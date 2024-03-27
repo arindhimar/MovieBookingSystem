@@ -1,0 +1,16 @@
+UserTb(uid(user/owner),uname,uemail,umobile,upass,uytpe)
+
+MovieTB(mid,mname)
+
+CinemaTb(cid,cname,location=Surat(latitude and longitude),uid(owner))
+
+ScreenTb(sid,capacity/seats,cid,uid(owner))
+
+ShowTb(shwid,mid,sid,cid, uid(owner) ,pricing)
+
+BookingTb(bid,shwid,mid,sid,cid, uid(user),uid(owner) ,no.ofseats)
+
+PaymentTb(pid,bid,shwid,mid,sid,cid, uid(user),uid(owner),amount,price*nos)
+
+
+ 

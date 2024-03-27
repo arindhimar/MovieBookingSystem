@@ -1,0 +1,69 @@
+**Learn to use github**
+**Learn Image Upload using FireBase**
+**Learn Authentication**
+**Navigation Drawer Activity**
+
+
+
+Users
+
+
+
+
+
+==Main==
+- Manage Movies
+- View Transactions
+
+==Owners==
+- Manage cinemas - Manage Screens - Add Movies - Add Seats(generated dynamically)
+
+- View Transactions
+
+==User==
+- View Movie(dynamic and images) - View Cinema - View Shows - View Seats - Payment API
+- Location 
+- Search
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==Common Functions==
+- Profile Managment 
+
+
+==User Interface==
+
+
+=Login Activity=
+- Email/Phone/UserName and Password Login
+- Login using Google
+- Register Option
+
+=Register Activity=
+- Name,email,pass,mobile with verfication,utype(need to think about it)
+
+=Owners Activity=
+- Have a list of movies added by the Main User
+- Manage the cinemas - Manage the screens - Manage the seats & price
+- View Bookings
+
+
+=Users Activity=
+- Payment via api
+- When Booking Seats(yellow=temp block,white=available,black=booked; dynamic) 

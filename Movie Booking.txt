@@ -1,0 +1,30 @@
+- login page (background image ; filed - mail/phone , pass , auto login with gmail using api , rounded rectangular button for login , register ; usertb = uid,uemail,phone, name , pass)
+
+
+- think for admin who can add shows and places also
+
+- Square Online Payment API
+
+- main page allows user to select location , movies that are available , datepicker , 
+
+- on movie selection shows cinemas along with the show timings 
+ 
+- after show selection show seats that are available , on selection of seats show the amount and than payment using the api
+
+- if exit after payment than seat should be displayed in yellow color as pending and should be available after some time only
+
+- user can re attend the pending bookings for some time
+
+==Tables==(Database - FireBase)
+- usertb (uid,uname,uemail,uphone,upass,utype-user,admin,main)
+- Location set by default
+- CinemaTb(Cid , Cname , Location )
+- CinemaOwner(coid , Cid , Uid)
+- ScreenTb(sid , cid , seats - to be displayed when user selects a show  black - booked : white normal - nb : yellow : pending payment )
+- MovieTb(mid , mname, can only be added by the main admin)
+- ShowTb(sid,coid , timing , price)
+- BookingTb(bid,uid,sid,qty,total)
+
+
+
+
