@@ -1,0 +1,13 @@
+
+
+
+
+==Admin/Owner==
+- Manage Cinema
+- Manage Screen
+- Manage Shows
+- Add Movie(Patya - One movie can be added only once)
+- View Booked Details
+
+==User==
+- View Movies - Location (Default) - View Cinema - View Shows - Display Seats - Payment

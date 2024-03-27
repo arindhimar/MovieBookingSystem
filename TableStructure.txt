@@ -1,3 +1,6 @@
+==3NF==
+
+
 UserTb(uid(user/owner),uname,uemail,umobile,upass,uytpe)
 
 MovieTB(mid,mname)
