@@ -1,1 +1,6 @@
 Custom Alert Dialog - https://www.geeksforgeeks.org/how-to-implement-loading-alertdialog-in-android/
+FireBase OTP - https://firebase.google.com/docs/auth/android/phone-auth
+
+
+Invalid Google Play API - https://stackoverflow.com/questions/67490537/android-studio-4-2-doesnt-show-signing-report-in-the-gradle-bar
+Command to get SHA KEYS - ./gradlew signingReport
