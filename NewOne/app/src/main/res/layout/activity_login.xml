@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+
+
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+
+    <EditText
+        android:id="@+id/txtemail"
+        android:hint="Username/Email/Phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <EditText
+        android:id="@+id/txtpass"
+        android:hint="Password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:onClick="loginUser"
+        android:id="@+id/btnLogin"
+        android:text="Login"
+        android:bottomRightRadius="10dp"
+        android:bottomLeftRadius="10dp"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:text="Or Connect with"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/loginusinggoogle"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:weightSum="3"
+        android:layout_marginLeft="30pt"
+        android:layout_marginRight="30pt"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+
+            android:src="@drawable/googleicon"
+            android:layout_width="25pt"
+            android:layout_height="25pt"/>
+
+        <TextView
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Login Using Google"
+            android:textSize="8pt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:onClick="OpenRegister"
+        android:id="@+id/registernewuser"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:weightSum="3"
+        android:layout_marginLeft="30pt"
+        android:layout_marginRight="30pt"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+
+            android:src="@drawable/humanicon"
+            android:layout_width="25pt"
+            android:layout_height="25pt"/>
+
+        <TextView
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Register"
+            android:textSize="8pt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

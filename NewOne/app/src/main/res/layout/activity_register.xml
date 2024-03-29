@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+    
+    
+    <EditText
+        android:hint="Enter Name"
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
+
+        <EditText
+
+            android:hint="Enter Email"
+            android:id="@+id/txtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+
+
+
+
+
+
+
+
+    <EditText
+        android:hint="Enter Password"
+        android:id="@+id/txtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
+    <LinearLayout
+        android:weightSum="5"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_weight="4.9"
+
+            android:hint="Enter Mobile Number"
+            android:id="@+id/txtMobile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+
+        <Button
+            android:onClick="SendOtp"
+            android:id="@+id/sendotp"
+
+            android:text="Send"
+            android:layout_weight="0.1"
+            android:layout_width="40pt"
+            android:layout_height="20pt"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:weightSum="5"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_weight="4.9"
+
+            android:id="@+id/txtotp"
+            android:hint="Enter OTP(Do Not Share With Anyone)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+
+        <Button
+            android:onClick="VerifyOTP"
+            android:id="@+id/verifyotpbtn"
+            android:text="Verify"
+            android:layout_weight="0.1"
+            android:layout_width="40pt"
+            android:layout_height="20pt"/>
+
+    </LinearLayout>
+
+
+
+
+
+
+    <EditText
+        android:hint="Enter Type"
+        android:id="@+id/txtType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <Button
+        android:enabled="true"
+        android:onClick="RegisterUser"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:text="Register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
