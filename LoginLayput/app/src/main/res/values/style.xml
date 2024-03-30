@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="TextAppearance.AppTheme.TextInputLayout.HintTextAlt" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextInputLayoutStyle"  parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextAppearance">@style/TextAppearance.AppTheme.TextInputLayout.HintTextAlt</item>
+        <item name="boxStrokeColor">@color/white</item>
+
+        <item name="boxCornerRadiusBottomEnd">5dp</item>
+        <item name="boxCornerRadiusBottomStart">5dp</item>
+        <item name="boxCornerRadiusTopEnd">5dp</item>
+        <item name="boxCornerRadiusTopStart">5dp</item>
+        <item name="android:layout_margin">5dp</item>
+    </style>
+
+
+<!--    <selector name="text_input_layout_stroke_color" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+<!--        <item android:alpha="..." android:color="@color/...." android:state_focused="true" name="" />-->
+<!--        <item android:alpha="..." android:color="@color/...." android:state_hovered="true"/>-->
+<!--        <item android:alpha="..." android:color="@color/...." android:state_enabled="false"/>-->
+<!--        <item android:alpha="..." android:color="@color/...."/>-->
+<!--    </selector>-->
+
+
+</resources>
