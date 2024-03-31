@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="user_type_array">
+        <item>Owner</item>
+        <item>User</item>
+    </string-array>
+</resources>

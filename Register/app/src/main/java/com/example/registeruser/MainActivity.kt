@@ -1,58 +1,80 @@
 package com.example.registeruser
-
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.view.isVisible
+import com.example.registeruser.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var front_animation: AnimatorSet
-    lateinit var back_animation: AnimatorSet
-    var isFront =true
+    var isFront = true
+    lateinit var binding:ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
 
-        var scale = applicationContext.resources.displayMetrics.density
+        setContentView(binding.root)
 
-        val front:CardView = findViewById(R.id.card_front)
-        val back:CardView = findViewById(R.id.card_back)
-
-        val flip = findViewById<Button>(R.id.loginbtn) as Button
+        val scale = applicationContext.resources.displayMetrics.density
+        val front: CardView = findViewById(R.id.card_front)
+        val flip = findViewById<Button>(R.id.loginbtn)
 
         front.cameraDistance = 8000 * scale
-        back.cameraDistance = 8000 * scale
 
+        // Load the rotate_360 animation for the front card
+        front_animation = AnimatorInflater.loadAnimator(applicationContext, R.animator.animation360) as AnimatorSet
 
-        // Now we will set the front animation
-        front_animation = AnimatorInflater.loadAnimator(applicationContext, R.animator.front_animator) as AnimatorSet
-        back_animation = AnimatorInflater.loadAnimator(applicationContext, R.animator.back_animator) as AnimatorSet
-
-        // Now we will set the event listener
+        // Set the event listener for the button
         flip.setOnClickListener {
-            isFront = if (isFront) {
-                front_animation.setTarget(front);
-                back_animation.setTarget(back);
-                front_animation.start()
-                back_animation.start()
-                false
+            // Set the animation target to the front card
+            front_animation.setTarget(front)
 
-            } else {
-                front_animation.setTarget(back)
-                back_animation.setTarget(front)
-                back_animation.start()
-                front_animation.start()
-                true
+            // Start the animation
+            front_animation.start()
 
-            }
+            // Toggle the card state
+            isFront = !isFront
 
+            switchControls()
 
         }
-        flip.performClick()
-        flip.performClick()
 
+        binding.loginbtn2.setOnClickListener {
+            front_animation.setTarget(front)
+
+            // Start the animation
+            front_animation.start()
+
+            // Toggle the card state
+            isFront = !isFront
+
+            switchControls()
         }
+
+        // Trigger the animation once to show the back of the card initially
+        flip.performClick()
+        flip.performClick()
+    }
+
+
+    fun switchControls() {
+        val currentVisibility = binding.textInputLayout1.isVisible
+
+        binding.textInputLayout1.isVisible = !currentVisibility
+        binding.textInputLayout2.isVisible = !currentVisibility
+        binding.textInputLayout3.isVisible = !currentVisibility
+        binding.textInputLayout4.isVisible = currentVisibility
+        binding.textInputLayout5.isVisible = currentVisibility
+        binding.textInputLayout6.isVisible = currentVisibility
+        binding.loginbtn.isVisible = !currentVisibility
+        binding.loginbtn2.isVisible = currentVisibility
+        binding.loginbtn3.isVisible = currentVisibility
+    }
+
+
 }

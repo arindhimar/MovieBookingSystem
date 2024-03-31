@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/login_button</item>
+        <item name="colorPrimaryDark">@color/login_button</item>
+        <item name="colorAccent">@color/login_button</item>
+
+    </style>
+</resources>
