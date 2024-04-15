@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160948405201",
+    "project_id": "fire-base-5d033",
+    "storage_bucket": "fire-base-5d033.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160948405201:android:838c319d4dd2fdcfd856f0",
+        "android_client_info": {
+          "package_name": "com.example.fire_upload"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmtHSvUfFRQWFikt-2uSwsd_dAMLs9KpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
