@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Define your primary colors -->
+        <item name="colorPrimary">@color/login_button</item>
+        <item name="colorPrimaryDark">@color/login_button</item>
+        <item name="colorAccent">@color/login_button</item>
+
+        <!-- Define the default button style -->
+        <item name="materialButtonOutlinedStyle">@style/OutlinedButtonStyle</item>
+    </style>
+
+    <style name="OutlinedButtonStyle" parent="Widget.Material3.Button.IconButton.Outlined">
+        <!-- Define your button style attributes -->
+    </style>
+</resources>

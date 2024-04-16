@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bkg2"
+    tools:context=".LoginAndRegister">
+
+
+
+
+
+
+    <androidx.cardview.widget.CardView
+
+        android:layout_width="320dp"
+        android:layout_height="480dp"
+        android:id="@+id/card_front"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.5"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/semiTransparentWhite">
+
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/corner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+
+
+        <!--    Login Layout            -->
+
+            <ImageView
+                android:id="@+id/AppIcon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="48dp"
+                android:background="@drawable/circle_background"
+                android:contentDescription="Description"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- txtLoginEmailMobileId  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtLoginEmailMobileId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="120dp"
+                android:layout_marginRight="25dp"
+
+                android:layout_marginBottom="-60dp"
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:endIconMode="clear_text"
+                app:endIconScaleType="centerInside"
+                app:endIconTint="@color/login_button"
+                app:layout_constraintBottom_toTopOf="@+id/txtPassword"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.52"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/AppIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47000003"
+                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username/Email/Mobile"
+                    android:textColorHint="@color/m3_textfield_login_page_colors"
+                     />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtPassword"
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="100dp"
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/txtLoginEmailMobileId"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/login_button"
+                app:startIconDrawable="@drawable/baseline_password_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/loginbtnmain"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-80dp"
+                android:layout_marginBottom="16dp"
+                android:text="SIGN IN"
+                android:onClick="LoginUser"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                app:cornerRadius="25dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPassword"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+            <Button
+                android:id="@+id/loginwithgoogle"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-20dp"
+                android:layout_marginBottom="16dp"
+                android:text="Sign In With Google"
+                android:textColor="@color/login_button"
+                android:textSize="20dp"
+                app:cornerRadius="25dp"
+                app:icon="@drawable/google"
+                app:iconSize="10pt"
+                app:iconTintMode="src_in"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/loginbtnmain"
+                app:rippleColor="#90FFFFFF"
+                android:onClick="LoginWithGoogle"
+                app:strokeColor="#1E1E8E" />
+
+            <Button
+                android:id="@+id/registerbtn"
+                style="@style/Widget.Material3.Button.TextButton"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:layout_marginBottom="16dp"
+                android:text="Don't have an account??Sign Up"
+
+                android:textColor="@color/login_button"
+                android:textSize="12dp"
+                app:cornerRadius="25dp"
+                android:onClick="SwitchToRegister"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/loginwithgoogle"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <Button
+                android:id="@+id/CloseIcon"
+                android:onClick="SwitchToLogin"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                app:icon="@drawable/close_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+            <TextView
+                android:visibility="invisible"
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:contentDescription="Description"
+                android:text="Sign Up"
+
+                android:textSize="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- TextInputLayout 4 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout4"
+                android:visibility="invisible"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="25dp"
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:endIconMode="clear_text"
+                app:endIconScaleType="centerInside"
+                app:endIconTint="@color/login_button"
+                app:layout_constraintBottom_toTopOf="@+id/textInputLayout5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.52"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47000003"
+                app:startIconDrawable="@drawable/baseline_phone_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Phone Number"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- TextInputLayout 5 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout5"
+                android:visibility="invisible"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="-120dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="100dp"
+                app:boxBackgroundColor="#00ECECF3"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout4"
+                app:passwordToggleEnabled="false"
+                app:passwordToggleTint="@color/login_button"
+                app:startIconDrawable="@drawable/otp"
+
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="OTP"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:id="@+id/textInputLayout6"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="150dp"
+                app:boxBackgroundColor="#00ECECF3"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout5"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/login_button"
+                app:startIconDrawable="@drawable/baseline_password_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="User Type"
+                    android:textColorHint="@color/m3_textfield_login_page_colors"
+
+                    app:simpleItems="@array/user_type_array" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/loginbtn2"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+
+
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-50dp"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/white"
+
+                app:cornerRadius="25dp"
+
+                app:icon="@drawable/baseline_arrow_back_24"
+
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout6"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+            <Button
+                android:id="@+id/loginbtn3"
+                style="Widget.Material3.Button.IconButton.Filled.Tonal"
+
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/white"
+
+                app:cornerRadius="25dp"
+
+                android:text="Register"
+
+                android:textSize="14dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/loginbtn2"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+
+            <TextView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:contentDescription="Description"
+                android:text="Sign Up"
+                android:textSize="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- TextInputLayout 1 for Name  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="1dp"
+
+
+                android:layout_marginRight="25dp"
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:counterEnabled="true"
+                app:counterMaxLength="10"
+                app:counterTextColor="@color/m3_textfield_login_page_colors"
+                app:endIconMode="clear_text"
+
+                app:endIconScaleType="centerInside"
+                app:endIconTint="@color/login_button"
+
+                app:helperTextEnabled="false"
+                app:helperTextTextColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toTopOf="@+id/textInputLayout2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.52"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.47000003"
+                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:inputType="text"
+                    android:maxLines="1"
+
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- TextInputLayout 2  Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout2"
+
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="-120dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="100dp"
+                app:boxBackgroundColor="#00ECECF3"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout1"
+                app:passwordToggleEnabled="false"
+                app:passwordToggleTint="@color/login_button"
+                app:startIconDrawable="@drawable/baseline_alternate_email_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <!-- TextInputLayout 3 Password-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout3"
+
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="-110dp"
+                app:boxBackgroundColor="#00ECECF3"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/login_button"
+                app:startIconDrawable="@drawable/baseline_password_24"
+                app:startIconTint="@color/m3_textfield_login_page_colors">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="Password"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/loginbtn"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+
+
+                app:icon="@drawable/baseline_arrow_forward_24"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-50dp"
+                android:layout_marginBottom="16dp"
+
+
+                android:textColor="@color/white"
+
+                app:cornerRadius="25dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
