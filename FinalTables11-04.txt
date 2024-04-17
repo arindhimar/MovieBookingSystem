@@ -1,0 +1,75 @@
+Cinema_OwnerTb:
+cinema_owner_id (NUMBER, PRIMARY KEY)
+cinema_owner_username (VARCHAR(50))
+cinema_owner_email (VARCHAR(50))
+cinema_owner_pass (VARCHAR(50))
+cinema_owner_mobile (VARCHAR(20))
+
+UserTb:
+user_id (NUMBER, PRIMARY KEY)
+user_username (VARCHAR(50))
+user_email (VARCHAR(50))
+user_pass (VARCHAR(50))
+user_mobile (VARCHAR(20))
+
+MovieTb:
+movie_id (NUMBER, PRIMARY KEY)
+movie_name (VARCHAR(100))
+movie_duration (INTERVAL DAY TO SECOND)
+movie_genre (VARCHAR(50))
+
+CinemaTb:
+cinema_id (NUMBER, PRIMARY KEY)
+owner_id (NUMBER, FOREIGN KEY references OwnerTb(owner_id))
+cinema_name (VARCHAR(100))
+location (VARCHAR(100))
+
+CinemaAdministrationTb:
+cinema_admin_id (NUMBER, PRIMARY KEY)
+cinema_admin_username (VARCHAR(50))
+cinema_admin_email (VARCHAR(50))
+cinema_admin_pass (VARCHAR(50))
+cinema_admin_mobile (VARCHAR(20))
+cinema_id (NUMBER, FOREIGN KEY references CinemaTb(cinema_id))
+
+ScreenTb:
+screen_id (NUMBER, PRIMARY KEY)
+cinema_id (NUMBER, FOREIGN KEY references CinemaTb(cinema_id))
+Number_Of_seat (NUMBER)
+
+ShowTb:
+show_id (NUMBER, PRIMARY KEY)
+movie_id (NUMBER, FOREIGN KEY references MovieTb(movie_id))
+screen_id (NUMBER, FOREIGN KEY references ScreenTb(screen_id))
+start_time (TIMESTAMP)
+end_time (TIMESTAMP)
+
+
+BookingTb:
+booking_id (NUMBER, PRIMARY KEY)
+show_id (NUMBER, FOREIGN KEY references ShowTb(show_id))
+user_id (NUMBER, FOREIGN KEY references UserTb(user_id))
+num_tickets (NUMBER)
+total_price (NUMBER)
+booking_time (TIMESTAMP)
+
+PaymentTb:
+payment_id (NUMBER, PRIMARY KEY)
+booking_id (NUMBER, FOREIGN KEY references BookingTb(booking_id))
+payment_amount (NUMBER)
+payment_date (TIMESTAMP)
+payment_method (VARCHAR(50))
+payment_status (VARCHAR(20))
+
+CancellationTb:
+cancellation_id (NUMBER, PRIMARY KEY)
+booking_id (NUMBER, FOREIGN KEY references BookingTb(booking_id))
+cancellation_reason (VARCHAR(200))
+cancellation_date (TIMESTAMP)
+
+FeedbackTb:
+feedback_id (NUMBER, PRIMARY KEY)
+booking_id (NUMBER, FOREIGN KEY references BookingTb(booking_id))
+rating (NUMBER)
+comments (VARCHAR(200))
+feedback_date (TIMESTAMP)
