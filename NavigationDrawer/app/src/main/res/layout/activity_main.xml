@@ -14,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +28,7 @@
                 android:id="@+id/ToolBaar"
                 android:layout_height="wrap_content"
                 app:navigationIcon="@drawable/baseline_menu_24"
-                app:title="Main Title" />
+                app:title="Cinema Admin Panel" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -41,6 +40,7 @@
         app:menu="@menu/nav_drawer_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:id="@+id/nav_view"
 
         android:layout_gravity="start" />
 

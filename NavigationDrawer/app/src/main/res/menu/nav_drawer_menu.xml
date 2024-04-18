@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:checkable="true"
-        android:id="@+id/nav_menu_home"
-        android:icon="@drawable/ic_menu_home"
-        android:title="Home" />
 
     <item
-        android:checkable="true"
-        android:id="@+id/nav_menu_explore"
-        android:icon="@drawable/ic_menu_explore"
-        android:title="Explore" />
+
+        android:title="Management  Options">
+        <menu>
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_manage_screen"
+                android:icon="@drawable/cinema_screen"
+                android:title="Manage Screen" />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_manage_show"
+                android:icon="@drawable/cinema_show"
+                android:title="Manage Shows" />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_view_booking"
+                android:icon="@drawable/cinema_booking"
+                android:title="View Bookings" />
+        </menu>
+    </item>
+
+
+
+
 
     <item
-        android:checkable="true"
-        android:id="@+id/nav_menu_subscription"
-        android:icon="@drawable/ic_menu_subscription"
-        android:title="Subscriptions" />
-
-    <item
-        android:checkable="true"
-        android:id="@+id/nav_menu_video_library"
-        android:icon="@drawable/ic_menu_video_library"
-        android:title="Video Library" />
-
-    <item
-        android:title="Other Options"
+        android:title="Profile Options"
         >
         <menu>
             <item
                 android:checkable="true"
                 android:id="@+id/nav_menu_account"
-                android:icon="@drawable/ic_menu_account"
+                android:icon="@drawable/account_profile_48px"
                 android:title="My Account" />
 
             <item
                 android:checkable="true"
-                android:id="@+id/nav_menu_settings"
-                android:icon="@drawable/ic_menu_settings"
-                android:title="Settings" />
+                android:id="@+id/logoutuser"
+                android:icon="@drawable/logout48px"
+                android:title="LogOut" />
         </menu>
     </item>
 </menu>
