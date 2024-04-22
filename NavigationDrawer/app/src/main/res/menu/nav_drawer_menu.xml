@@ -9,19 +9,21 @@
             <item
                 android:checkable="true"
                 android:id="@+id/nav_manage_screen"
-                android:icon="@drawable/cinema_screen"
-                android:title="Manage Screen" />
+                android:icon="@drawable/ic_menu_screenboth"
+                android:title="Manage Screen"
+
+                />
 
             <item
                 android:checkable="true"
                 android:id="@+id/nav_manage_show"
-                android:icon="@drawable/cinema_show"
+                android:icon="@drawable/ic_menu_showboth"
                 android:title="Manage Shows" />
 
             <item
                 android:checkable="true"
                 android:id="@+id/nav_view_booking"
-                android:icon="@drawable/cinema_booking"
+                android:icon="@drawable/ic_menu_bookingboth"
                 android:title="View Bookings" />
         </menu>
     </item>
@@ -37,7 +39,7 @@
             <item
                 android:checkable="true"
                 android:id="@+id/nav_menu_account"
-                android:icon="@drawable/account_profile_48px"
+                android:icon="@drawable/ic_menu_accountboth"
                 android:title="My Account" />
 
             <item
