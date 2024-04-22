@@ -12,6 +12,7 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.Window
+
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -27,11 +28,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
@@ -46,6 +49,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
+import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
@@ -53,10 +58,13 @@ class LoginAndRegister : AppCompatActivity() {
     private lateinit var binding: ActivityLoginAndRegisterBinding
     private lateinit var frontAnimation: AnimatorSet
     private var isFront = true
+    private lateinit var loadingDialogBox:Dialog
+
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
     val Req_Code: Int = 123
     private lateinit var firebaseAuth: FirebaseAuth
+
 
 
     //For OTP
@@ -82,6 +90,37 @@ class LoginAndRegister : AppCompatActivity() {
         // Inflate layout using view binding
         binding = ActivityLoginAndRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        // No Internet Dialog: Signal
+        NoInternetDialogSignal.Builder(
+            this,
+            lifecycle
+        ).apply {
+            dialogProperties.apply {
+                connectionCallback = object : ConnectionCallback { // Optional
+                    override fun hasActiveConnection(hasActiveConnection: Boolean) {
+                        // ...
+                    }
+                }
+
+                cancelable = false // Optional
+                noInternetConnectionTitle = "No Internet" // Optional
+                noInternetConnectionMessage =
+                    "Check your Internet connection and try again." // Optional
+                showInternetOnButtons = true // Optional
+                pleaseTurnOnText = "Please turn on" // Optional
+                wifiOnButtonText = "Wifi" // Optional
+                mobileDataOnButtonText = "Mobile data" // Optional
+
+                onAirplaneModeTitle = "No Internet" // Optional
+                onAirplaneModeMessage = "You have turned on the airplane mode." // Optional
+                pleaseTurnOffText = "Please turn off" // Optional
+                airplaneModeOffButtonText = "Airplane mode" // Optional
+                showAirplaneModeOffButtons = true // Optional
+            }
+        }.build()
+
 
         FirebaseApp.initializeApp(this)
 
@@ -148,6 +187,7 @@ class LoginAndRegister : AppCompatActivity() {
             } else {
                 //if phone number is valid generate OTP
                 startPhoneNumberVerification(binding.textInputLayout4.editText!!.text.trim().toString())
+                showLoading("Sending OTP")
             }
         }
 
@@ -177,6 +217,9 @@ class LoginAndRegister : AppCompatActivity() {
         //Disable OTP field
         binding.textInputLayout5.isEnabled = false
 
+        //Disable the Register Button
+        binding.loginbtn3.isEnabled = false
+
         // Trigger the animation once to show the back of the card initially
         binding.CloseIcon.performClick()
 
@@ -204,12 +247,18 @@ class LoginAndRegister : AppCompatActivity() {
                 // for instance if the the phone number format is not valid.
                 Log.w("TAG", "onVerificationFailed", e)
 
-                if (e is FirebaseAuthInvalidCredentialsException) {
-                    // Invalid request
-                } else if (e is FirebaseTooManyRequestsException) {
-                    // The SMS quota for the project has been exceeded
-                } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
-                    // reCAPTCHA verification attempted with null Activity
+                when (e) {
+                    is FirebaseAuthInvalidCredentialsException -> {
+                        // Invalid request
+                    }
+
+                    is FirebaseTooManyRequestsException -> {
+                        // The SMS quota for the project has been exceeded
+                    }
+
+                    is FirebaseAuthMissingActivityForRecaptchaException -> {
+                        // reCAPTCHA verification attempted with null Activity
+                    }
                 }
 
                 // Show a message and update the UI
@@ -226,33 +275,22 @@ class LoginAndRegister : AppCompatActivity() {
                 Log.d("TAG", "onCodeSent:$verificationId")
 
                 // Show the dialog that otp is sent
-                val dialog = Dialog(this@LoginAndRegister)
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setCancelable(false)
-                dialog.setContentView(R.layout.custom_dialog_layout)
-                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                dialog.window?.setWindowAnimations(R.style.AnimationsForDailog)
+                loadingDialogBox.dismiss()//Dismissing the loading dialog
 
-                val MessageIcon:ImageView = dialog.findViewById(R.id.imageView)
-                val tvMessage: TextView = dialog.findViewById(R.id.textView2)
-                val btnLayout: LinearLayout = dialog.findViewById(R.id.CustomDialogButtonLayout)
-                btnLayout.isVisible=false
-
-                MessageIcon.setImageResource(R.drawable.green_tick)
-                tvMessage.text = "OTP sent successfully"
-                dialog.show()
+                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
+                imageView.setImageResource(R.drawable.green_tick)
+                loadingDialogBox.show()//showing that the otp is sent
+                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
+                ButtonLayout.isVisible = false
 
                 // Enable the OTP field
                 binding.textInputLayout5.isEnabled = true
 
-                // Close the dialog after 2 seconds
+
                 val handler = Handler()
                 handler.postDelayed({
-                    dialog.dismiss()
+                    loadingDialogBox.dismiss()
                 }, 2000)
-
-
-
 
                 VerificationID = verificationId
 
@@ -263,7 +301,181 @@ class LoginAndRegister : AppCompatActivity() {
         }
         // [END phone_auth_callbacks]
 
+        //Initiating Loading Dialog Screen
+        loadingDialogBox=Dialog(this)
+        showLoading("Initiating")
 
+        //Registering the user
+        binding.loginbtn3.setOnClickListener {
+            registerUser()
+        }
+    }
+
+    fun registerUser() {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseDatabase = FirebaseDatabase.getInstance()
+
+
+        // Validating user input
+        val username = binding.textInputLayout1.editText!!.text.toString()
+        val email = binding.textInputLayout2.editText!!.text.toString()
+        val password = binding.textInputLayout3.editText!!.text.toString()
+        val mobile = binding.textInputLayout4.editText!!.text.toString()
+
+        if (username.isBlank() || email.isBlank() || password.isBlank() || mobile.isBlank()) {
+            Toast.makeText(this, "Empty fields!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val firebaseRestManager = FirebaseRestManager<UserTb>()
+
+        // Perform user registration with Firebase Authentication
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { authTask ->
+                if (authTask.isSuccessful) {
+                    // Registration successful, get the authenticated user
+                    val firebaseUser = firebaseAuth.currentUser
+                    if (firebaseUser != null) {
+                        // Use the user ID from Firebase Authentication as the key for database storage
+                        val userId = firebaseUser.uid
+
+                        // Create a UserTb object with the obtained user ID
+                        val tempUser = UserTb(userId, username, email, password, mobile, "user")
+                        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+
+                        firebaseRestManager.addItem(tempUser, dbRef) { success, error ->
+                            if (success) {
+                                binding.CloseIcon.performClick()
+                                EnableAndCleanRegisterFields()
+
+                                showLoading("User Registered!!")
+                                val imageView =
+                                    loadingDialogBox.findViewById<ImageView>(R.id.imageView)
+                                imageView.setImageResource(R.drawable.green_tick)
+                                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
+                                ButtonLayout.isVisible = false
+                                loadingDialogBox.show() // Show success message
+
+                                // Create the user in Firebase Authentication
+                                val auth = FirebaseAuth.getInstance()
+                                auth.createUserWithEmailAndPassword(
+                                    tempUser.uemail!!,
+                                    tempUser.upassword!!
+                                )
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            // User registration successful, navigate to the next screen or perform desired action
+                                            Log.d("TAG", "createUserWithEmail:success")
+                                        } else {
+
+                                            Toast.makeText(
+                                                this,
+                                                "Authentication failed: ${task.exception?.message}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    loadingDialogBox.dismiss()
+                                }, 2000)
+                            } else {
+                                // Handle failure to add user data to the database
+                                Log.e("TAG", "Error adding user data to the database: $error")
+                                // Display error message or take appropriate action
+                            }
+                        }
+
+
+                    } else {
+                        // Registration failed, display error message
+                        Log.e("TAG", "User registration failed: ${authTask.exception}")
+                        Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+    }
+
+
+//    fun registerUser() {
+//
+//
+//        val firebaseRestManager = FirebaseRestManager<UserTb>()
+//        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+//
+//        val userKey = dbRef.push().key
+//        val tempUser:UserTb = UserTb(userKey,
+//            binding.textInputLayout1.editText!!.text.toString(),
+//            binding.textInputLayout2.editText!!.text.toString(),
+//            binding.textInputLayout3.editText!!.text.toString(),
+//            binding.textInputLayout4.editText!!.text.toString(),
+//            "user")
+//
+//
+//        firebaseRestManager.addItem(tempUser, dbRef) { success, error ->
+//            if (success) {
+//                binding.CloseIcon.performClick()
+//                EnableAndCleanRegisterFields()
+//
+//                showLoading("User Registered!!")
+//                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
+//                imageView.setImageResource(R.drawable.green_tick)
+//                loadingDialogBox.show() // Show success message
+//
+//                // Create the user in Firebase Authentication
+//                val auth = FirebaseAuth.getInstance()
+//                auth.createUserWithEmailAndPassword(tempUser.uemail!!, tempUser.upassword!!)
+//                    .addOnCompleteListener { task ->
+//                        if (task.isSuccessful) {
+//                            // User registration successful, navigate to the next screen or perform desired action
+//                            Log.d("TAG", "createUserWithEmail:success")
+//                        } else {
+//                            // User registration failed, display error message
+//                            Log.w("TAG", "createUserWithEmail:failure", task.exception)
+//                            Toast.makeText(this, "Authentication failed: ${task.exception?.message}",
+//                                Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//
+//                val handler = Handler()
+//                handler.postDelayed({
+//                    loadingDialogBox.dismiss()
+//                }, 2000)
+//            } else {
+//                // Handle failure to add user data to the database
+//                Log.e("TAG", "Error adding user data to the database: $error")
+//                // Display error message or take appropriate action
+//            }
+//        }
+//
+//    }
+
+
+    private fun showLoading(message: String?) {
+        loadingDialogBox=Dialog(this)
+
+        // Request window feature before setting content view
+        loadingDialogBox.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        loadingDialogBox.setCancelable(false)
+
+        // Set content view after requesting window feature
+        loadingDialogBox.setContentView(R.layout.custom_dialog_layout)
+        loadingDialogBox.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        loadingDialogBox.window?.setWindowAnimations(R.style.AnimationsForDailog)
+
+        val tvmessage: TextView = loadingDialogBox.findViewById(R.id.textView2)
+        val btnyes: Button = loadingDialogBox.findViewById(R.id.btn_yes)
+        val btnno: Button = loadingDialogBox.findViewById(R.id.btn_no)
+
+        tvmessage.text = message
+
+        btnyes.setOnClickListener {
+            Toast.makeText(this, "click on yes", Toast.LENGTH_SHORT).show()
+        }
+
+        btnno.setOnClickListener {
+            loadingDialogBox.dismiss()
+        }
     }
 
     fun onNewToken() {
@@ -273,10 +485,7 @@ class LoginAndRegister : AppCompatActivity() {
             if(task.isSuccessful){
                 Log.d("TAG", "Refreshed token: ${task.result}")
             }
-
         }
-
-
     }
 
 
@@ -316,8 +525,22 @@ class LoginAndRegister : AppCompatActivity() {
 
                     val user = task.result?.user
 
+                    //OTP has been Verified along with validation enabling the register button
+                    binding.loginbtn3.isEnabled = true
 
-                    Toast.makeText(this,"Lol!!",Toast.LENGTH_SHORT).show()
+                    showLoading("OTP Verified!!")
+                    val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
+                    imageView.setImageResource(R.drawable.green_tick)
+                    loadingDialogBox.show()//showing that the otp is sent
+                    val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
+                    ButtonLayout.isVisible = false
+                    val handler = Handler()
+                    handler.postDelayed({
+                        loadingDialogBox.dismiss()
+                    }, 2000)
+
+                    //Disabling to prevent user from modifying the fields
+                    LockUnlockRegisterationFields()
 
                 } else {
                     // Sign in failed, display a message and update the UI
@@ -351,6 +574,27 @@ class LoginAndRegister : AppCompatActivity() {
     }
     // [END sign_in_with_phone]
 
+    private fun LockUnlockRegisterationFields(){
+        binding.textInputLayout1.isEnabled = false
+        binding.textInputLayout2.isEnabled = false
+        binding.textInputLayout3.isEnabled = false
+        binding.textInputLayout4.isEnabled = false
+        binding.textInputLayout5.isEnabled = false
+    }
+
+    private fun EnableAndCleanRegisterFields(){
+        binding.textInputLayout1.isEnabled = true
+        binding.textInputLayout1.editText!!.text.clear()
+        binding.textInputLayout2.isEnabled = true
+        binding.textInputLayout2.editText!!.text.clear()
+        binding.textInputLayout3.isEnabled = true
+        binding.textInputLayout3.editText!!.text.clear()
+        binding.textInputLayout4.isEnabled = true
+        binding.textInputLayout4.editText!!.text.clear()
+        binding.textInputLayout5.isEnabled = false
+        binding.textInputLayout5.editText!!.text.clear()
+    }
+
 
     private fun switchControls() {
         val currentVisibility = binding.textInputLayout1.isVisible
@@ -360,7 +604,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout3.isVisible = !currentVisibility
         binding.textInputLayout4.isVisible = currentVisibility
         binding.textInputLayout5.isVisible = currentVisibility
-        binding.textInputLayout6.isVisible = currentVisibility
+
         binding.loginbtn.isVisible = !currentVisibility
         binding.loginbtn2.isVisible = currentVisibility
         binding.loginbtn3.isVisible = currentVisibility
@@ -385,7 +629,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout3.isVisible = false
         binding.textInputLayout4.isVisible = false
         binding.textInputLayout5.isVisible = false
-        binding.textInputLayout6.isVisible = false
+
         binding.loginbtn.isVisible = false
         binding.imageView2.isVisible = false
         binding.imageView.isVisible=false
@@ -429,6 +673,7 @@ class LoginAndRegister : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun SwitchToRegister(view: View) {
         // Initialize front card and flip button
         val scale = applicationContext.resources.displayMetrics.density
@@ -458,41 +703,44 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
     fun LoginUser(view: View) {
-        //Validating for empty fields!!
-        if(binding.txtLoginEmailMobileId.editText!!.text.isEmpty() || binding.txtPassword.editText!!.text.isEmpty()) {
-            Toast.makeText(this,"Empty Fields!!",Toast.LENGTH_SHORT).show()
+        // Validating for empty fields
+        if (binding.txtLoginEmailMobileId.editText!!.text.isEmpty() || binding.txtPassword.editText!!.text.isEmpty()) {
+            Toast.makeText(this, "Empty Fields!!", Toast.LENGTH_SHORT).show()
             return // Exit the function to prevent further execution
         }
-        val DbRef:DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
 
-        DbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                //checking if data exists
-                if (snapshot.exists()) {
-                    //traverse data
-                    var loginSuccess = false
-                    for (data in snapshot.children) {
-                        val temp = data.getValue(UserTb::class.java)
-                        if (temp != null) {
-                            if (temp.uemail == binding.txtLoginEmailMobileId.editText!!.text.toString() ||
-                                temp.umobile == binding.txtLoginEmailMobileId.editText!!.text.toString() ||
-                                temp.uname == binding.txtLoginEmailMobileId.editText!!.text.toString()) {
-                                if (temp.upassword == binding.txtPassword.editText!!.text.toString()) {
-                                    Log.d("TAG", "onDataChange:${temp.uid} ")
+        val userLogin = binding.txtLoginEmailMobileId.editText!!.text.toString()
+        val password = binding.txtPassword.editText!!.text.toString()
 
-                                    break // Exit the loop once login is successful
-                                }
-                            }
-                        }
+        val auth = FirebaseAuth.getInstance()
+        auth.signInWithEmailAndPassword(userLogin, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Login successful, get the authenticated user
+                    val user = auth.currentUser
+
+                    // Now you have access to the authenticated user's details
+                    if (user != null) {
+                        val userId = user.uid
+                        val userEmail = user.email
+                        // You can access other details like displayName, photoUrl, etc. as needed
+
+                        Log.d("TAG", "signInWithEmail:success, currentUser: $user\n $userId ")
+
+                        // Proceed to navigate to the next screen or perform other actions
+                    } else {
+                        // User is null, handle error
+                        Log.e("TAG", "Current user is null")
+                        Toast.makeText(baseContext, "User details not found.",
+                            Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    // Login failed, display a message to the user
+                    Log.w("TAG", "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("Login Error", "Error in Firebase query: ${error.message}")
-            }
-        })
-
     }
 
     fun LoginWithGoogle(view: View) {
@@ -643,12 +891,11 @@ class LoginAndRegister : AppCompatActivity() {
             binding.textInputLayout3.error = null
         }
 
-        // Check if there are no errors in any field
-//        return binding.textInputLayout1.error == null &&
-//                binding.textInputLayout2.error == null &&
-//                binding.textInputLayout3.error == null
+//         Check if there are no errors in any field
+        return binding.textInputLayout1.error == null &&
+                binding.textInputLayout2.error == null &&
+                binding.textInputLayout3.error == null
 
-        return true
     }
 
     private fun validateRegisterPage2(): Boolean {

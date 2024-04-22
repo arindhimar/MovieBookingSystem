@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         val btnlogout:Button= findViewById(R.id.dialog_btn)
 
         btnlogout.setOnClickListener{
-            val message:String?="Congratulations! you have successfully create a custom dialog."
+            val message: String ="Congratulations! you have successfully create a custom dialog."
             val dialog=Dialog(this)
             dialog.window?.setWindowAnimations(R.style.AnimationsForDailog)
             showcustomdialogbox(message)
