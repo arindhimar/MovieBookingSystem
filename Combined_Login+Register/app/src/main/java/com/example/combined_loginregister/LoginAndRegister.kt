@@ -95,6 +95,10 @@ class LoginAndRegister : AppCompatActivity() {
             switchControls()
         }
 
+        binding.loginbtn3.setOnClickListener {
+            validateRegisterUser()
+        }
+
         // Trigger the animation once to show the back of the card initially
         binding.CloseIcon.performClick()
     }
@@ -356,6 +360,16 @@ class LoginAndRegister : AppCompatActivity() {
         } else {
             // Email address is null
             Toast.makeText(this, "Email address is null", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun validateRegisterUser(){
+        if (binding.textInputLayout1.editText!!.text.isEmpty()) {
+            binding.textInputLayout1.error = "Name cannot be empty"
+        } else if (!binding.textInputLayout1.editText!!.text.matches("[a-zA-Z ]+".toRegex())) {
+            binding.textInputLayout1.error = "Invalid characters in name"
+        } else {
+            binding.textInputLayout1.error = null
         }
     }
 

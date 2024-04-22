@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="1200">
+<set xmlns:android="http://schemas.android.com/apk/res/android">
     <translate
-        android:fromYDelta="100%p"
-        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-        android:toYDelta="0"/>
-    <alpha
-        android:fromAlpha="0"
-        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
-        android:toAlpha="1"/>
+        android:duration="1000"
+        android:fromYDelta="100%"
+    android:toYDelta="0" /> <!-- Move the view to the top of the screen -->
 </set>
