@@ -13,4 +13,12 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="AnimationsForDailog">
+
+        <item name="android:windowEnterAnimation">@anim/dialog_show </item>
+        <item name="android:windowExitAnimation"> @anim/dialog_hide</item>
+
+    </style>
+
 </resources>

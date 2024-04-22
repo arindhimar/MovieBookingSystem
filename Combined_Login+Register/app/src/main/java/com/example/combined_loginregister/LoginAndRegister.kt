@@ -2,10 +2,20 @@ package com.example.combined_loginregister
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,13 +28,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
 class LoginAndRegister : AppCompatActivity() {
     private lateinit var binding: ActivityLoginAndRegisterBinding
@@ -34,6 +57,23 @@ class LoginAndRegister : AppCompatActivity() {
     lateinit var mGoogleSignInClient: GoogleSignInClient
     val Req_Code: Int = 123
     private lateinit var firebaseAuth: FirebaseAuth
+
+
+    //For OTP
+    var otpverification = 3
+
+    var VerificationID: String? = null
+
+    var validateotp by Delegates.notNull<Boolean>()
+
+    // [START declare_auth]
+    private lateinit var auth: FirebaseAuth
+    // [END declare_auth]
+
+    private var storedVerificationId: String? = ""
+    private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
+    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,27 +121,236 @@ class LoginAndRegister : AppCompatActivity() {
             switchControls()
         }
 
+        binding.loginbtn.setOnClickListener {
+            // Set the animation target to the front card
+
+            if(validateRegisterPage1()) {
+
+                frontAnimation.setTarget(front)
+
+                // Start the animation
+                frontAnimation.start()
+
+                // Toggle the card state
+                isFront = !isFront
+
+                // Switch visibility of text input layouts and buttons
+                switchControls()
+            }
+        }
+
+        binding.textInputLayout4.setEndIconOnClickListener {
+            //Validation for phone number
+            if ( binding.textInputLayout4.editText!!.text.toString().trim().isEmpty()) {
+                binding.textInputLayout4.error = "Phone number cannot be empty"
+            } else if (! binding.textInputLayout4.editText!!.text.toString().trim().matches("[6-9]\\d{9}".toRegex())) {
+                binding.textInputLayout4.error = "Invalid phone number"
+            } else {
+                //if phone number is valid generate OTP
+                startPhoneNumberVerification(binding.textInputLayout4.editText!!.text.trim().toString())
+            }
+        }
+
+        binding.textInputLayout5.setEndIconOnClickListener {
+            verifyPhoneNumberWithCode(VerificationID,binding.textInputLayout5.editText!!.text.trim().toString())
+        }
+
+
         binding.loginbtn2.setOnClickListener {
             // Set the animation target to the front card
-            frontAnimation.setTarget(front)
 
-            // Start the animation
-            frontAnimation.start()
+                binding.textInputLayout5.isEnabled = false
 
-            // Toggle the card state
-            isFront = !isFront
+                frontAnimation.setTarget(front)
 
-            // Switch visibility of text input layouts and buttons
-            switchControls()
+                // Start the animation
+                frontAnimation.start()
+
+                // Toggle the card state
+                isFront = !isFront
+
+                // Switch visibility of text input layouts and buttons
+                switchControls()
+
         }
 
-        binding.loginbtn3.setOnClickListener {
-            validateRegisterUser()
-        }
+        //Disable OTP field
+        binding.textInputLayout5.isEnabled = false
 
         // Trigger the animation once to show the back of the card initially
         binding.CloseIcon.performClick()
+
+        //For OTP
+        validateotp = false
+        auth = Firebase.auth
+        onNewToken()
+
+        // [START phone_auth_callbacks]
+        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                // This callback will be invoked in two situations:
+                // 1 - Instant verification. In some cases the phone number can be instantly
+                //     verified without needing to send or enter a verification code.
+                // 2 - Auto-retrieval. On some devices Google Play services can automatically
+                //     detect the incoming verification SMS and perform verification without
+                //     user action.
+                Log.d("TAG", "onVerificationCompleted:$credential")
+                signInWithPhoneAuthCredential(credential)
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                // This callback is invoked in an invalid request for verification is made,
+                // for instance if the the phone number format is not valid.
+                Log.w("TAG", "onVerificationFailed", e)
+
+                if (e is FirebaseAuthInvalidCredentialsException) {
+                    // Invalid request
+                } else if (e is FirebaseTooManyRequestsException) {
+                    // The SMS quota for the project has been exceeded
+                } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
+                    // reCAPTCHA verification attempted with null Activity
+                }
+
+                // Show a message and update the UI
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken,
+            ) {
+                // The SMS verification code has been sent to the provided phone number, we
+                // now need to ask the user to enter the code and then construct a credential
+                // by combining the code with a verification ID.
+                Log.d("TAG", "onCodeSent:$verificationId")
+
+                // Show the dialog that otp is sent
+                val dialog = Dialog(this@LoginAndRegister)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.custom_dialog_layout)
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.window?.setWindowAnimations(R.style.AnimationsForDailog)
+
+                val MessageIcon:ImageView = dialog.findViewById(R.id.imageView)
+                val tvMessage: TextView = dialog.findViewById(R.id.textView2)
+                val btnLayout: LinearLayout = dialog.findViewById(R.id.CustomDialogButtonLayout)
+                btnLayout.isVisible=false
+
+                MessageIcon.setImageResource(R.drawable.green_tick)
+                tvMessage.text = "OTP sent successfully"
+                dialog.show()
+
+                // Enable the OTP field
+                binding.textInputLayout5.isEnabled = true
+
+                // Close the dialog after 2 seconds
+                val handler = Handler()
+                handler.postDelayed({
+                    dialog.dismiss()
+                }, 2000)
+
+
+
+
+                VerificationID = verificationId
+
+                // Save verification ID and resending token so we can use them later
+                storedVerificationId = verificationId
+                resendToken = token
+            }
+        }
+        // [END phone_auth_callbacks]
+
+
     }
+
+    fun onNewToken() {
+        Log.d("TAG", "Refreshed token: ")
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {task->
+            if(task.isSuccessful){
+                Log.d("TAG", "Refreshed token: ${task.result}")
+            }
+
+        }
+
+
+    }
+
+
+
+
+
+
+    private fun verifyPhoneNumberWithCode(verificationId: String?, code: String) {
+        // [START verify_with_code]
+        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
+        // [END verify_with_code]
+        signInWithPhoneAuthCredential(credential)
+    }
+
+
+
+    private fun startPhoneNumberVerification(phoneNumber: String) {
+        // [START start_phone_auth]
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber("+91$phoneNumber") // Phone number to verify
+            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+            .setActivity(this) // Activity (for callback binding)
+            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+            .build()
+        PhoneAuthProvider.verifyPhoneNumber(options)
+        // [END start_phone_auth]
+    }
+
+
+    // [START sign_in_with_phone]
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("TAG", "signInWithCredential:success")
+
+                    val user = task.result?.user
+
+
+                    Toast.makeText(this,"Lol!!",Toast.LENGTH_SHORT).show()
+
+                } else {
+                    // Sign in failed, display a message and update the UI
+                    Log.w("TAG", "signInWithCredential:failure", task.exception)
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        val dialog = Dialog(this@LoginAndRegister)
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                        dialog.setCancelable(false)
+                        dialog.setContentView(R.layout.custom_dialog_layout)
+                        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        dialog.window?.setWindowAnimations(R.style.AnimationsForDailog)
+
+                        val MessageIcon:ImageView = dialog.findViewById(R.id.imageView)
+                        val tvMessage: TextView = dialog.findViewById(R.id.textView2)
+                        val btnLayout: LinearLayout = dialog.findViewById(R.id.CustomDialogButtonLayout)
+                        btnLayout.isVisible=false
+
+                        MessageIcon.setImageResource(R.drawable.red_wrong)
+                        tvMessage.text = "Wrong OTP"
+                        dialog.show()
+
+
+                        // Close the dialog after 2 seconds
+                        val handler = Handler()
+                        handler.postDelayed({
+                            dialog.dismiss()
+                        }, 2000)                    }
+                    // Update UI
+                }
+            }
+    }
+    // [END sign_in_with_phone]
+
 
     private fun switchControls() {
         val currentVisibility = binding.textInputLayout1.isVisible
@@ -363,7 +612,8 @@ class LoginAndRegister : AppCompatActivity() {
         }
     }
 
-    private fun validateRegisterUser(){
+    private fun validateRegisterPage1(): Boolean {
+        // Validation for name
         if (binding.textInputLayout1.editText!!.text.isEmpty()) {
             binding.textInputLayout1.error = "Name cannot be empty"
         } else if (!binding.textInputLayout1.editText!!.text.matches("[a-zA-Z ]+".toRegex())) {
@@ -371,7 +621,53 @@ class LoginAndRegister : AppCompatActivity() {
         } else {
             binding.textInputLayout1.error = null
         }
+
+        // Validation for Email
+        if (binding.textInputLayout2.editText!!.text.toString().trim().isEmpty()) {
+            binding.textInputLayout2.error = "Email cannot be empty"
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(binding.textInputLayout2.editText!!.text.toString().trim()).matches()) {
+            binding.textInputLayout2.error = "Invalid email format"
+        } else {
+            binding.textInputLayout2.error = null
+        }
+
+        // Validation for Password
+        if (binding.textInputLayout3.editText!!.text.toString().trim().isEmpty()) {
+            binding.textInputLayout3.error = "Password cannot be empty"
+        } else if (binding.textInputLayout3.editText!!.text.toString().trim().length < 8) {
+            // Change 8 to your desired minimum password length
+            binding.textInputLayout3.error = "Password must be at least 8 characters long"
+        } else if (!binding.textInputLayout3.editText!!.text.toString().trim().matches("[a-zA-Z0-9@#$%^&+=]+".toRegex())) {
+            binding.textInputLayout3.error = "Password must contain letters, numbers, and special characters"
+        } else {
+            binding.textInputLayout3.error = null
+        }
+
+        // Check if there are no errors in any field
+//        return binding.textInputLayout1.error == null &&
+//                binding.textInputLayout2.error == null &&
+//                binding.textInputLayout3.error == null
+
+        return true
     }
+
+    private fun validateRegisterPage2(): Boolean {
+        // Validation for Phone Number
+        val phoneNumber = binding.textInputLayout4.editText!!.text.toString().trim()
+        if (phoneNumber.isEmpty()) {
+            binding.textInputLayout4.error = "Phone number cannot be empty"
+        } else if (!phoneNumber.matches("[6-9]\\d{9}".toRegex())) {
+            binding.textInputLayout4.error = "Invalid phone number format"
+        } else {
+            binding.textInputLayout4.error = null
+        }
+
+
+        // Check if there are no errors in any field
+        return binding.textInputLayout4.error == null
+    }
+
+
 
     override fun onStart() {
         super.onStart()

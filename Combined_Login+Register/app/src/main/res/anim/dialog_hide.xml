@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
-     <scale android:duration="800"
-         android:fromYScale="0.2"
-         android:fromXScale="0.2"
-         android:toYScale="1"
-         android:toXScale="1"
+     <scale android:duration="200"
+         android:fromYScale="1"
+         android:fromXScale="1"
+         android:toYScale="0.2"
+         android:toXScale="0.2"
          android:pivotX="60%"
          android:pivotY="60%"
 

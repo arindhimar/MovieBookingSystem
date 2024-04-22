@@ -126,6 +126,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Password"
+                    android:inputType="textPassword"
+
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -240,12 +242,12 @@
             <!-- TextInputLayout 4 -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout4"
-                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="1dp"
                 android:layout_marginRight="25dp"
+                android:visibility="invisible"
                 app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="25dp"
@@ -271,6 +273,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Phone Number"
+                    android:inputType="phone"
+
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -278,13 +282,13 @@
             <!-- TextInputLayout 5 -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout5"
-                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="-120dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginBottom="100dp"
+                android:visibility="invisible"
                 app:boxBackgroundColor="#00ECECF3"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="25dp"
@@ -292,7 +296,9 @@
                 app:boxCornerRadiusTopEnd="25dp"
                 app:boxCornerRadiusTopStart="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-
+                app:endIconDrawable="@drawable/forward_arrow"
+                app:endIconMode="custom"
+                app:endIconScaleType="centerInside"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -300,7 +306,6 @@
                 app:passwordToggleEnabled="false"
                 app:passwordToggleTint="@color/login_button"
                 app:startIconDrawable="@drawable/otp"
-
                 app:startIconTint="@color/m3_textfield_login_page_colors">
 
 
@@ -536,7 +541,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:inputType="textPassword"
                     android:hint="Password"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
 
