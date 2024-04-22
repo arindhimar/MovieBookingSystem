@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="320dp"
+    android:layout_height="380dp"
+    android:layout_gravity="center"
+    android:alpha="0.80"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintVertical_bias="0.5"
+    app:cardCornerRadius="50dp"
+    app:cardElevation="8dp"
+    tools:context=".MainActivity">
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/corner"
+            android:layout_width="318dp"
+            android:layout_height="match_parent"
+            app:CornerRadius="26dp"
+            android:background="@drawable/card_background">
+
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="250dp"
+                android:layout_height="150dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.493"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_cruelty_free_24" />
+
+            <TextView
+                android:id="@+id/textview1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="Success"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="Congratulations! you have successfully create a custom dialog."
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview1" />
+
+
+            <Button
+                android:id="@+id/btn_yes"
+                style="@style/Widget.Material3.Button"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Yes"
+
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                app:cornerRadius="25dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.15"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintVertical_bias="0.503"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+            <Button
+                android:id="@+id/btn_no"
+                style="@style/Widget.Material3.Button"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="No"
+
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                app:cornerRadius="25dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_yes"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>
