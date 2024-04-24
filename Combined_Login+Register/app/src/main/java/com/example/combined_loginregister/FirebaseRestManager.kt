@@ -31,6 +31,25 @@ class FirebaseRestManager<T> {
             }
     }
 
+    fun <T> addItemWithCustomId(item: T, childId: String, dbRef: DatabaseReference, callback: (Boolean, Exception?) -> Unit) {
+        val gson = Gson()
+        val jsonItem = gson.toJson(item)
+
+        // Get a reference to the child node with the specified ID
+        val childRef = dbRef.child(childId)
+
+        // Set the value of the child node with the specified ID
+        childRef.setValue(item)
+            .addOnSuccessListener {
+                println("Add Item Success")
+                callback(true, null)
+            }
+            .addOnFailureListener { e ->
+                println("Add Item Failed: $e")
+                callback(false, e)
+            }
+    }
+
 
     fun <T> getAllItems(itemClass: Class<T>, callback: (List<T>) -> Unit) {
         val request = Request.Builder()

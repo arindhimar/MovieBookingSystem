@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_gravity="center"
+        android:layout_width="56pt"
+        android:layout_height="56pt"
+        android:src="@drawable/application_logo"
+         />
+
+
+    <TextView
+        android:clickable="true"
+        android:layout_gravity="center"
+        android:id="@+id/NavHeaderText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome Arin Dhimar"
+        android:textAppearance="?attr/textAppearanceBody2" />
+
+</LinearLayout>

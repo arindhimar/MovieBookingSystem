@@ -8,23 +8,23 @@
         <menu>
             <item
                 android:checkable="true"
-                android:id="@+id/nav_manage_screen"
+                android:id="@+id/nav_manage_cinemaowner"
                 android:icon="@drawable/ic_menu_screenboth"
-                android:title="Manage Screen"
+                android:title="Manage Owner"
 
                 />
 
             <item
                 android:checkable="true"
-                android:id="@+id/nav_manage_show"
+                android:id="@+id/nav_movies"
                 android:icon="@drawable/ic_menu_showboth"
-                android:title="Manage Shows" />
+                android:title="Manage Movies" />
 
-            <item
-                android:checkable="true"
-                android:id="@+id/nav_view_booking"
-                android:icon="@drawable/ic_menu_bookingboth"
-                android:title="View Bookings" />
+<!--            <item-->
+<!--                android:checkable="true"-->
+<!--                android:id="@+id/nav_view_booking"-->
+<!--                android:icon="@drawable/ic_menu_bookingboth"-->
+<!--                android:title="View Bookings" />-->
         </menu>
     </item>
 

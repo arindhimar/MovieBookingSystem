@@ -342,7 +342,7 @@ class LoginAndRegister : AppCompatActivity() {
                         val tempUser = UserTb(userId, username, email, password, mobile, "user")
                         val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
 
-                        firebaseRestManager.addItem(tempUser, dbRef) { success, error ->
+                        firebaseRestManager.addItemWithCustomId(tempUser,userId, dbRef) { success, error ->
                             if (success) {
                                 binding.CloseIcon.performClick()
                                 EnableAndCleanRegisterFields()
@@ -394,6 +394,8 @@ class LoginAndRegister : AppCompatActivity() {
                     }
                 }
             }
+
+
     }
 
 
