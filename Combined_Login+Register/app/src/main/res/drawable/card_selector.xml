@@ -1,0 +1,46 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed state -->
+    <item android:state_pressed="true">
+        <set>
+            <!-- Ripple effect -->
+            <item android:drawable="?android:attr/selectableItemBackground"/>
+            <!-- Scale animation -->
+            <objectAnimator
+                android:propertyName="scaleX"
+                android:valueTo="0.95"
+                android:duration="100"/>
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueTo="0.95"
+                android:duration="100"/>
+            <!-- Elevation animation -->
+            <objectAnimator
+                android:propertyName="cardElevation"
+                android:valueTo="10dp"
+                android:duration="100"/>
+        </set>
+    </item>
+    <!-- Default state -->
+    <item>
+        <!-- Ripple effect -->
+        <ripple android:color="?android:colorControlHighlight"/>
+        <!-- Scale animation -->
+        <set>
+            <objectAnimator
+                android:propertyName="scaleX"
+                android:valueTo="1.0"
+                android:duration="100"/>
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueTo="1.0"
+                android:duration="100"/>
+        </set>
+        <!-- Elevation animation -->
+        <set>
+            <objectAnimator
+                android:propertyName="cardElevation"
+                android:valueTo="5dp"
+                android:duration="100"/>
+        </set>
+    </item>
+</selector>

@@ -4,11 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.applicaitionowner.ManageCinemaOwner
-import com.example.applicaitionowner.ManageMovies
 import com.example.applicaitionowner.MyAccountFragment
 import com.example.combined_loginregister.databinding.ActivityOwnerBinding
 
@@ -34,6 +31,9 @@ class OwnerActivity : AppCompatActivity() {
             binding.drawerLayout.closeDrawers()
             // Handle navigation item clicks here
             when (menuItem.itemId) {
+                R.id.nav_ownerdashboard -> {
+                    replaceFragment(OwnerDashBoardFragment())
+                }
                 R.id.nav_manage_cinemaowner -> {
                     replaceFragment(ManageCinemaOwner())
                 }
@@ -49,7 +49,7 @@ class OwnerActivity : AppCompatActivity() {
         }
         // Select the first item by default
         binding.navView.menu.getItem(0).isChecked = true
-        replaceFragment(ManageCinemaOwner())
+        replaceFragment(OwnerDashBoardFragment())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

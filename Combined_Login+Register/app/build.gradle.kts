@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
