@@ -1,7 +1,5 @@
 package com.example.combined_loginregister
 import android.net.Uri
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -11,15 +9,16 @@ object FirebaseStorageHelper {
 
     fun uploadImage(
         imageUri: Uri?,
+        folderName: String,
         onSuccess: (String) -> Unit,
         onFailure: (String) -> Unit
     ) {
         if (imageUri != null) {
             val storage = FirebaseStorage.getInstance()
-            val storageReference = storage.reference.child(STORAGE_PATH + System.currentTimeMillis() + ".jpg")
+            val storageReference = storage.reference.child(STORAGE_PATH + folderName + "/" + System.currentTimeMillis() + ".jpg")
             val uploadTask = storageReference.putFile(imageUri)
 
-            uploadTask.addOnSuccessListener(OnSuccessListener {
+            uploadTask.addOnSuccessListener { taskSnapshot ->
                 // File uploaded successfully
                 storageReference.downloadUrl.addOnSuccessListener { uri ->
                     // Get the download URL of the uploaded file
@@ -29,10 +28,10 @@ object FirebaseStorageHelper {
                     // Failed to get download URL
                     onFailure("Failed to get download URL")
                 }
-            }).addOnFailureListener(OnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 // Handle unsuccessful uploads
                 onFailure(exception.message ?: "Unknown error")
-            })
+            }
         } else {
             // Invalid URI
             onFailure("Invalid image URI")
@@ -49,6 +48,31 @@ object FirebaseStorageHelper {
             onSuccess(uri)
         }.addOnFailureListener {
             onFailure()
+        }
+    }
+
+    fun getAllImagesInFolder(folderPath: String, onComplete: (List<String>) -> Unit) {
+        val storageReference = FirebaseStorage.getInstance().reference.child(folderPath)
+
+        storageReference.listAll().addOnSuccessListener { result ->
+            val imageUrls = mutableListOf<String>()
+
+            result.items.forEach { item ->
+                item.downloadUrl.addOnSuccessListener { uri ->
+                    imageUrls.add(uri.toString())
+                }.addOnFailureListener { exception ->
+                    // Handle any errors that may occur while retrieving the URL
+                    // For example, log the error or show an error message
+                    println("Failed to retrieve download URL: $exception")
+                }
+            }
+
+            onComplete(imageUrls)
+        }.addOnFailureListener { exception ->
+            // Handle any errors that may occur while listing the items
+            // For example, log the error or show an error message
+            println("Failed to list items: $exception")
+            onComplete(emptyList()) // Return an empty list if there's an error
         }
     }
 }

@@ -49,7 +49,22 @@ class FirebaseRestManager<T> {
                 callback(false, e)
             }
     }
+    fun <T> getAllItems(itemClass: Class<T>, node: String, callback: (List<T>) -> Unit) {
+        val request = Request.Builder()
+            .url("$firebaseUrl/$node.json")
+            .build()
 
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val items = response.body?.string()?.parseItems(itemClass)
+                callback(items ?: emptyList())
+            }
+        })
+    }
 
     fun <T> getAllItems(itemClass: Class<T>, callback: (List<T>) -> Unit) {
         val request = Request.Builder()
@@ -142,5 +157,33 @@ class FirebaseRestManager<T> {
             items.add(item)
         }
         return items
+    }
+
+    fun <T> getSingleItem(itemClass: Class<T>, node: String, itemId: String, callback: (T?) -> Unit) {
+        val request = Request.Builder()
+            .url("$firebaseUrl/$node/$itemId.json")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val item = response.body?.string()?.parseItem(itemClass)
+                callback(item)
+            }
+        })
+    }
+
+    private fun <T> String.parseItem(itemClass: Class<T>): T? {
+        if (isNullOrBlank()) {
+            // Handle null or empty response
+            return null
+        }
+
+        val json = JSONObject(this)
+        val item = Gson().fromJson(json.toString(), itemClass)
+        return item
     }
 }
