@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -36,6 +37,65 @@ class ManageMovies : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentManageMoviesBinding.inflate(layoutInflater, container, false)
+        binding.CardsHere.removeAllViews()
+
+
+
+
+        //get data of all the move in movietb
+        val movieClass = MovieTB::class.java
+        val node = "moviedb/movietb"
+
+        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
+        firebaseRestManager.getAllItems(movieClass, node) { items ->
+            // Run UI-related code on the main thread
+            requireActivity().runOnUiThread {
+                if (items.isNotEmpty()) {
+                    // Iterate over the list of MoviePosterTb objects
+                    for (item in items) {
+                        // Access the properties of each MoviePosterTb object
+                        val movieid = item.uid
+
+                        val movielistcard = layoutInflater.inflate(R.layout.listmoviecard,null,false)
+
+                        val MainPoster:ImageView = movielistcard.findViewById(R.id.MainPoster)
+                        val textView:TextView = movielistcard.findViewById(R.id.textView)
+
+                        textView.text = "Name : ${item.mname}"
+
+                        //getting all the poster of all the movies
+                        val moviePosterClass = MoviePosterTb::class.java
+                        val node = "moviedb/moviepostertb"
+
+                        val firebaseRestManager2 = FirebaseRestManager<MoviePosterTb>()
+                        firebaseRestManager2.getAllItems(moviePosterClass, node) { items ->
+                            if (items.isNotEmpty()) {
+                                // Iterate over the list of MoviePosterTb objects
+                                for (item2 in items) {
+                                    // Access the properties of each MoviePosterTb object
+                                    if(item2.mid==item.uid){
+                                        // Update ImageView on the main thread
+                                        requireActivity().runOnUiThread {
+                                            Glide.with(requireContext())
+                                                .load(item2.uname)
+                                                .into(MainPoster)
+                                            Log.d("TAG", "onCreateView: ${item2.uname}")
+                                        }
+                                        break
+                                    }
+                                }
+                            } else {
+                                Log.d("Firebase", "No movie posters found")
+                            }
+                        }
+                        binding.CardsHere.addView(movielistcard)
+                    }
+                } else {
+                    Log.d("Firebase", "No movie posters found")
+                }
+            }
+        }
+
 
 
         //        getting a single poster
@@ -54,51 +114,11 @@ class ManageMovies : Fragment() {
 //        }
 
 
-//        //getting all the poster of all the movies
-//        val moviePosterClass = MoviePosterTb::class.java
-//        val node = "moviedb/moviepostertb"
-//
-//        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
-//        firebaseRestManager.getAllItems(moviePosterClass, node) { items ->
-//            if (items.isNotEmpty()) {
-//                // Iterate over the list of MoviePosterTb objects
-//                for (item in items) {
-//                    // Access the properties of each MoviePosterTb object
-//                    val movieposterid = item.movieposterid
-//                    val uname = item.uname
-//                    val mid = item.mid
-//
-//                    // Do something with the properties, such as display them in a view
-//                    Log.d("Firebase", "movieposterid: $movieposterid, Image URL: $uname, Movie ID: $mid")
-//                }
-//            } else {
-//                Log.d("Firebase", "No movie posters found")
-//            }
-//        }
-
-        //get data of all the move in movietb
-        val movieClass = MovieTB::class.java
-        val node = "moviedb/movietb"
-
-        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
-        firebaseRestManager.getAllItems(movieClass, node) { items ->
-            if (items.isNotEmpty()) {
-                // Iterate over the list of MoviePosterTb objects
-                for (item in items) {
-                    // Access the properties of each MoviePosterTb object
-                    val movieid = item.uid
-
-
-                    // Do something with the properties, such as display them in a view
-                    Log.d("Firebase", "movieposterid: $movieid")
 
 
 
-                }
-            } else {
-                Log.d("Firebase", "No movie posters found")
-            }
-        }
+
+
 
 
         binding.AddMovieBtn.setOnClickListener {

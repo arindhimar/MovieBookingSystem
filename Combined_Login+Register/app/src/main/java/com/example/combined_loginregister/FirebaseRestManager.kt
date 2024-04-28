@@ -176,6 +176,8 @@ class FirebaseRestManager<T> {
         })
     }
 
+
+
     private fun <T> String.parseItem(itemClass: Class<T>): T? {
         if (isNullOrBlank()) {
             // Handle null or empty response
