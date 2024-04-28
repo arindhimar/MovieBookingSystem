@@ -79,8 +79,6 @@ class ManageCinemaOwner : Fragment() {
                     registerUser()
 
                 }
-
-
             }
 
 

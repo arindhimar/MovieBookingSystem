@@ -35,87 +35,8 @@ class ManageMovies : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentManageMoviesBinding.inflate(layoutInflater, container, false)
-        binding.CardsHere.removeAllViews()
-
-
-
-
-        //get data of all the move in movietb
-        val movieClass = MovieTB::class.java
-        val node = "moviedb/movietb"
-
-        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
-        firebaseRestManager.getAllItems(movieClass, node) { items ->
-            // Run UI-related code on the main thread
-            requireActivity().runOnUiThread {
-                if (items.isNotEmpty()) {
-                    // Iterate over the list of MoviePosterTb objects
-                    for (item in items) {
-                        // Access the properties of each MoviePosterTb object
-                        val movieid = item.uid
-
-                        val movielistcard = layoutInflater.inflate(R.layout.listmoviecard,null,false)
-
-                        val MainPoster:ImageView = movielistcard.findViewById(R.id.MainPoster)
-                        val textView:TextView = movielistcard.findViewById(R.id.textView)
-
-                        textView.text = "Name : ${item.mname}"
-
-                        //getting all the poster of all the movies
-                        val moviePosterClass = MoviePosterTb::class.java
-                        val node = "moviedb/moviepostertb"
-
-                        val firebaseRestManager2 = FirebaseRestManager<MoviePosterTb>()
-                        firebaseRestManager2.getAllItems(moviePosterClass, node) { items ->
-                            if (items.isNotEmpty()) {
-                                // Iterate over the list of MoviePosterTb objects
-                                for (item2 in items) {
-                                    // Access the properties of each MoviePosterTb object
-                                    if(item2.mid==item.uid){
-                                        // Update ImageView on the main thread
-                                        requireActivity().runOnUiThread {
-                                            Glide.with(requireContext())
-                                                .load(item2.uname)
-                                                .into(MainPoster)
-                                            Log.d("TAG", "onCreateView: ${item2.uname}")
-                                        }
-                                        break
-                                    }
-                                }
-                            } else {
-                                Log.d("Firebase", "No movie posters found")
-                            }
-                        }
-                        binding.CardsHere.addView(movielistcard)
-                    }
-                } else {
-                    Log.d("Firebase", "No movie posters found")
-                }
-            }
-        }
-
-
-
-        //        getting a single poster
-//        val moviePosterClass = MoviePosterTb::class.java
-//        val node = "moviedb/moviepostertb"
-//        val itemId = "-NwOon8FIqog6BGi6MRv"
-//
-//        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
-//        firebaseRestManager.getSingleItem(moviePosterClass, node, itemId) { item ->
-//            if (item != null) {
-//                // Do something with the MoviePosterTb object
-//                Log.d("Firebase", "Movie Poster ID: ${item.movieposterid}, Uname: ${item.uname}, Movie ID: ${item.mid}")
-//            } else {
-//                Log.d("Firebase", "No movie poster found")
-//            }
-//        }
-
-
-
-
 
 
 
@@ -134,29 +55,58 @@ class ManageMovies : Fragment() {
             alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
             val uploadImagesBtn = dialogView.findViewById<Button>(R.id.uploadImagesBtn)
-            val AddMovieBtn = dialogView.findViewById<Button>(R.id.AddMovieBtn)
+            val AddMovieBtnFinal = dialogView.findViewById<Button>(R.id.AddMovieBtnFinal)
             val textInputLayout1: TextInputLayout = dialogView.findViewById(R.id.textInputLayout1)
+            val textInputLayout2: TextInputLayout = dialogView.findViewById(R.id.textInputLayout2)
 
             uploadImagesBtn.setOnClickListener {
+                val movieName = textInputLayout1.editText?.text.toString()
+                val movieDuration = textInputLayout2.editText?.text.toString()
+
+                if (movieName.isEmpty()) {
+                    // Display error for empty movie name
+                    textInputLayout1.error = "Please enter a movie name"
+
+                } else {
+                    // Clear any previous error
+                    textInputLayout1.error = null
+                }
+
+                if (movieDuration.isEmpty()) {
+                    // Display error for empty movie duration
+                    textInputLayout2.error = "Please enter movie duration in minutes"
+                } else {
+                    // Clear any previous error
+                    textInputLayout2.error = null
+                }
+
+                // Open gallery only if both fields are not empty
                 openGallery()
             }
 
-            AddMovieBtn.setOnClickListener {
+            AddMovieBtnFinal.setOnClickListener {
                 // Perform action when Add Movie button is clicked
-                if (textInputLayout1.editText!!.text.isEmpty() && selectedUris == null) {
+                val movieName = textInputLayout1.editText?.text.toString()
+                val movieDuration = textInputLayout2.editText?.text.toString()
+
+                if (movieName.isEmpty() || movieDuration.isEmpty() || selectedUris == null) {
                     Toast.makeText(
                         requireContext(),
-                        "Make Sure to add movie name and add atleast 1 movie poster!!",
+                        "Make sure to add movie name, movie duration, and at least 1 movie poster!",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     uploadImageToFirebaseStorage(selectedUris)
+                    displayMovies()
+
                 }
             }
 
             // Show the dialog
             alertDialog.show()
         }
+
+        displayMovies()
 
         return binding.root
     }
@@ -166,6 +116,78 @@ class ManageMovies : Fragment() {
         intent.type = "image/*"
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         startActivityForResult(intent, PICK_IMAGES_REQUEST)
+    }
+
+    private fun displayMovies() {
+        val loadingScreen = LoadingDialogHelper()
+        loadingScreen.showLoadingDialog(requireContext())
+
+        //get data of all the move in movietb
+        val movieClass = MovieTB::class.java
+        val node = "moviedb/movietb"
+
+        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
+        firebaseRestManager.getAllItems(movieClass, node) { items ->
+            // Run UI-related code on the main thread
+            requireActivity().runOnUiThread {
+                if (items.isNotEmpty()) {
+                    // Create a counter to track the number of items processed
+                    var itemsProcessed = 0
+
+                    // Iterate over the list of MoviePosterTb objects
+                    for (item in items) {
+                        // Access the properties of each MoviePosterTb object
+                        val movieid = item.mid
+
+                        val movielistcard = layoutInflater.inflate(R.layout.listmoviecard, null, false)
+
+                        val MainPoster: ImageView = movielistcard.findViewById(R.id.MainPoster)
+                        val textView: TextView = movielistcard.findViewById(R.id.textView)
+
+                        textView.text = "Name : ${item.mname}\nDuration : ${item.duration}"
+
+                        //getting all the poster of all the movies
+                        val moviePosterClass = MoviePosterTb::class.java
+                        val node = "moviedb/moviepostertb"
+
+                        val firebaseRestManager2 = FirebaseRestManager<MoviePosterTb>()
+                        firebaseRestManager2.getAllItems(moviePosterClass, node) { posterItems ->
+                            if (posterItems.isNotEmpty()) {
+                                // Iterate over the list of MoviePosterTb objects
+                                for (item2 in posterItems) {
+                                    // Access the properties of each MoviePosterTb object
+                                    if (item2.mid == item.mid) {
+                                        // Update ImageView on the main thread
+                                        requireActivity().runOnUiThread {
+                                            Glide.with(requireContext())
+                                                .load(item2.mlink)
+                                                .into(MainPoster)
+                                            Log.d("TAG", "onCreateView: ${item2.mlink}")
+
+                                            // Increment the counter
+                                            itemsProcessed++
+
+                                            // If all items are processed, dismiss the loading dialog
+                                            if (itemsProcessed == items.size) {
+                                                loadingScreen.dismissLoadingDialog()
+                                            }
+                                        }
+                                        break
+                                    }
+                                }
+                            } else {
+                                Log.d("Firebase", "No movie posters found")
+                            }
+                        }
+                        binding.CardsHere.addView(movielistcard)
+                    }
+                } else {
+                    Log.d("Firebase", "No movie posters found")
+                    // Dismiss the loading dialog if no items are found
+                    loadingScreen.dismissLoadingDialog()
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -200,13 +222,14 @@ class ManageMovies : Fragment() {
 
     private fun uploadImageToFirebaseStorage(imageUri: MutableList<Uri>?) {
         val textInputLayout1: TextInputLayout = dialogView.findViewById(R.id.textInputLayout1)
+        val textInputLayout2: TextInputLayout = dialogView.findViewById(R.id.textInputLayout2)
 
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val firebaseRestManager = FirebaseRestManager<MovieTB>()
         val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/movietb")
         val movieId = dbRef.push().key
         // Create a UserTb object with the obtained user ID
-        val tempMovie = MovieTB(movieId, textInputLayout1.editText!!.text.toString())
+        val tempMovie = MovieTB(movieId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString())
         firebaseRestManager.addItem(tempMovie, dbRef) { success, error ->
             if (success) {
                 // Movie added successfully, now upload the image

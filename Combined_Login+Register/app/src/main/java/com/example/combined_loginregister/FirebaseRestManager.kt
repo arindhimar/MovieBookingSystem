@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import okhttp3.*
@@ -50,39 +51,52 @@ class FirebaseRestManager<T> {
             }
     }
     fun <T> getAllItems(itemClass: Class<T>, node: String, callback: (List<T>) -> Unit) {
-        val request = Request.Builder()
-            .url("$firebaseUrl/$node.json")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
+        val dbRef = FirebaseDatabase.getInstance().reference.child(node)
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val items = mutableListOf<T>()
+                    for (childSnapshot in snapshot.children) {
+                        val item = childSnapshot.getValue(itemClass)
+                        item?.let { items.add(it) }
+                    }
+                    callback(items)
+                } else {
+                    callback(emptyList())
+                    Log.w("FirebaseRestManager", "Branch $node does not exist")
+                }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val items = response.body?.string()?.parseItems(itemClass)
-                callback(items ?: emptyList())
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseRestManager", "Error getting data: ${error.message}")
+                callback(emptyList())
             }
         })
     }
 
     fun <T> getAllItems(itemClass: Class<T>, callback: (List<T>) -> Unit) {
-        val request = Request.Builder()
-            .url("$firebaseUrl/items.json")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
+        val dbRef = FirebaseDatabase.getInstance().reference.child("items")
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val items = mutableListOf<T>()
+                    for (childSnapshot in snapshot.children) {
+                        val item = childSnapshot.getValue(itemClass)
+                        item?.let { items.add(it) }
+                    }
+                    callback(items)
+                } else {
+                    callback(emptyList())
+                    Log.w("FirebaseRestManager", "Node 'items' does not exist")
+                }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val items = response.body?.string()?.parseItems(itemClass)
-                callback(items ?: emptyList())
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseRestManager", "Error getting data: ${error.message}")
+                callback(emptyList())
             }
         })
     }
-
     private fun <T> String.parseItems(itemClass: Class<T>): List<T> {
         val items = mutableListOf<T>()
         if (isNullOrBlank()) {
@@ -160,22 +174,24 @@ class FirebaseRestManager<T> {
     }
 
     fun <T> getSingleItem(itemClass: Class<T>, node: String, itemId: String, callback: (T?) -> Unit) {
-        val request = Request.Builder()
-            .url("$firebaseUrl/$node/$itemId.json")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
+        val dbRef = FirebaseDatabase.getInstance().reference.child(node).child(itemId)
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val item = snapshot.getValue(itemClass)
+                    callback(item)
+                } else {
+                    callback(null)
+                    Log.w("FirebaseRestManager", "Item $itemId does not exist in node $node")
+                }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val item = response.body?.string()?.parseItem(itemClass)
-                callback(item)
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseRestManager", "Error getting data: ${error.message}")
+                callback(null)
             }
         })
     }
-
 
 
     private fun <T> String.parseItem(itemClass: Class<T>): T? {

@@ -67,7 +67,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Idea"
+                        android:textAlignment="center"
+                        android:text="Manage \nCinema Owner"
                         android:fontFamily="@font/googlesans_bold"
                         android:textSize="18sp"
                         android:textColor="@color/white"
@@ -97,13 +98,14 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/suggestion"
+                        android:src="@drawable/movie_icon_dashboard"
                         android:layout_marginTop="18dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Suggestion"
+                        android:text="Manage\nMovies"
+                        android:textAlignment="center"
                         android:fontFamily="@font/googlesans_bold"
                         android:textSize="18sp"
                         android:textColor="@color/white"
@@ -127,18 +129,21 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
+
                     >
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/career"
+
+                        android:src="@drawable/feedback_dashboard_icon"
                         android:layout_marginTop="18dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Career"
+                        android:textAlignment="center"
+                        android:text="Manage\nFeedback"
                         android:fontFamily="@font/googlesans_bold"
                         android:textSize="18sp"
                         android:textColor="@color/white"
