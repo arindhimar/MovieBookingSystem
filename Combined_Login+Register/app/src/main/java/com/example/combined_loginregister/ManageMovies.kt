@@ -38,20 +38,20 @@ class ManageMovies : Fragment() {
         binding = FragmentManageMoviesBinding.inflate(layoutInflater, container, false)
 
 
-//        getting a single poster
-        val moviePosterClass = MoviePosterTb::class.java
-        val node = "moviedb/moviepostertb"
-        val itemId = "-NwOon8FIqog6BGi6MRv"
-
-        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
-        firebaseRestManager.getSingleItem(moviePosterClass, node, itemId) { item ->
-            if (item != null) {
-                // Do something with the MoviePosterTb object
-                Log.d("Firebase", "Movie Poster ID: ${item.movieposterid}, Uname: ${item.uname}, Movie ID: ${item.mid}")
-            } else {
-                Log.d("Firebase", "No movie poster found")
-            }
-        }
+        //        getting a single poster
+//        val moviePosterClass = MoviePosterTb::class.java
+//        val node = "moviedb/moviepostertb"
+//        val itemId = "-NwOon8FIqog6BGi6MRv"
+//
+//        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
+//        firebaseRestManager.getSingleItem(moviePosterClass, node, itemId) { item ->
+//            if (item != null) {
+//                // Do something with the MoviePosterTb object
+//                Log.d("Firebase", "Movie Poster ID: ${item.movieposterid}, Uname: ${item.uname}, Movie ID: ${item.mid}")
+//            } else {
+//                Log.d("Firebase", "No movie poster found")
+//            }
+//        }
 
 
 //        //getting all the poster of all the movies
@@ -76,6 +76,29 @@ class ManageMovies : Fragment() {
 //            }
 //        }
 
+        //get data of all the move in movietb
+        val movieClass = MovieTB::class.java
+        val node = "moviedb/movietb"
+
+        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
+        firebaseRestManager.getAllItems(movieClass, node) { items ->
+            if (items.isNotEmpty()) {
+                // Iterate over the list of MoviePosterTb objects
+                for (item in items) {
+                    // Access the properties of each MoviePosterTb object
+                    val movieid = item.uid
+
+
+                    // Do something with the properties, such as display them in a view
+                    Log.d("Firebase", "movieposterid: $movieid")
+
+
+
+                }
+            } else {
+                Log.d("Firebase", "No movie posters found")
+            }
+        }
 
 
         binding.AddMovieBtn.setOnClickListener {
