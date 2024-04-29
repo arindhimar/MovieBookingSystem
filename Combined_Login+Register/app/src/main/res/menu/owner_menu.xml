@@ -27,6 +27,12 @@
                 android:icon="@drawable/ic_menu_showboth"
                 android:title="Manage Movies" />
 
+            <item
+                android:checkable="true"
+                android:id="@+id/manage_feedback"
+                android:icon="@drawable/feedback_dashboard_icon"
+                android:title="Manage Feedback" />
+
 <!--            <item-->
 <!--                android:checkable="true"-->
 <!--                android:id="@+id/nav_view_booking"-->

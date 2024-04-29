@@ -12,15 +12,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.combined_loginregister.databinding.FragmentManageCinemaownerBinding
+import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.combined_loginregister.databinding.FragmentManageMoviesBinding
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.FirebaseDatabase
-import org.w3c.dom.Text
 
 private const val PICK_IMAGES_REQUEST = 1
 
@@ -40,8 +40,6 @@ class ManageMovies : Fragment() {
 
 
 
-
-
         binding.AddMovieBtn.setOnClickListener {
             // Inflate the custom layout
             dialogView = layoutInflater.inflate(R.layout.add_update_movie_dialog, null)
@@ -53,6 +51,8 @@ class ManageMovies : Fragment() {
             // Set custom window animations
             alertDialog = dialogBuilder.create()
             alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+
 
             val uploadImagesBtn = dialogView.findViewById<Button>(R.id.uploadImagesBtn)
             val AddMovieBtnFinal = dialogView.findViewById<Button>(R.id.AddMovieBtnFinal)
@@ -66,7 +66,6 @@ class ManageMovies : Fragment() {
                 if (movieName.isEmpty()) {
                     // Display error for empty movie name
                     textInputLayout1.error = "Please enter a movie name"
-
                 } else {
                     // Clear any previous error
                     textInputLayout1.error = null
@@ -81,7 +80,9 @@ class ManageMovies : Fragment() {
                 }
 
                 // Open gallery only if both fields are not empty
-                openGallery()
+                if (textInputLayout1.error == null && textInputLayout2.error == null) {
+                    openGallery()
+                }
             }
 
             AddMovieBtnFinal.setOnClickListener {
@@ -96,17 +97,20 @@ class ManageMovies : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
+
+
                     uploadImageToFirebaseStorage(selectedUris)
-                    displayMovies()
+
+
 
                 }
             }
-
-            // Show the dialog
             alertDialog.show()
         }
 
         displayMovies()
+
+
 
         return binding.root
     }
@@ -116,6 +120,12 @@ class ManageMovies : Fragment() {
         intent.type = "image/*"
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         startActivityForResult(intent, PICK_IMAGES_REQUEST)
+    }
+
+    fun onItemClick(movie: MovieTB) {
+        // Handle click event here
+        Log.d("ManageMovies", "Clicked on movie: ${movie.mid}")
+        // You can perform any action here, such as opening a new fragment or activity
     }
 
     private fun displayMovies() {
@@ -128,66 +138,65 @@ class ManageMovies : Fragment() {
 
         val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
         firebaseRestManager.getAllItems(movieClass, node) { items ->
-            // Run UI-related code on the main thread
             requireActivity().runOnUiThread {
+                loadingScreen.dismissLoadingDialog()
+
                 if (items.isNotEmpty()) {
-                    // Create a counter to track the number of items processed
-                    var itemsProcessed = 0
-
-                    // Iterate over the list of MoviePosterTb objects
-                    for (item in items) {
-                        // Access the properties of each MoviePosterTb object
-                        val movieid = item.mid
-
-                        val movielistcard = layoutInflater.inflate(R.layout.listmoviecard, null, false)
-
-                        val MainPoster: ImageView = movielistcard.findViewById(R.id.MainPoster)
-                        val textView: TextView = movielistcard.findViewById(R.id.textView)
-
-                        textView.text = "Name : ${item.mname}\nDuration : ${item.duration}"
-
-                        //getting all the poster of all the movies
-                        val moviePosterClass = MoviePosterTb::class.java
-                        val node = "moviedb/moviepostertb"
-
-                        val firebaseRestManager2 = FirebaseRestManager<MoviePosterTb>()
-                        firebaseRestManager2.getAllItems(moviePosterClass, node) { posterItems ->
-                            if (posterItems.isNotEmpty()) {
-                                // Iterate over the list of MoviePosterTb objects
-                                for (item2 in posterItems) {
-                                    // Access the properties of each MoviePosterTb object
-                                    if (item2.mid == item.mid) {
-                                        // Update ImageView on the main thread
-                                        requireActivity().runOnUiThread {
-                                            Glide.with(requireContext())
-                                                .load(item2.mlink)
-                                                .into(MainPoster)
-                                            Log.d("TAG", "onCreateView: ${item2.mlink}")
-
-                                            // Increment the counter
-                                            itemsProcessed++
-
-                                            // If all items are processed, dismiss the loading dialog
-                                            if (itemsProcessed == items.size) {
-                                                loadingScreen.dismissLoadingDialog()
-                                            }
-                                        }
-                                        break
-                                    }
-                                }
-                            } else {
-                                Log.d("Firebase", "No movie posters found")
-                            }
+                    val movieList = ArrayList<MovieTB>(items)
+                    val adapter = OwnerMovieListAdapter(movieList)
+                    adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
+                        override fun onItemClick(movie: MovieTB) {
+                            displayAllMoviePoster(movie.mid!!)
                         }
-                        binding.CardsHere.addView(movielistcard)
-                    }
+                    })
+
+
+                    binding.CardsHere.adapter = adapter
+                    binding.CardsHere.layoutManager = LinearLayoutManager(requireContext())
                 } else {
-                    Log.d("Firebase", "No movie posters found")
-                    // Dismiss the loading dialog if no items are found
-                    loadingScreen.dismissLoadingDialog()
+                    Toast.makeText(requireContext(), "No movies found", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    private fun displayAllMoviePoster(tempMid: String) {
+        val dialogView2 = LayoutInflater.from(requireContext()).inflate(R.layout.displayallmoviepostercard, null)
+        val dialogBuilder2 = AlertDialog.Builder(requireContext())
+            .setView(dialogView2)
+            .setCancelable(true)
+        val dialog2 = dialogBuilder2.create()
+
+        val recyclerView: RecyclerView = dialogView2.findViewById(R.id.recycler)
+        val imageUrls = ArrayList<String>()
+
+        //getting all the poster of all the movies
+        val moviePosterClass = MoviePosterTb::class.java
+        val node = "moviedb/moviepostertb"
+
+        val firebaseRestManager2 = FirebaseRestManager<MoviePosterTb>()
+        firebaseRestManager2.getAllItems(moviePosterClass, node) { posterItems ->
+            if (posterItems.isNotEmpty()) {
+                for (item2 in posterItems) {
+                    if (item2.mid ==tempMid) {
+                        Log.d("TAG", "displayAllMoviePoster: ${item2.mlink}")
+                        imageUrls.add(item2.mlink!!)
+                    }
+                }
+
+                val adapter: SingleMovieAllPosterAdapter = SingleMovieAllPosterAdapter(requireContext(), imageUrls)
+                recyclerView.adapter = adapter
+
+                dialog2.show()
+            } else {
+                Log.d("Firebase", "No movie posters found")
+            }
+        }
+
+        val adapter = SingleMovieAllPosterAdapter(requireContext(), imageUrls)
+        recyclerView.adapter = adapter
+
+//        dialog2.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -199,8 +208,7 @@ class ManageMovies : Fragment() {
                 }
                 val clipData = data.clipData
                 val textView: TextView = dialogView.findViewById(R.id.textView)
-                textView.text =
-                    "Poster uploaded : ${clipData!!.itemCount}\nThe first image uploaded will be\nshown to users as the main poster**"
+//                textView.text = "Poster uploaded : ${clipData!!.itemCount}\nThe first image uploaded will be\nshown to users as the main poster**"
                 if (clipData != null && clipData.itemCount > 0) {
                     for (i in 0 until clipData.itemCount) {
                         val uri = clipData.getItemAt(i).uri
@@ -221,6 +229,12 @@ class ManageMovies : Fragment() {
 
 
     private fun uploadImageToFirebaseStorage(imageUri: MutableList<Uri>?) {
+
+
+        // Show loading dialog
+        val loadingScreen = LoadingDialogHelper()
+        loadingScreen.showLoadingDialog(requireContext())
+
         val textInputLayout1: TextInputLayout = dialogView.findViewById(R.id.textInputLayout1)
         val textInputLayout2: TextInputLayout = dialogView.findViewById(R.id.textInputLayout2)
 
@@ -244,6 +258,7 @@ class ManageMovies : Fragment() {
                                 "Image uploaded successfully",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            loadingScreen.dismissLoadingDialog()
 
                             Log.d("TAG", "uploadImageToFirebaseStorage: $downloadUrl")
 
@@ -264,6 +279,11 @@ class ManageMovies : Fragment() {
                                         "Movie poster added successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    loadingScreen.dismissLoadingDialog()
+                                    displayMovies()
+                                    alertDialog.dismiss() // Close the alert dialog
+
+
                                 } else {
                                     // Handle error adding movie poster to database
                                     Toast.makeText(
@@ -271,6 +291,9 @@ class ManageMovies : Fragment() {
                                         "Error adding movie poster to database: $error2",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    loadingScreen.dismissLoadingDialog()
+                                    alertDialog.dismiss() // Close the alert dialog
+
                                 }
                             }
 
@@ -282,6 +305,9 @@ class ManageMovies : Fragment() {
                                 "Image upload failed: $errorMessage",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            loadingScreen.dismissLoadingDialog()
+                            alertDialog.dismiss() // Close the alert dialog
+
                         }
                     )
                 }
@@ -292,7 +318,24 @@ class ManageMovies : Fragment() {
                     "Error adding movie to database: $error",
                     Toast.LENGTH_SHORT
                 ).show()
+                loadingScreen.dismissLoadingDialog()
+                alertDialog.dismiss() // Close the alert dialog
+
             }
         }
     }
+
+        companion object {
+            fun newInstance(param1: String, param2: String): ManageMovies {
+                val fragment = ManageMovies()
+                val args = Bundle()
+                args.putString(ARG_PARAM1, param1)
+                args.putString(ARG_PARAM2, param2)
+                fragment.arguments = args
+                return fragment
+            }
+
+    }
+
+
 }

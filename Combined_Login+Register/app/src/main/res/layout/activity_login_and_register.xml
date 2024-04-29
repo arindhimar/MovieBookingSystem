@@ -89,7 +89,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Username/Email/Mobile"
+                    android:hint="Email"
+                    android:maxLines="1"
                     android:textColorHint="@color/m3_textfield_login_page_colors"
                      />
 
@@ -128,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Password"
                     android:inputType="textPassword"
-
+                    android:maxLines="1"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
 
             </com.google.android.material.textfield.TextInputLayout>

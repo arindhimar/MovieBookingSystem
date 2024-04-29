@@ -1,13 +1,15 @@
 package com.example.combined_loginregister
-
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.applicaitionowner.MyAccountFragment
 import com.example.combined_loginregister.databinding.ActivityOwnerBinding
+import com.google.android.material.navigation.NavigationView
 
 class OwnerActivity : AppCompatActivity() {
     lateinit var binding: ActivityOwnerBinding
@@ -16,7 +18,6 @@ class OwnerActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         setSupportActionBar(binding.ToolBaar)
 
@@ -33,6 +34,7 @@ class OwnerActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.nav_ownerdashboard -> {
                     replaceFragment(OwnerDashBoardFragment())
+
                 }
                 R.id.nav_manage_cinemaowner -> {
                     replaceFragment(ManageCinemaOwner())
@@ -43,13 +45,17 @@ class OwnerActivity : AppCompatActivity() {
                 R.id.nav_menu_account -> {
                     replaceFragment(MyAccountFragment())
                 }
+                R.id.manage_feedback -> {
+
+                }
                 // Add more cases for other menu items if needed
             }
             true
         }
-        // Select the first item by default
-        binding.navView.menu.getItem(0).isChecked = true
-        replaceFragment(OwnerDashBoardFragment())
+
+
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -69,5 +75,4 @@ class OwnerActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
-
 }

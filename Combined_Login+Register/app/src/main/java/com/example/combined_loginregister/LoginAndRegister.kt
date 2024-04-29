@@ -399,60 +399,6 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
 
-//    fun registerUser() {
-//
-//
-//        val firebaseRestManager = FirebaseRestManager<UserTb>()
-//        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
-//
-//        val userKey = dbRef.push().key
-//        val tempUser:UserTb = UserTb(userKey,
-//            binding.textInputLayout1.editText!!.text.toString(),
-//            binding.textInputLayout2.editText!!.text.toString(),
-//            binding.textInputLayout3.editText!!.text.toString(),
-//            binding.textInputLayout4.editText!!.text.toString(),
-//            "user")
-//
-//
-//        firebaseRestManager.addItem(tempUser, dbRef) { success, error ->
-//            if (success) {
-//                binding.CloseIcon.performClick()
-//                EnableAndCleanRegisterFields()
-//
-//                showLoading("User Registered!!")
-//                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
-//                imageView.setImageResource(R.drawable.green_tick)
-//                loadingDialogBox.show() // Show success message
-//
-//                // Create the user in Firebase Authentication
-//                val auth = FirebaseAuth.getInstance()
-//                auth.createUserWithEmailAndPassword(tempUser.uemail!!, tempUser.upassword!!)
-//                    .addOnCompleteListener { task ->
-//                        if (task.isSuccessful) {
-//                            // User registration successful, navigate to the next screen or perform desired action
-//                            Log.d("TAG", "createUserWithEmail:success")
-//                        } else {
-//                            // User registration failed, display error message
-//                            Log.w("TAG", "createUserWithEmail:failure", task.exception)
-//                            Toast.makeText(this, "Authentication failed: ${task.exception?.message}",
-//                                Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//
-//                val handler = Handler()
-//                handler.postDelayed({
-//                    loadingDialogBox.dismiss()
-//                }, 2000)
-//            } else {
-//                // Handle failure to add user data to the database
-//                Log.e("TAG", "Error adding user data to the database: $error")
-//                // Display error message or take appropriate action
-//            }
-//        }
-//
-//    }
-
-
     private fun showLoading(message: String?) {
         loadingDialogBox=Dialog(this)
 
@@ -711,6 +657,9 @@ class LoginAndRegister : AppCompatActivity() {
             return // Exit the function to prevent further execution
         }
 
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(this)
+
         val userLogin = binding.txtLoginEmailMobileId.editText!!.text.toString()
         val password = binding.txtPassword.editText!!.text.toString()
 
@@ -727,20 +676,30 @@ class LoginAndRegister : AppCompatActivity() {
                         val userEmail = user.email
                         // You can access other details like displayName, photoUrl, etc. as needed
 
-                        Log.d("TAG", "signInWithEmail:success, currentUser: $user\n $userId ")
+                        val firebaseRestManager = FirebaseRestManager<UserTb>()
+                        firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", userId) { user ->
+                            if(user!!.utype=="owner"){
+                                val intent = Intent(this,OwnerActivity::class.java)
+                                startActivity(intent)
+                            }
+                            loadingDialogHelper.dismissLoadingDialog()
+                        }
 
-                        // Proceed to navigate to the next screen or perform other actions
                     } else {
                         // User is null, handle error
                         Log.e("TAG", "Current user is null")
                         Toast.makeText(baseContext, "User details not found.",
                             Toast.LENGTH_SHORT).show()
+                        loadingDialogHelper.dismissLoadingDialog()
+
                     }
                 } else {
-                    // Login failed, display a message to the user
+                    // Login failed, display a message to the user ye wala wrong details hai bisi
                     Log.w("TAG", "signInWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT).show()
+                    loadingDialogHelper.dismissLoadingDialog()
+
                 }
             }
     }
@@ -780,8 +739,6 @@ class LoginAndRegister : AppCompatActivity() {
     private fun UpdateUI(account: GoogleSignInAccount) {
         val email = account.email
 
-        Toast.makeText(this,email,Toast.LENGTH_SHORT).show()
-
         if (email != null) {
             // Check if the user exists in the Firebase database
 
@@ -790,66 +747,27 @@ class LoginAndRegister : AppCompatActivity() {
             DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-
-                        Toast.makeText(this@LoginAndRegister, "HO Gya MKC Finally ", Toast.LENGTH_SHORT).show()
-
-
-
-                        // User exists in the database, sign them in using Firebase authentication
-//                        firebaseAuth.signInWithEmailAndPassword(email, "b")
-//                            .addOnCompleteListener { signInTask ->
-//                                if (signInTask.isSuccessful) {
-//                                    // Successfully signed in
-//                                    val user = firebaseAuth.currentUser
-//                                    if (user != null) {
-//                                        // Perform actions after successful sign-in
-//                                        // For example, navigate to another activity
-//                                        Toast.makeText(this@LoginActivity, "HO Gya MKC Finally pr naya hau!!", Toast.LENGTH_SHORT).show()
-//                                    }
-//                                } else {
-//                                    // Sign-in failed
-//                                    Toast.makeText(this@LoginActivity, "Sign-in failed: ${signInTask.exception?.message} Ye locha hai re baba", Toast.LENGTH_SHORT).show()
-//                                }
-//                            }
-//                    } else {
-//                        Toast.makeText(this@LoginActivity, "Glt account se try kr raha haix`", Toast.LENGTH_SHORT).show()
-////                        // User does not exist in the database, create a new entry
-////                        val newUser = UserTb(
-////                            uid = "", // Generate a unique user ID or use Firebase's push() method
-////                            uemail = email,
-////                            // Set other user details if needed
-////                        )
-////                        DbRef.push().setValue(newUser)
-////                            .addOnCompleteListener { createTask ->
-////                                if (createTask.isSuccessful) {
-////                                    // User entry created successfully, sign them in using Firebase authentication
-////                                    firebaseAuth.signInWithEmailAndPassword(email, "dummyPassword")
-////                                        .addOnCompleteListener { signInTask ->
-////                                            if (signInTask.isSuccessful) {
-////                                                // Successfully signed in
-////                                                val user = firebaseAuth.currentUser
-////                                                if (user != null) {
-////                                                    // Perform actions after successful sign-in
-////                                                    // For example, navigate to another activity
-////                                                    Toast.makeText(this@LoginActivity, "HO Gya MKC Finally pr naya hau!!", Toast.LENGTH_SHORT).show()
-////                                                }
-////                                            } else {
-////                                                // Sign-in failed
-////                                                Toast.makeText(this@LoginActivity, "Kuch to locha hai re baba", Toast.LENGTH_SHORT).show()
-////                                            }
-////                                        }
-////                                } else {
-////                                    // User entry creation failed
-////                                    Toast.makeText(this@LoginActivity, "User creation failed: ${createTask.exception?.message}", Toast.LENGTH_SHORT).show()
-////                                }
-////                            }
-//                    }
-                    }
-                    else{
-                        Toast.makeText(this@LoginAndRegister, "HO Gya MKC Finally pr naya hai!!", Toast.LENGTH_SHORT).show()
-
+                        for (userSnapshot in snapshot.children) {
+                            val user = userSnapshot.getValue(UserTb::class.java)
+                            if (user != null) {
+                                val username = user.uname
+                                if (username != null) {
+                                    if(user.utype=="owner"){
+                                        val intent = Intent(this@LoginAndRegister,OwnerActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                } else {
+                                    Toast.makeText(this@LoginAndRegister, "User data is incomplete", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(this@LoginAndRegister, "Failed to fetch user data", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this@LoginAndRegister, "User not found", Toast.LENGTH_SHORT).show()
                     }
                 }
+
 
                 override fun onCancelled(error: DatabaseError) {
                     // Error occurred while checking for user existence
