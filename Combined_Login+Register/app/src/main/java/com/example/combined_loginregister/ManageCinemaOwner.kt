@@ -1,21 +1,21 @@
 package com.example.applicaitionowner
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.combined_loginregister.FirebaseRestManager
+import com.example.combined_loginregister.ListAllUserAdapter
+import com.example.combined_loginregister.LoadingDialogHelper
+import com.example.combined_loginregister.MoviePosterTb
+import com.example.combined_loginregister.MovieTB
+import com.example.combined_loginregister.OwnerMovieListAdapter
 import com.example.combined_loginregister.R
 import com.example.combined_loginregister.UserTb
 
@@ -57,7 +57,7 @@ class ManageCinemaOwner : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentManageCinemaownerBinding.inflate(layoutInflater,container,false)
 
-
+        displayCinemaOwner()
 
         // Set onClickListener for the register button
         binding.registerOwnerButton.setOnClickListener {
@@ -140,6 +140,7 @@ class ManageCinemaOwner : Fragment() {
                                         if (task.isSuccessful) {
                                             // User registration successful, navigate to the next screen or perform desired action
                                             Log.d("TAG", "createUserWithEmail:success")
+                                            displayCinemaOwner()
                                         } else {
 
 
@@ -215,6 +216,45 @@ class ManageCinemaOwner : Fragment() {
         return txtName.error == null && txtEmail.error == null && txtPass.error == null && txtMobile.error == null
     }
 
+    private fun displayCinemaOwner(){
+        val loadingScreen = LoadingDialogHelper()
+        loadingScreen.showLoadingDialog(requireContext())
+
+        //get data of all the move in movietb
+        val userClass = UserTb::class.java
+        val node = "moviedb/usertb"
+
+        val firebaseRestManager = FirebaseRestManager<MoviePosterTb>()
+        firebaseRestManager.getAllItems(userClass, node) { items ->
+            requireActivity().runOnUiThread {
+                loadingScreen.dismissLoadingDialog()
+                val userList = ArrayList<UserTb>()
+
+                if (items.isNotEmpty()) {
+
+                    for(item in items){
+                        if(item.utype=="cinemaowner") {
+                            userList.add(item)
+                        }
+                    }
+
+                    val adapter = ListAllUserAdapter(userList)
+                    Log.d("TAG", "displayCinemaOwner: $userList")
+                    adapter.setOnItemClickListener(object : ListAllUserAdapter.OnItemClickListener {
+                        override fun onItemClick(user: UserTb) {
+                            Log.d("TAG", "onItemClick:asdkhasdkashkjdh ")
+                        }
+                    })
+
+
+                    binding.CardsHere.adapter = adapter
+                    binding.CardsHere.layoutManager = LinearLayoutManager(requireContext())
+                } else {
+                    Toast.makeText(requireContext(), "No movies found", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
 
     companion object {

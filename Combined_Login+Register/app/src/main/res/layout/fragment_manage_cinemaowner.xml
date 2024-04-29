@@ -5,17 +5,10 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--    ScrollView-->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/CardsHere"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-    >
-        <LinearLayout
-            android:id="@+id/CardsHere"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
+        android:layout_height="match_parent"/>
     <!-- FloatingActionButton -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/registerOwnerButton"

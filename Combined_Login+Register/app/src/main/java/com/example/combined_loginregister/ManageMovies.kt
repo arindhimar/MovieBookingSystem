@@ -16,8 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.combined_loginregister.databinding.FragmentManageMoviesBinding
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.FirebaseDatabase

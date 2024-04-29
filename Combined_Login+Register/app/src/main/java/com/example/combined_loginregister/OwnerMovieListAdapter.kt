@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
+class OwnerMovieListAdapter(private val movieList: ArrayList<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
 
     private lateinit var onItemClickListener: OnItemClickListener
 
@@ -31,7 +31,10 @@ class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView
     override fun onBindViewHolder(holder: OwnerMovieViewHolder, position: Int) {
         val movie = movieList[position]
 
-        holder.textView.text = "Name : ${movie.mname}\nDuration : ${movie.duration}"
+        holder.Heading.text = "Name : ${movie.mname}"
+        holder.SubHeading1.text = "Duration : ${movie.duration}"
+
+
 
         //getting all the poster of all the movies
         val moviePosterClass = MoviePosterTb::class.java
@@ -65,6 +68,8 @@ class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView
 
     class OwnerMovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val MainPoster: ImageView = itemView.findViewById(R.id.MainPoster)
-        val textView: TextView = itemView.findViewById(R.id.textView)
+        val Heading: TextView = itemView.findViewById(R.id.Heading)
+        val SubHeading1: TextView = itemView.findViewById(R.id.subheading1)
+
     }
 }
