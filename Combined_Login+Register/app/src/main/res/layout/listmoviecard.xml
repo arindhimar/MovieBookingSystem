@@ -1,59 +1,75 @@
-<androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.furkanakdemir.surroundcardview.SurroundCardView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/MainCard"
     android:layout_width="380dp"
     android:layout_height="130dp"
-    android:id="@+id/MainCard"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintHorizontal_bias="0.5"
     app:cardCornerRadius="12dp"
+    app:scv_duration="1000"
+    app:scv_startPoint="bottom_start"
+    app:scv_color="#03A9F4"
+    app:scv_surrounded="true"
+    app:scv_width="3dp"
     app:cardElevation="5dp"
     android:foreground="@drawable/ripple_effect"
     app:cardBackgroundColor="@color/gray"
     android:layout_margin="10dp">
 
+    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="10dp">
 
+        <!-- Poster Image -->
         <ImageView
             android:id="@+id/MainPoster"
             android:layout_width="110dp"
+            android:layout_height="110dp"
             android:layout_margin="10dp"
-            android:layout_height="110dp" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:textColor="@color/white"
-            android:id="@+id/Heading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/googlesans_bold"
-            />
+        <!-- Text Content -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
+            <!-- Heading -->
+            <TextView
+                android:id="@+id/Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/googlesans_bold"
+                tools:text="Heading" />
 
-        <TextView
-            android:textColor="@color/white"
-            android:id="@+id/subheading1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/googlesans_bold"
-            />
+            <!-- Subheading -->
+            <TextView
+                android:id="@+id/subheading1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/googlesans_bold"
+                tools:text="Subheading" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.furkanakdemir.surroundcardview.SurroundCardView>
