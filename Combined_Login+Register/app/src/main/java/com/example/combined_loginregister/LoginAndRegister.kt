@@ -48,6 +48,7 @@ import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
+import kotlin.system.exitProcess
 
 
 class LoginAndRegister : AppCompatActivity() {
@@ -156,6 +157,7 @@ class LoginAndRegister : AppCompatActivity() {
                     intent = Intent(this@LoginAndRegister, CinemaOwnerActivity::class.java)
                     startActivity(intent)
                 }
+                mGoogleSignInClient.signOut()
 
                 finish()
                 loadingDialogHelper.dismissLoadingDialog()
@@ -339,7 +341,23 @@ class LoginAndRegister : AppCompatActivity() {
         }
     }
 
-    fun registerUser() {
+    fun signInGoogleAgain(view: View) {
+        signInGoogle()
+
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        moveTaskToBack(true)
+        android.os.Process.killProcess(android.os.Process.myPid())
+        exitProcess(1)
+    }
+
+    private fun registerUser() {
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(this)
+
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance()
 
@@ -352,6 +370,7 @@ class LoginAndRegister : AppCompatActivity() {
 
         if (username.isBlank() || email.isBlank() || password.isBlank() || mobile.isBlank()) {
             Toast.makeText(this, "Empty fields!", Toast.LENGTH_SHORT).show()
+            loadingDialogHelper.dismissLoadingDialog()
             return
         }
         val firebaseRestManager = FirebaseRestManager<UserTb>()
@@ -381,6 +400,8 @@ class LoginAndRegister : AppCompatActivity() {
                                 imageView.setImageResource(R.drawable.green_tick)
                                 val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
                                 ButtonLayout.isVisible = false
+                                loadingDialogHelper.dismissLoadingDialog()
+
                                 loadingDialogBox.show() // Show success message
 
                                 // Create the user in Firebase Authentication
@@ -402,6 +423,8 @@ class LoginAndRegister : AppCompatActivity() {
                                 }, 2000)
                             } else {
                                 // Handle failure to add user data to the database
+                                loadingDialogHelper.dismissLoadingDialog()
+
                                 Log.e("TAG", "Error adding user data to the database: $error")
                                 // Display error message or take appropriate action
                             }
@@ -409,6 +432,8 @@ class LoginAndRegister : AppCompatActivity() {
 
 
                     } else {
+                        loadingDialogHelper.dismissLoadingDialog()
+
                         // Registration failed, display error message
                         Log.e("TAG", "User registration failed: ${authTask.exception}")
                         Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
@@ -726,8 +751,7 @@ class LoginAndRegister : AppCompatActivity() {
                     }
                 } else {
                     // Login failed, display a message to the user ye wala wrong details hai bisi
-
-                    Toast.makeText(baseContext, "Invalid Credentials!!",
+                    Toast.makeText(baseContext, "New User ?? Register Please!!",
                         Toast.LENGTH_SHORT).show()
                     loadingDialogHelper.dismissLoadingDialog()
 
@@ -736,7 +760,7 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
     fun LoginWithGoogle(view: View) {
-        signInGoogle()
+        signInGoogleAgain(view)
     }
 
     private fun signInGoogle() {
@@ -880,7 +904,7 @@ class LoginAndRegister : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (GoogleSignIn.getLastSignedInAccount(this) == null) {
-            Toast.makeText(this,"Application SHA Code Verification Failure!!",Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this,"Application SHA Code Verification Failure!!",Toast.LENGTH_SHORT).show()
         }
 
     }

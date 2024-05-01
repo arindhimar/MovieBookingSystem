@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.applicaitionowner.MyAccountFragment
 import com.example.combined_loginregister.databinding.ActivityCinemaOwnerBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 
@@ -23,6 +25,10 @@ class CinemaOwnerActivity : AppCompatActivity() {
         binding = ActivityCinemaOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        init()
+    }
+
+    private fun init(){
         // No Internet Dialog: Signal
         NoInternetDialogSignal.Builder(
             this,
@@ -102,6 +108,14 @@ class CinemaOwnerActivity : AppCompatActivity() {
             replaceFragment(CommonProfileFragment())
         }
         binding.logOut.setOnClickListener {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                .requestEmail()
+                .build()
+
+            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+            mGoogleSignInClient.signOut()
             val encryption = Encryption(this)
 
             if(encryption.decrypt("userId")!=""){
@@ -110,6 +124,7 @@ class CinemaOwnerActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
+
         }
 
     }

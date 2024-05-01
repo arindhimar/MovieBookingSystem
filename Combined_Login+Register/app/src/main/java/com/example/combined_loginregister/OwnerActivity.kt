@@ -6,10 +6,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.applicaitionowner.MyAccountFragment
 import com.example.combined_loginregister.databinding.ActivityOwnerBinding
+import com.example.combined_loginregister.databinding.FragmentManageCinemaownerBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationView
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
@@ -21,6 +25,11 @@ class OwnerActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        init()
+    }
+
+    private fun init(){
         // No Internet Dialog: Signal
         NoInternetDialogSignal.Builder(
             this,
@@ -63,30 +72,22 @@ class OwnerActivity : AppCompatActivity() {
             // Handle navigation item clicks here
             when (menuItem.itemId) {
                 R.id.nav_ownerdashboard -> {
-                    replaceFragment(OwnerDashBoardFragment())
-
+                    binding.OwnerDashBoard.isVisible = true
                 }
                 R.id.nav_manage_cinemaowner -> {
-                    replaceFragment(ManageCinemaOwner())
+                    binding.dashboardManageCinemaOwner.performClick()
                 }
                 R.id.nav_movies -> {
-                    replaceFragment(ManageMovies())
+                    binding.dashboardManageMovies.performClick()
                 }
                 R.id.nav_menu_account -> {
-                    replaceFragment(MyAccountFragment())
+                    binding.dashboardManageProfile.performClick()
                 }
                 R.id.manage_feedback -> {
-
+                    //pending
                 }
                 R.id.logoutuser -> {
-                    val encryption = Encryption(this)
-
-                    if(encryption.decrypt("userId")!=""){
-                        encryption.removeData("userId")
-                        val intent = Intent(this, LoginAndRegister::class.java)
-                        startActivity(intent)
-                        finish()
-                    }
+                    binding.logOut.performClick()
                 }
 
             }
@@ -95,6 +96,36 @@ class OwnerActivity : AppCompatActivity() {
 
 
 
+        binding.dashboardManageCinemaOwner.setOnClickListener {
+            replaceFragment(ManageCinemaOwner())
+        }
+
+        binding.dashboardManageMovies.setOnClickListener {
+            replaceFragment(ManageMovies())
+
+        }
+
+        binding.dashboardManageProfile.setOnClickListener {
+            replaceFragment(CommonProfileFragment())
+        }
+        binding.logOut.setOnClickListener {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                .requestEmail()
+                .build()
+
+            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+            mGoogleSignInClient.signOut()
+            val encryption = Encryption(this)
+
+            if(encryption.decrypt("userId")!=""){
+                encryption.removeData("userId")
+                val intent = Intent(this, LoginAndRegister::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
 
     }
 
@@ -111,6 +142,8 @@ class OwnerActivity : AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: Fragment) {
+        binding.OwnerDashBoard.isVisible = false
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
