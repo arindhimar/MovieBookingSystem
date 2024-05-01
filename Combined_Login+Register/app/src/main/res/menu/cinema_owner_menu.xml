@@ -8,36 +8,36 @@
         <menu>
             <item
                 android:checkable="true"
-                android:id="@+id/nav_ownerdashboard"
+                android:id="@+id/nav_cinema_owner_dashboard"
                 android:icon="@drawable/ic_menu_screenboth"
-                android:title="Owner DashBoard"
+                android:title="Cinema Owner DashBoard"
 
                 />
             <item
                 android:checkable="true"
-                android:id="@+id/nav_manage_cinemaowner"
+                android:id="@+id/nav_manage_cinema_admin"
                 android:icon="@drawable/ic_menu_screenboth"
-                android:title="Manage Owner"
+                android:title="Manage Cinema Admin"
 
                 />
 
             <item
                 android:checkable="true"
-                android:id="@+id/nav_movies"
+                android:id="@+id/nav_rent_movies"
                 android:icon="@drawable/ic_menu_showboth"
-                android:title="Manage Movies" />
+                android:title="Manage Rent Movies" />
 
             <item
                 android:checkable="true"
-                android:id="@+id/manage_feedback"
+                android:id="@+id/manage_booking"
                 android:icon="@drawable/feedback_dashboard_icon"
-                android:title="Manage Feedback" />
+                android:title="Manage Booking" />
 
-<!--            <item-->
-<!--                android:checkable="true"-->
-<!--                android:id="@+id/nav_view_booking"-->
-<!--                android:icon="@drawable/ic_menu_bookingboth"-->
-<!--                android:title="View Bookings" />-->
+            <!--            <item-->
+            <!--                android:checkable="true"-->
+            <!--                android:id="@+id/nav_view_booking"-->
+            <!--                android:icon="@drawable/ic_menu_bookingboth"-->
+            <!--                android:title="View Bookings" />-->
         </menu>
     </item>
 

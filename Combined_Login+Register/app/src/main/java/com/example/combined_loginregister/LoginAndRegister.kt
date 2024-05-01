@@ -12,7 +12,6 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.Window
-
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -20,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isEmpty
 import androidx.core.view.isVisible
 import com.example.combined_loginregister.databinding.ActivityLoginAndRegisterBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -28,13 +26,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
@@ -54,6 +49,7 @@ import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
+
 class LoginAndRegister : AppCompatActivity() {
     private lateinit var binding: ActivityLoginAndRegisterBinding
     private lateinit var frontAnimation: AnimatorSet
@@ -65,7 +61,7 @@ class LoginAndRegister : AppCompatActivity() {
     val Req_Code: Int = 123
     private lateinit var firebaseAuth: FirebaseAuth
 
-
+    lateinit var encryption: Encryption
 
     //For OTP
     var otpverification = 3
@@ -133,6 +129,38 @@ class LoginAndRegister : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
 
+
+
+
+        encryption = Encryption(this)
+
+
+
+        if(encryption.decrypt("userId")!=""){
+
+
+
+
+            val loadingDialogHelper = LoadingDialogHelper()
+            loadingDialogHelper.showLoadingDialog(this)
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", encryption.decrypt("userId")) { user ->
+
+
+                if(user!!.utype=="owner"){
+                    val intent = Intent(this,OwnerActivity::class.java)
+                    startActivity(intent)
+                }
+                else if(user.utype=="cinemaowner") {
+
+                    intent = Intent(this@LoginAndRegister, CinemaOwnerActivity::class.java)
+                    startActivity(intent)
+                }
+
+                finish()
+                loadingDialogHelper.dismissLoadingDialog()
+            }
+        }
 
         // Initialize front card and flip button
         val scale = applicationContext.resources.displayMetrics.density
@@ -365,13 +393,6 @@ class LoginAndRegister : AppCompatActivity() {
                                         if (task.isSuccessful) {
                                             // User registration successful, navigate to the next screen or perform desired action
                                             Log.d("TAG", "createUserWithEmail:success")
-                                        } else {
-
-                                            Toast.makeText(
-                                                this,
-                                                "Authentication failed: ${task.exception?.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
                                         }
                                     }
 
@@ -674,14 +695,24 @@ class LoginAndRegister : AppCompatActivity() {
                     if (user != null) {
                         val userId = user.uid
                         val userEmail = user.email
-                        // You can access other details like displayName, photoUrl, etc. as needed
-
+                        // access other details like displayName, photoUrl, etc. as needed
                         val firebaseRestManager = FirebaseRestManager<UserTb>()
                         firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", userId) { user ->
+
+                            Log.d("encryption", "LoginUser: ${encryption.encrypt("userId",userId)} ")
+
                             if(user!!.utype=="owner"){
                                 val intent = Intent(this,OwnerActivity::class.java)
                                 startActivity(intent)
+                                finish()
                             }
+                            else if(user.utype=="cinemaowner"){
+                                intent = Intent(this@LoginAndRegister,CinemaOwnerActivity::class.java)
+                                startActivity(intent)
+                                finish()
+
+                            }
+
                             loadingDialogHelper.dismissLoadingDialog()
                         }
 
@@ -695,8 +726,8 @@ class LoginAndRegister : AppCompatActivity() {
                     }
                 } else {
                     // Login failed, display a message to the user ye wala wrong details hai bisi
-                    Log.w("TAG", "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
+
+                    Toast.makeText(baseContext, "Invalid Credentials!!",
                         Toast.LENGTH_SHORT).show()
                     loadingDialogHelper.dismissLoadingDialog()
 
@@ -752,19 +783,29 @@ class LoginAndRegister : AppCompatActivity() {
                             if (user != null) {
                                 val username = user.uname
                                 if (username != null) {
-                                    if(user.utype=="owner"){
-                                        val intent = Intent(this@LoginAndRegister,OwnerActivity::class.java)
+                                    Log.d(
+                                        "encryption",
+                                        "LoginUser: ${encryption.encrypt("userId", user.uid!!)} "
+                                    )
+
+                                    if (user.utype == "owner") {
+                                        val intent =
+                                            Intent(this@LoginAndRegister, OwnerActivity::class.java)
                                         startActivity(intent)
+                                        finish()
+
+                                    } else if (user.utype == "cinemaowner") {
+                                        intent = Intent(
+                                            this@LoginAndRegister,
+                                            CinemaOwnerActivity::class.java
+                                        )
+                                        startActivity(intent)
+                                        finish()
+
                                     }
-                                } else {
-                                    Toast.makeText(this@LoginAndRegister, "User data is incomplete", Toast.LENGTH_SHORT).show()
                                 }
-                            } else {
-                                Toast.makeText(this@LoginAndRegister, "Failed to fetch user data", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    } else {
-                        Toast.makeText(this@LoginAndRegister, "User not found", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -776,7 +817,7 @@ class LoginAndRegister : AppCompatActivity() {
             })
         } else {
             // Email address is null
-            Toast.makeText(this, "Email address is null", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -838,9 +879,9 @@ class LoginAndRegister : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (GoogleSignIn.getLastSignedInAccount(this) != null) {
-            Toast.makeText(this,"HO Gya bhai mkc 22",Toast.LENGTH_SHORT).show()
-
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+            Toast.makeText(this,"Application SHA Code Verification Failure!!",Toast.LENGTH_SHORT).show()
         }
+
     }
 }

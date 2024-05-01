@@ -323,17 +323,7 @@ class ManageMovies : Fragment() {
         }
     }
 
-        companion object {
-            fun newInstance(param1: String, param2: String): ManageMovies {
-                val fragment = ManageMovies()
-                val args = Bundle()
-                args.putString(ARG_PARAM1, param1)
-                args.putString(ARG_PARAM2, param2)
-                fragment.arguments = args
-                return fragment
-            }
 
-    }
 
 
 }
