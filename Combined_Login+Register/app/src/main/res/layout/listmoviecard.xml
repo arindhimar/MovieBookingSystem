@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainCard"
     android:layout_width="380dp"
-    android:layout_height="130dp"
+    android:layout_height="150dp"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent"
@@ -29,13 +29,14 @@
         android:padding="10dp">
 
         <!-- Poster Image -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/MainPoster"
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_margin="10dp"
-
-            android:scaleType="centerCrop" />
+            app:shapeAppearanceOverlay="@style/RoundedCorner"
+            android:scaleType="centerCrop"
+            android:background="@color/white"/>
 
         <!-- Text Content -->
         <LinearLayout
@@ -43,6 +44,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
+            android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
