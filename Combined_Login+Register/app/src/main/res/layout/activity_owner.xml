@@ -34,254 +34,254 @@
                 android:layout_height="match_parent" />
 
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/OwnerDashBoard"
+        </com.google.android.material.appbar.AppBarLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/OwnerDashBoard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            >
+
+
+            <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/black"
-                >
+                android:orientation="vertical">
 
 
-                <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Dashboard"
+                    android:fontFamily="@font/googlesans_bold"
+                    android:textSize="24sp"
+                    android:textColor="@color/white"
+                    android:layout_margin="20dp"/>
 
+
+                <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:rowCount="4"
+                    android:columnCount="2"
+                    android:layout_margin="5dp"
+                    android:alignmentMode="alignMargins"
+                    android:layout_gravity="center_horizontal"
+                    android:columnOrderPreserved="false">
 
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Dashboard"
-                        android:fontFamily="@font/googlesans_bold"
-                        android:textSize="24sp"
-                        android:textColor="@color/white"
-                        android:layout_margin="20dp"/>
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/dashboard_manage_cinema_owner"
+
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:animateLayoutChanges="true"
+                        android:clipChildren="false">
 
 
-                    <GridLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:rowCount="4"
-                        android:columnCount="2"
-                        android:layout_margin="5dp"
-                        android:alignmentMode="alignMargins"
-                        android:layout_gravity="center_horizontal"
-                        android:columnOrderPreserved="false">
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            >
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/idea"
+                                android:layout_marginTop="18dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:text="Manage \nCinema Owner"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
 
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/dashboard_manage_cinema_owner"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        android:foreground="@drawable/ripple_effect"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp">
 
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="5dp"
-                            app:cardBackgroundColor="@color/gray"
-                            android:layout_margin="10dp"
-                            android:foreground="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:animateLayoutChanges="true"
-                            android:clipChildren="false">
+                        <LinearLayout
+                            android:id="@+id/dashboard_manage_movies"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            >
 
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/movie_icon_dashboard"
+                                android:layout_marginTop="18dp"/>
 
-                            <LinearLayout
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Manage\nMovies"
+                                android:textAlignment="center"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
 
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                >
+                        </LinearLayout>
 
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/idea"
-                                    android:layout_marginTop="18dp"/>
+                    </androidx.cardview.widget.CardView>
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:text="Manage \nCinema Owner"
-                                    android:fontFamily="@font/googlesans_bold"
-                                    android:textSize="18sp"
-                                    android:textColor="@color/white"
-                                    android:layout_marginTop="20dp"/>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        android:foreground="@drawable/ripple_effect"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp">
 
-                            </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/dashboard_manage_feedback"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
 
-                        </androidx.cardview.widget.CardView>
+                            android:gravity="center"
 
+                            >
 
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="5dp"
-                            android:foreground="@drawable/ripple_effect"
-                            app:cardBackgroundColor="@color/gray"
-                            android:layout_margin="10dp">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
 
-                            <LinearLayout
-                                android:id="@+id/dashboard_manage_movies"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                >
+                                android:src="@drawable/feedback_dashboard_icon"
+                                android:layout_marginTop="18dp"/>
 
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/movie_icon_dashboard"
-                                    android:layout_marginTop="18dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:text="Manage\nFeedback"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Manage\nMovies"
-                                    android:textAlignment="center"
-                                    android:fontFamily="@font/googlesans_bold"
-                                    android:textSize="18sp"
-                                    android:textColor="@color/white"
-                                    android:layout_marginTop="20dp"/>
+                        </LinearLayout>
 
-                            </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                        </androidx.cardview.widget.CardView>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        android:foreground="@drawable/ripple_effect"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp">
 
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="5dp"
-                            android:foreground="@drawable/ripple_effect"
-                            app:cardBackgroundColor="@color/gray"
-                            android:layout_margin="10dp">
+                        <LinearLayout
+                            android:id="@+id/dashboard_manage_profile"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
 
-                            <LinearLayout
-                                android:id="@+id/dashboard_manage_feedback"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
+                            android:gravity="center"
+                            >
 
-                                android:gravity="center"
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/medical"
+                                android:layout_marginTop="18dp"/>
 
-                                >
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Profile"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
 
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
+                        </LinearLayout>
 
-                                    android:src="@drawable/feedback_dashboard_icon"
-                                    android:layout_marginTop="18dp"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:text="Manage\nFeedback"
-                                    android:fontFamily="@font/googlesans_bold"
-                                    android:textSize="18sp"
-                                    android:textColor="@color/white"
-                                    android:layout_marginTop="20dp"/>
-
-                            </LinearLayout>
-
-                        </androidx.cardview.widget.CardView>
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="5dp"
-                            android:foreground="@drawable/ripple_effect"
-                            app:cardBackgroundColor="@color/gray"
-                            android:layout_margin="10dp">
-
-                            <LinearLayout
-                                android:id="@+id/dashboard_manage_profile"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-
-                                android:gravity="center"
-                                >
-
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/medical"
-                                    android:layout_marginTop="18dp"/>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Profile"
-                                    android:fontFamily="@font/googlesans_bold"
-                                    android:textSize="18sp"
-                                    android:textColor="@color/white"
-                                    android:layout_marginTop="20dp"/>
-
-                            </LinearLayout>
-
-                        </androidx.cardview.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
 
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="5dp"
-                            android:foreground="@drawable/ripple_effect"
-                            app:cardBackgroundColor="@color/gray"
-                            android:layout_margin="10dp">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        android:foreground="@drawable/ripple_effect"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp">
 
-                            <LinearLayout
-                                android:id="@+id/log_out"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
+                        <LinearLayout
+                            android:id="@+id/log_out"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
 
-                                android:gravity="center"
-                                >
+                            android:gravity="center"
+                            >
 
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/logout_icon"
-                                    android:layout_marginTop="18dp"/>
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/logout_icon"
+                                android:layout_marginTop="18dp"/>
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="LogOut"
-                                    android:fontFamily="@font/googlesans_bold"
-                                    android:textSize="18sp"
-                                    android:textColor="@color/white"
-                                    android:layout_marginTop="20dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="LogOut"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
 
-                            </LinearLayout>
+                        </LinearLayout>
 
-                        </androidx.cardview.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
 
 
 
 
 
-                    </GridLayout>
+                </GridLayout>
 
 
 
-                </LinearLayout>
+            </LinearLayout>
 
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.appbar.AppBarLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

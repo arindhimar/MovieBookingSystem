@@ -33,6 +33,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -131,14 +132,11 @@ class LoginAndRegister : AppCompatActivity() {
 
 
 
-
-
         encryption = Encryption(this)
 
 
 
         if(encryption.decrypt("userId")!=""){
-
 
 
 
@@ -343,7 +341,6 @@ class LoginAndRegister : AppCompatActivity() {
 
     fun signInGoogleAgain(view: View) {
         signInGoogle()
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -795,50 +792,65 @@ class LoginAndRegister : AppCompatActivity() {
         val email = account.email
 
         if (email != null) {
-            // Check if the user exists in the Firebase database
+            // Authenticate the user with Firebase
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnCompleteListener(this) { authTask ->
+                    if (authTask.isSuccessful) {
+                        // User authenticated with Firebase successfully
+                        // Check if the user exists in the Firebase database
+                        val DbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                        DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    for (userSnapshot in snapshot.children) {
+                                        val user = userSnapshot.getValue(UserTb::class.java)
+                                        if (user != null) {
+                                            val username = user.uname
+                                            if (username != null) {
+                                                Log.d(
+                                                    "encryption",
+                                                    "LoginUser: ${encryption.encrypt("userId", user.uid!!)} "
+                                                )
 
-            val DbRef:DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                                                if (user.utype == "owner") {
+                                                    val intent =
+                                                        Intent(this@LoginAndRegister, OwnerActivity::class.java)
+                                                    startActivity(intent)
+                                                    finish()
 
-            DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        for (userSnapshot in snapshot.children) {
-                            val user = userSnapshot.getValue(UserTb::class.java)
-                            if (user != null) {
-                                val username = user.uname
-                                if (username != null) {
-                                    Log.d(
-                                        "encryption",
-                                        "LoginUser: ${encryption.encrypt("userId", user.uid!!)} "
-                                    )
-
-                                    if (user.utype == "owner") {
-                                        val intent =
-                                            Intent(this@LoginAndRegister, OwnerActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-
-                                    } else if (user.utype == "cinemaowner") {
-                                        intent = Intent(
-                                            this@LoginAndRegister,
-                                            CinemaOwnerActivity::class.java
-                                        )
-                                        startActivity(intent)
-                                        finish()
-
+                                                } else if (user.utype == "cinemaowner") {
+                                                    intent = Intent(
+                                                        this@LoginAndRegister,
+                                                        CinemaOwnerActivity::class.java
+                                                    )
+                                                    startActivity(intent)
+                                                    finish()
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    // User does not exist in Firebase database, save their details
+                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+                                    firebaseUser?.let {
+                                        val uid = it.uid
+                                        val newUser = UserTb(uid, account.displayName, email, "user")
+                                        DbRef.child(uid).setValue(newUser)
                                     }
                                 }
                             }
-                        }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Error occurred while checking for user existence
+                                Log.d("Login Error", "Error in Firebase query: ${error.message}")
+                            }
+                        })
+                    } else {
+                        // Authentication failed
+                        Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
                     }
                 }
-
-
-                override fun onCancelled(error: DatabaseError) {
-                    // Error occurred while checking for user existence
-                    Log.d("Login Error", "Error in Firebase query: ${error.message}")
-                }
-            })
         } else {
             // Email address is null
             Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
