@@ -2,21 +2,24 @@ package com.example.applicaitionowner
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.combined_loginregister.FirebaseRestManager
 import com.example.combined_loginregister.ListAllUserAdapter
 import com.example.combined_loginregister.LoadingDialogHelper
 import com.example.combined_loginregister.MoviePosterTb
-import com.example.combined_loginregister.MovieTB
-import com.example.combined_loginregister.OwnerMovieListAdapter
 import com.example.combined_loginregister.R
+import com.example.combined_loginregister.SuccessLoadingHelper
 import com.example.combined_loginregister.UserTb
 
 import com.example.combined_loginregister.databinding.FragmentManageCinemaownerBinding
@@ -95,7 +98,6 @@ class ManageCinemaOwner : Fragment() {
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance()
 
-
         // Validating user input
         val textInputLayout1 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout1)
         val textInputLayout2 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout2)
@@ -111,62 +113,71 @@ class ManageCinemaOwner : Fragment() {
             Toast.makeText(requireContext(), "Empty fields!", Toast.LENGTH_SHORT).show()
             return
         }
-        val firebaseRestManager = FirebaseRestManager<UserTb>()
 
-        // Perform user registration with Firebase Authentication
-        firebaseAuth.createUserWithEmailAndPassword(email.toString(), password.toString())
-            .addOnCompleteListener { authTask ->
-                if (authTask.isSuccessful) {
-                    // Registration successful, get the authenticated user
-                    val firebaseUser = firebaseAuth.currentUser
-                    if (firebaseUser != null) {
-                        // Use the user ID from Firebase Authentication as the key for database storage
-                        val userId = firebaseUser.uid
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(requireContext())
 
-                        // Create a UserTb object with the obtained user ID
-                        val tempUser = UserTb(userId, username.toString(), email.toString(), password.toString(), mobile.toString(), "cinemaowner")
-                        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+        // Check if the email is already registered
+        firebaseAuth.fetchSignInMethodsForEmail(email.toString())
+            .addOnCompleteListener { fetchTask ->
+                if (fetchTask.isSuccessful) {
+                    val signInMethods = fetchTask.result?.signInMethods
+                    if (signInMethods != null && signInMethods.isNotEmpty()) {
+                        // Email is already registered, handle accordingly
+                        loadingDialogHelper.dismissLoadingDialog()
+                        Log.e("TAG", "Email already registered")
+                        Toast.makeText(requireContext(), "Email already registered", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Email is not registered, proceed with user registration
+                        // Perform user registration with Firebase Authentication
+                        firebaseAuth.createUserWithEmailAndPassword(email.toString(),
+                            password.toString()
+                        )
+                            .addOnCompleteListener { authTask ->
+                                if (authTask.isSuccessful) {
+                                    // Use the user ID from Firebase Authentication as the key for database storage
+                                    val userId = firebaseAuth.currentUser!!.uid
 
-                        firebaseRestManager.addItemWithCustomId(tempUser,userId, dbRef) { success, error ->
-                            if (success) {
+                                    // Create a UserTb object with the obtained user ID
+                                    val tempUser = UserTb(userId,email.toString(), username.toString(),mobile.toString(), "cinemaowner")
+                                    val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                                    val firebaseRestManager = FirebaseRestManager<UserTb>()
 
-                                // Create the user in Firebase Authentication
-                                val auth = FirebaseAuth.getInstance()
-                                auth.createUserWithEmailAndPassword(
-                                    tempUser.uemail!!,
-                                    tempUser.upassword!!
-                                )
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            // User registration successful, navigate to the next screen or perform desired action
-                                            Log.d("TAG", "createUserWithEmail:success")
-                                            displayCinemaOwner()
+                                    firebaseRestManager.addItemWithCustomId(tempUser, userId, dbRef) { success, error ->
+                                        if (success) {
+                                            loadingDialogHelper.dismissLoadingDialog()
+                                            val successLoadingHelper = SuccessLoadingHelper()
+                                            successLoadingHelper.hideButtons()
+                                            successLoadingHelper.showLoadingDialog(requireContext())
+
+                                            val handler = Handler()
+                                            handler.postDelayed({
+                                                successLoadingHelper.dismissLoadingDialog()
+                                                displayCinemaOwner()
+                                            }, 2000)
                                         } else {
-
-
+                                            // Handle failure to add user data to the database
+                                            loadingDialogHelper.dismissLoadingDialog()
+                                            Log.e("TAG", "Error adding user data to the database: $error")
+                                            // Display error message or take appropriate action
                                         }
                                     }
-
-
-                            } else {
-                                // Handle failure to add user data to the database
-                                Log.e("TAG", "Error adding user data to the database: $error")
-                                // Display error message or take appropriate action
+                                } else {
+                                    // Registration failed
+                                    loadingDialogHelper.dismissLoadingDialog()
+                                    Log.e("TAG", "User registration failed: ${authTask.exception}")
+                                    Toast.makeText(requireContext(), "User registration failed", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
-
-
-                    } else {
-                        // Registration failed, display error message
-                        Log.e("TAG", "User registration failed: ${authTask.exception}")
-                        Toast.makeText(requireContext(), "User registration failed", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    // Error fetching sign-in methods
+                    loadingDialogHelper.dismissLoadingDialog()
+                    Log.e("TAG", "Error fetching sign-in methods: ${fetchTask.exception}")
+                    Toast.makeText(requireContext(), "Error fetching sign-in methods", Toast.LENGTH_SHORT).show()
                 }
             }
-
-        alertDialog.dismiss()
     }
-
 
     private fun validateRegisterPage(): Boolean {
         // Validation for name

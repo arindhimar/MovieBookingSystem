@@ -2,20 +2,19 @@ package com.example.combined_loginregister
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.example.applicaitionowner.ManageCinemaOwner
-import com.example.applicaitionowner.MyAccountFragment
 import com.example.combined_loginregister.databinding.ActivityCinemaOwnerBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
+
 
 class CinemaOwnerActivity : AppCompatActivity() {
     lateinit var binding: ActivityCinemaOwnerBinding
@@ -26,6 +25,15 @@ class CinemaOwnerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         init()
+
+        validateUser()
+
+
+    }
+
+    private fun validateUser(){
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        Log.d("TAG", "validateUser: ${currentUser!!.uid}")
     }
 
     private fun init(){
@@ -57,6 +65,11 @@ class CinemaOwnerActivity : AppCompatActivity() {
                 showAirplaneModeOffButtons = true // Optional
             }
         }.build()
+
+
+
+
+
 
         setSupportActionBar(binding.ToolBaar)
 
@@ -116,14 +129,14 @@ class CinemaOwnerActivity : AppCompatActivity() {
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
             mGoogleSignInClient.signOut()
-            val encryption = Encryption(this)
 
-            if(encryption.decrypt("userId")!=""){
-                encryption.removeData("userId")
-                val intent = Intent(this, LoginAndRegister::class.java)
-                startActivity(intent)
-                finish()
-            }
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+
+            val encryption = Encryption(this)
+            val intent = Intent(this, LoginAndRegister::class.java)
+            startActivity(intent)
+
 
         }
 

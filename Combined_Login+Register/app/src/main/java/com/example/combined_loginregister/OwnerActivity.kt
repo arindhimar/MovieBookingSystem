@@ -15,6 +15,8 @@ import com.example.combined_loginregister.databinding.FragmentManageCinemaownerB
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 
@@ -59,6 +61,13 @@ class OwnerActivity : AppCompatActivity() {
             }
         }.build()
         setSupportActionBar(binding.ToolBaar)
+
+
+
+
+
+
+//        Log.d("TAG", "onCreate: ahsdjkhasjkhdkhasjkhdkhaskdh")
 
         binding.ToolBaar.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navView)
@@ -117,14 +126,13 @@ class OwnerActivity : AppCompatActivity() {
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
             mGoogleSignInClient.signOut()
-            val encryption = Encryption(this)
 
-            if(encryption.decrypt("userId")!=""){
-                encryption.removeData("userId")
-                val intent = Intent(this, LoginAndRegister::class.java)
-                startActivity(intent)
-                finish()
-            }
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+
+            val intent = Intent(this, LoginAndRegister::class.java)
+            startActivity(intent)
+
         }
 
     }
@@ -149,3 +157,9 @@ class OwnerActivity : AppCompatActivity() {
             .commit()
     }
 }
+
+
+//firebase restmanager ,firebase storage
+
+
+
