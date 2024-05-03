@@ -369,8 +369,7 @@
                 app:layout_constraintTop_toBottomOf="@id/loginbtn2"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
-
-
+            `
 
             <TextView
                 android:id="@+id/imageView"
