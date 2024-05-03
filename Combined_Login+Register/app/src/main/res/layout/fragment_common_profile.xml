@@ -68,6 +68,7 @@
             <!-- TextInputLayout 2  Email -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout2"
+                android:hint="Email Address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -99,39 +100,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- TextInputLayout 3 Password-->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="25dp"
-                app:boxBackgroundColor="#00ECECF3"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
-                app:boxCornerRadiusBottomEnd="25dp"
-                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.52"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayout2"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@color/login_button"
-                app:startIconDrawable="@drawable/baseline_password_24"
-                app:startIconTint="@color/m3_textfield_login_page_colors">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-
-                    android:hint="Password"
-                    android:textColorHint="@color/m3_textfield_login_page_colors" />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout4"
@@ -153,7 +122,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.52"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout2"
                 app:startIconDrawable="@drawable/baseline_phone_24"
                 app:startIconTint="@color/m3_textfield_login_page_colors">
 

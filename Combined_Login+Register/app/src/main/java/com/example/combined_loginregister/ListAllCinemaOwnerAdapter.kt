@@ -33,7 +33,6 @@ class ListAllUserAdapter(private val userList: List<UserTb>) : RecyclerView.Adap
         // Only bind data if user type is "cinemaowner"
         if (user.utype == "cinemaowner") {
             holder.SubHeading1.text = "Name : ${user.uname}"
-            holder.SubHeading2.text = "Email : ${user.uemail}"
             holder.SubHeading3.text = "Mobile : ${user.umobile}"
 
             Glide.with(holder.itemView.context)
