@@ -121,26 +121,25 @@ class FirebaseRestManager<T> {
 
 
 
-    fun updateItem(itemId: String, newItem: T) {
+    fun <T> updateItem(dbRef: DatabaseReference, itemId: String, newItem: T, callback: (Boolean, Exception?) -> Unit) {
         val gson = Gson()
         val jsonItem = gson.toJson(newItem)
 
-        val requestBody = jsonItem.toString().toRequestBody()
-        val request = Request.Builder()
-            .url("$firebaseUrl/items/$itemId.json")
-            .put(requestBody)
-            .build()
+        // Get a reference to the child node with the specified ID
+        val childRef = dbRef.child(itemId)
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
+        // Set the value of the child node with the specified ID
+        childRef.setValue(newItem)
+            .addOnSuccessListener {
+                println("Update Item Success")
+                callback(true, null)
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                println("Update Item Response: ${response.body?.string()}")
+            .addOnFailureListener { e ->
+                println("Update Item Failed: $e")
+                callback(false, e)
             }
-        })
     }
+
 
     fun deleteItem(itemId: String) {
         val request = Request.Builder()

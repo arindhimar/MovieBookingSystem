@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import com.example.combined_loginregister.databinding.ActivityLoginAndRegisterBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -193,6 +194,7 @@ class LoginAndRegister : AppCompatActivity() {
 
         binding.textInputLayout5.setEndIconOnClickListener {
             verifyPhoneNumberWithCode(VerificationID,binding.textInputLayout5.editText!!.text.trim().toString())
+            
         }
 
 
@@ -364,7 +366,7 @@ class LoginAndRegister : AppCompatActivity() {
                                         val userId = firebaseUser.uid
 
                                         // Create a UserTb object with the obtained user ID
-                                        val tempUser = UserTb(userId,email, username,mobile, "user")
+                                        val tempUser = UserTb(userId, username,mobile, "user")
                                         val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
                                         val firebaseRestManager = FirebaseRestManager<UserTb>()
 
@@ -372,18 +374,13 @@ class LoginAndRegister : AppCompatActivity() {
                                             if (success) {
                                                 binding.CloseIcon.performClick()
                                                 EnableAndCleanRegisterFields()
-
-                                                showLoading("User Registered!!")
-                                                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
-                                                imageView.setImageResource(R.drawable.green_tick)
-                                                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
-                                                ButtonLayout.isVisible = false
-                                                loadingDialogHelper.dismissLoadingDialog()
-                                                loadingDialogBox.show() // Show success message
+                                                val successLoadingHelper = SuccessLoadingHelper()
+                                                successLoadingHelper.hideButtons()
+                                                successLoadingHelper.showLoadingDialog(this)
 
                                                 val handler = Handler()
                                                 handler.postDelayed({
-                                                    loadingDialogBox.dismiss()
+                                                    successLoadingHelper.dismissLoadingDialog()
                                                 }, 2000)
                                             } else {
                                                 // Handle failure to add user data to the database
@@ -906,6 +903,10 @@ class LoginAndRegister : AppCompatActivity() {
                     loadingDialogHelper.dismissLoadingDialog()
 
                     finish()
+                }
+                else{
+                    loadingDialogHelper.dismissLoadingDialog()
+
                 }
             }
         }

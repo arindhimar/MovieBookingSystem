@@ -139,7 +139,7 @@ class ManageCinemaOwner : Fragment() {
                                     val userId = firebaseAuth.currentUser!!.uid
 
                                     // Create a UserTb object with the obtained user ID
-                                    val tempUser = UserTb(userId,email.toString(), username.toString(),mobile.toString(), "cinemaowner")
+                                    val tempUser = UserTb(userId, username.toString(),mobile.toString(), "cinemaowner")
                                     val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
                                     val firebaseRestManager = FirebaseRestManager<UserTb>()
 
