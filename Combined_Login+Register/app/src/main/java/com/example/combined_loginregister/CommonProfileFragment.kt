@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import com.example.combined_loginregister.databinding.FragmentCommonProfileBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
@@ -28,6 +30,7 @@ private const val ARG_PARAM2 = "param2"
 class CommonProfileFragment : Fragment() {
     lateinit var binding: FragmentCommonProfileBinding
     lateinit var auth: FirebaseAuth
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -40,20 +43,19 @@ class CommonProfileFragment : Fragment() {
         }
     }
 
-    private fun ToggleControls(){
-        if(binding.enableControls.text=="Disable Controls"){
-           binding.enableControls.text = "Enable Controls"
-            binding.textInputLayout1.isEnabled=false
-            binding.textInputLayout2.isEnabled=false
+    private fun ToggleControls() {
+        if (binding.enableControls.text == "Disable Controls") {
+            binding.enableControls.text = "Enable Controls"
+            binding.textInputLayout1.isEnabled = false
+            binding.textInputLayout2.isEnabled = false
 
-            binding.textInputLayout4.isEnabled=false
-        }
-        else{
-            binding.enableControls.text= "Disable Controls"
-            binding.textInputLayout1.isEnabled=true
-            binding.textInputLayout2.isEnabled=true
+            binding.textInputLayout4.isEnabled = false
+        } else {
+            binding.enableControls.text = "Disable Controls"
+            binding.textInputLayout1.isEnabled = true
+            binding.textInputLayout2.isEnabled = true
 
-            binding.textInputLayout4.isEnabled=true
+            binding.textInputLayout4.isEnabled = true
         }
     }
 
@@ -62,24 +64,17 @@ class CommonProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentCommonProfileBinding.inflate(layoutInflater,container,false)
+        binding = FragmentCommonProfileBinding.inflate(layoutInflater, container, false)
 
         init()
         ToggleControls()
         return binding.root
     }
 
-    private fun init() {
-
-
-        auth  = Firebase.auth
-
+    private fun fetchAndSetUserData() {
+        auth = Firebase.auth
         val userData = auth.currentUser
-
         val userId = userData!!.uid
-
-
-
 
         if (userId != "null") {
             val firebaseRestManager = FirebaseRestManager<UserTb>()
@@ -96,67 +91,111 @@ class CommonProfileFragment : Fragment() {
                     Editable.Factory.getInstance().newEditable(user.umobile.toString())
             }
 
+        }
+    }
 
-            binding.enableControls.setOnClickListener{
-                ToggleControls()
-            }
+    private fun init() {
 
-            binding.updateBtn.setOnClickListener {
-
-                val loadingDialogHelper = LoadingDialogHelper()
-                loadingDialogHelper.showLoadingDialog(requireContext())
+        fetchAndSetUserData()
 
 
+        binding.enableControls.setOnClickListener {
+            ToggleControls()
+        }
 
-                val userData = auth.currentUser
+        binding.updateBtn.setOnClickListener {
+            val loadingDialogHelper = LoadingDialogHelper()
+            loadingDialogHelper.showLoadingDialog(requireContext())
 
-                val userId = userData!!.uid
+            val userData = auth.currentUser
+            val userId = userData!!.uid
 
-                val firebaseRestManager = FirebaseRestManager<UserTb>()
-                firebaseRestManager.getSingleItem(
-                    UserTb::class.java,
-                    "moviedb/usertb",
-                    userId
-                ) { user ->
-                    if(user!!.uname!=binding.textInputLayout1.editText!!.text.toString()||user.umobile!=binding.textInputLayout4.editText!!.text.toString()){
-                        if(userData.email!=binding.textInputLayout2.editText!!.text.toString()) {
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+            firebaseRestManager.getSingleItem(
+                UserTb::class.java,
+                "moviedb/usertb",
+                userId
+            ) { user ->
+                if (user!!.uname!= binding.textInputLayout1.editText!!.text.toString() ||
+                    user.umobile!= binding.textInputLayout4.editText!!.text.toString() ||
+                    userData.email!= binding.textInputLayout2.editText!!.text.toString()) {
 
-                        }
-                        else{
+                    if (userData.email!= binding.textInputLayout2.editText!!.text.toString()) {
+                        loadingDialogHelper.dismissLoadingDialog()
+                        val newEmail = binding.textInputLayout2.editText!!.text.toString()
+                        //detected change in email
 
-                            val database = FirebaseDatabase.getInstance()
-                            val dbRef = database.getReference("moviedb/usertb")
+                        val warningLoadingHelper = WarningLoadingHelper()
+                        warningLoadingHelper.showLoadingDialog(requireContext())
+                        warningLoadingHelper.hideButtons()
+                        warningLoadingHelper.updateText("Change in email detected!!\nNeed password to verify the change.\nA link will be sent to the new email to verify, the email will be only updated after that!!\nRest details will be updated directly!!")
 
+                        val passwordConfirmationLoadingHelper = PasswordConfirmationLoadingHelper()
 
-                            val newData = UserTb(userId, binding.textInputLayout1.editText!!.text.toString(), binding.textInputLayout4.editText!!.text.toString())
+                        val handler = Handler()
+                        handler.postDelayed({
+                            warningLoadingHelper.dismissLoadingDialog()
+                            passwordConfirmationLoadingHelper.showLoadingDialog(requireContext())
+                            ToggleControls()
+                            val view = passwordConfirmationLoadingHelper.getView()
+                            val btn = view.findViewById<Button>(R.id.passwordconfirmbutton)
+                            btn.setOnClickListener {
+                                val password = passwordConfirmationLoadingHelper.getPassword()
+                                val credential = EmailAuthProvider.getCredential(userData.email!!, password)
 
-
-                            firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
-                                if (success) {
-                                    Log.d("TAG", "Data updated successfully!")
-                                    loadingDialogHelper.dismissLoadingDialog()
-                                    val successLoadingHelper = SuccessLoadingHelper()
-                                    successLoadingHelper.hideButtons()
-                                    successLoadingHelper.showLoadingDialog(requireContext())
-
-                                    val handler = Handler()
-                                    handler.postDelayed({
-                                        successLoadingHelper.dismissLoadingDialog()
-                                    }, 2000)
-
-                                } else {
-                                    Log.e("TAG", "Failed to update data: $error")
-                                }
+                                userData.reauthenticate(credential)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            userData.updateEmail(newEmail)
+                                                .addOnCompleteListener { task ->
+                                                    if (task.isSuccessful) {
+                                                        Log.d("TAG", "User email updated.")
+                                                    } else {
+                                                        Log.e("TAG", "Error updating user email.", task.exception)
+                                                    }
+                                                }
+                                        } else {
+                                            Log.e("TAG", "Error re-authenticating user.", task.exception)
+                                        }
+                                    }
                             }
+                        }, 5000)
 
+                    } else {
+                        //if email is the same
+                        val database = FirebaseDatabase.getInstance()
+                        val dbRef = database.getReference("moviedb/usertb")
+
+                        val newData = UserTb(
+                            userId,
+                            binding.textInputLayout1.editText!!.text.toString(),
+                            binding.textInputLayout4.editText!!.text.toString()
+                        )
+
+                        firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
+                            if (success) {
+                                Log.d("TAG", "Data updated successfully!")
+                                loadingDialogHelper.dismissLoadingDialog()
+                                val successLoadingHelper = SuccessLoadingHelper()
+                                successLoadingHelper.showLoadingDialog(requireContext())
+                                successLoadingHelper.hideButtons()
+                                successLoadingHelper.updateText("User Data has been Updated!!")
+
+                                fetchAndSetUserData()
+
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    successLoadingHelper.dismissLoadingDialog()
+                                    ToggleControls()
+                                }, 2000)
+
+                            } else {
+                                Log.e("TAG", "Failed to update data: $error")
+                            }
                         }
                     }
-
                 }
-
-
             }
-
         }
 
 

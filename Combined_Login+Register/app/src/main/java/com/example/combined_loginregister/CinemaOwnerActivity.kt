@@ -2,6 +2,7 @@ package com.example.combined_loginregister
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
@@ -23,17 +24,26 @@ class CinemaOwnerActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCinemaOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        validateUser()
 
         init()
 
-        validateUser()
 
 
     }
 
     private fun validateUser(){
         val currentUser = FirebaseAuth.getInstance().currentUser
-        Log.d("TAG", "validateUser: ${currentUser!!.uid}")
+        if(currentUser==null){
+            val warningLoadingHelper = WarningLoadingHelper()
+            warningLoadingHelper.hideButtons()
+            warningLoadingHelper.updateText("Invalid User Detection!!")
+
+            val handler = Handler()
+            handler.postDelayed({
+                warningLoadingHelper.dismissLoadingDialog()
+            }, 2000)
+        }
     }
 
     private fun init(){
@@ -133,7 +143,6 @@ class CinemaOwnerActivity : AppCompatActivity() {
             val auth = FirebaseAuth.getInstance()
             auth.signOut()
 
-            val encryption = Encryption(this)
             val intent = Intent(this, LoginAndRegister::class.java)
             startActivity(intent)
 
@@ -141,6 +150,8 @@ class CinemaOwnerActivity : AppCompatActivity() {
         }
 
     }
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

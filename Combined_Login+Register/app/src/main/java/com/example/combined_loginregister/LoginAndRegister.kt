@@ -276,14 +276,12 @@ class LoginAndRegister : AppCompatActivity() {
                 // by combining the code with a verification ID.
                 Log.d("TAG", "onCodeSent:$verificationId")
 
-                // Show the dialog that otp is sent
-                loadingDialogBox.dismiss()//Dismissing the loading dialog
 
-                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
-                imageView.setImageResource(R.drawable.green_tick)
-                loadingDialogBox.show()//showing that the otp is sent
-                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
-                ButtonLayout.isVisible = false
+                val successLoadingHelper = SuccessLoadingHelper()
+                successLoadingHelper.showLoadingDialog(this@LoginAndRegister)
+                successLoadingHelper.hideButtons()
+                successLoadingHelper.updateText("Otp has been sent!!")
+
 
                 // Enable the OTP field
                 binding.textInputLayout5.isEnabled = true
@@ -291,8 +289,9 @@ class LoginAndRegister : AppCompatActivity() {
 
                 val handler = Handler()
                 handler.postDelayed({
-                    loadingDialogBox.dismiss()
+                    successLoadingHelper.dismissLoadingDialog()
                 }, 2000)
+
 
                 VerificationID = verificationId
 
@@ -374,10 +373,13 @@ class LoginAndRegister : AppCompatActivity() {
                                             if (success) {
                                                 binding.CloseIcon.performClick()
                                                 EnableAndCleanRegisterFields()
+                                                loadingDialogHelper.dismissLoadingDialog()
                                                 val successLoadingHelper = SuccessLoadingHelper()
-                                                successLoadingHelper.hideButtons()
-                                                successLoadingHelper.showLoadingDialog(this)
 
+
+                                                successLoadingHelper.showLoadingDialog(this)
+                                                successLoadingHelper.hideButtons()
+                                                successLoadingHelper.updateText("User Registered!!")
                                                 val handler = Handler()
                                                 handler.postDelayed({
                                                     successLoadingHelper.dismissLoadingDialog()
@@ -490,15 +492,16 @@ class LoginAndRegister : AppCompatActivity() {
                     //OTP has been Verified along with validation enabling the register button
                     binding.loginbtn3.isEnabled = true
 
-                    showLoading("OTP Verified!!")
-                    val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
-                    imageView.setImageResource(R.drawable.green_tick)
-                    loadingDialogBox.show()//showing that the otp is sent
-                    val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
-                    ButtonLayout.isVisible = false
+
+                    val successLoadingHelper = SuccessLoadingHelper()
+
+
+                    successLoadingHelper.showLoadingDialog(this)
+                    successLoadingHelper.hideButtons()
+                    successLoadingHelper.updateText("Otp has been verified!!")
                     val handler = Handler()
                     handler.postDelayed({
-                        loadingDialogBox.dismiss()
+                        successLoadingHelper.dismissLoadingDialog()
                     }, 2000)
 
                     //Disabling to prevent user from modifying the fields
@@ -756,73 +759,6 @@ class LoginAndRegister : AppCompatActivity() {
         }
     }
 
-    // this is where we update the UI after Google signin takes place
-//    private fun UpdateUI(account: GoogleSignInAccount) {
-//        val email = account.email
-//
-//        if (email != null) {
-//            // Authenticate the user with Firebase
-//            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-//            FirebaseAuth.getInstance().signInWithCredential(credential)
-//                .addOnCompleteListener(this) { authTask ->
-//                    if (authTask.isSuccessful) {
-//
-//                        // User authenticated with Firebase successfully
-//                        // Check if the user exists in the Firebase database
-//                        val DbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
-//                        DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
-//                            override fun onDataChange(snapshot: DataSnapshot) {
-//                                if (snapshot.exists()) {
-//                                    for (userSnapshot in snapshot.children) {
-//                                        val user = userSnapshot.getValue(UserTb::class.java)
-//                                        if (user != null) {
-//                                            val username = user.uname
-//                                            if (username != null) {
-//
-//                                                if (user.utype == "owner") {
-//                                                    val intent =
-//                                                        Intent(this@LoginAndRegister, OwnerActivity::class.java)
-//                                                    startActivity(intent)
-//                                                    finish()
-//
-//                                                } else if (user.utype == "cinemaowner") {
-//                                                    intent = Intent(
-//                                                        this@LoginAndRegister,
-//                                                        CinemaOwnerActivity::class.java
-//                                                    )
-//                                                    startActivity(intent)
-//                                                    finish()
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                } else {
-//                                    // User does not exist in Firebase database, save their details
-//                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
-//                                    firebaseUser?.let {
-//                                        val uid = it.uid
-//                                        val newUser = UserTb(uid, account.displayName, email, "user")
-//                                        DbRef.child(uid).setValue(newUser)
-//                                    }
-//                                }
-//                            }
-//
-//                            override fun onCancelled(error: DatabaseError) {
-//                                // Error occurred while checking for user existence
-//                                Log.d("Login Error", "Error in Firebase query: ${error.message}")
-//                            }
-//                        })
-//                    } else {
-//                        // Authentication  failed
-//                        Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
-//                    }
-//                }
-//        } else {
-//            // Email address is null
-//            Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
     private fun updateUI(account: GoogleSignInAccount) {
         val email = account.email
         if (email != null) {
@@ -837,34 +773,23 @@ class LoginAndRegister : AppCompatActivity() {
                             val uid = user.uid
                             Log.d("TAG", "User UID: $uid")
 
-                            // Check if the user already exists in Firebase Authentication
-                            FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
-                                .addOnCompleteListener { signInMethodsTask ->
-                                    if (signInMethodsTask.isSuccessful) {
-                                        val signInMethods = signInMethodsTask.result?.signInMethods ?: emptyList()
-                                        if (signInMethods.isNotEmpty()) {
+                            val firebaseRestManager = FirebaseRestManager<UserTb>()
+                            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
 
-                                            val firebaseRestManager = FirebaseRestManager<UserTb>()
-                                            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",uid){user->
-                                                if(user!!.utype=="owner"){
-                                                    intent = Intent(this,OwnerActivity::class.java)
-                                                    startActivity(intent)
-                                                    finish()
-                                                }
-                                                else if(user.utype=="cinemaowner"){
-                                                    intent = Intent(this,OwnerActivity::class.java)
-                                                    startActivity(intent)
-                                                }
-                                            }
-
-                                        } else {
-                                            // User does not exist, do not add new data
-                                            Log.d("TAG", "User with email $email does not exist")
-                                        }
-                                    } else {
-                                        Log.d("TAG", "Failed to fetch sign-in methods: ${signInMethodsTask.exception?.message}")
-                                    }
+                                if(user!!.utype=="owner"){
+                                    val intent = Intent(this,OwnerActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
                                 }
+                                else if(user.utype=="cinemaowner"){
+                                    intent = Intent(this@LoginAndRegister,CinemaOwnerActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+
+                                }
+
+                            }
+
                         }
                     } else {
                         // Authentication failed
@@ -881,35 +806,40 @@ class LoginAndRegister : AppCompatActivity() {
     private fun checkPrevLogin(){
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(this)
-        val temp = firebaseAuth.currentUser
-        if(temp!=null){
-                Log.d("TAG", "checkPrevLogin:${temp!!.uid} ")
 
-            val firebaseRestManager = FirebaseRestManager<UserTb>()
-            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",temp.uid){user->
+        if(firebaseAuth.currentUser!=null) {
+            val temp = firebaseAuth.currentUser
+            if (temp != null) {
+                Log.d("TAG", "checkPrevLogin:${temp.uid} ")
 
-                if(user!!.utype=="owner"){
-                    intent = Intent(this,OwnerActivity::class.java)
-                    startActivity(intent)
-                    loadingDialogHelper.dismissLoadingDialog()
+                val firebaseRestManager = FirebaseRestManager<UserTb>()
+                firebaseRestManager.getSingleItem(
+                    UserTb::class.java,
+                    "moviedb/usertb",
+                    temp.uid
+                ) { user ->
 
-                    finish()
+                    if (user!!.utype == "owner") {
+                        intent = Intent(this, OwnerActivity::class.java)
+                        startActivity(intent)
+                        loadingDialogHelper.dismissLoadingDialog()
 
-                }
-                else if(user.utype=="cinemaowner"){
-                    intent = Intent(this,OwnerActivity::class.java)
-                    startActivity(intent)
-                    loadingDialogHelper.dismissLoadingDialog()
+                        finish()
 
-                    finish()
-                }
-                else{
-                    loadingDialogHelper.dismissLoadingDialog()
+                    } else if (user.utype == "cinemaowner") {
+                        intent = Intent(this, CinemaOwnerActivity::class.java)
+                        startActivity(intent)
+                        loadingDialogHelper.dismissLoadingDialog()
 
+                        finish()
+                    } else {
+                        loadingDialogHelper.dismissLoadingDialog()
+
+                    }
                 }
             }
         }
-        else{
+        else {
             Log.d("TAG", "checkPrevLogin:bruhhhhhhhhhhhhhhhh ")
             loadingDialogHelper.dismissLoadingDialog()
         }
