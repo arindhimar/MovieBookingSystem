@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.combined_loginregister.databinding.FragmentCommonProfileBinding
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,6 +35,23 @@ class CommonProfileFragment : Fragment() {
         }
     }
 
+    private fun ToggleControls(){
+        if(binding.enableControls.text=="Disable Controls"){
+           binding.enableControls.text = "Enable Controls"
+            binding.textInputLayout1.isEnabled=false
+            binding.textInputLayout2.isEnabled=false
+            binding.textInputLayout3.isEnabled=false
+            binding.textInputLayout4.isEnabled=false
+        }
+        else{
+            binding.enableControls.text= "Disable Controls"
+            binding.textInputLayout1.isEnabled=true
+            binding.textInputLayout2.isEnabled=true
+            binding.textInputLayout3.isEnabled=true
+            binding.textInputLayout4.isEnabled=true
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +60,7 @@ class CommonProfileFragment : Fragment() {
         binding = FragmentCommonProfileBinding.inflate(layoutInflater,container,false)
 
         init()
-
+        ToggleControls()
         return binding.root
     }
 
@@ -63,24 +82,52 @@ class CommonProfileFragment : Fragment() {
                     Editable.Factory.getInstance().newEditable(user!!.uname.toString())
                 binding.textInputLayout2.editText!!.text =
                     Editable.Factory.getInstance().newEditable(user.uemail.toString())
-                binding.textInputLayout3.editText!!.text =
-                    Editable.Factory.getInstance().newEditable(user.upassword.toString())
                 binding.textInputLayout4.editText!!.text =
                     Editable.Factory.getInstance().newEditable(user.umobile.toString())
             }
 
 
             binding.enableControls.setOnClickListener{
+                ToggleControls()
             }
 
             binding.updateBtn.setOnClickListener {
+                FirebaseAuth.getInstance().currentUser?.let { user ->
+                    val newEmail = binding.textInputLayout3.editText?.text.toString()
+                    val newPassword = "Dhimar@99"
 
+                    user.email?.let { email ->
+                        val credential = EmailAuthProvider.getCredential(email, newPassword)
+
+                        user.reauthenticate(credential).addOnCompleteListener { reauthTask ->
+                            if (reauthTask.isSuccessful) {
+                                user.updateEmail(newEmail).addOnCompleteListener { emailUpdateTask ->
+                                    if (emailUpdateTask.isSuccessful) {
+                                        user.updatePassword(newPassword).addOnCompleteListener { passwordUpdateTask ->
+                                            if (passwordUpdateTask.isSuccessful) {
+                                                Log.d("TAG", "User email and password updated successfully.")
+                                            } else {
+                                                Log.d("TAG", "Failed to update password: ${passwordUpdateTask.exception?.message}")
+                                            }
+                                        }
+                                    } else {
+                                        Log.d("TAG", "Failed to update email address: ${emailUpdateTask.exception?.message}")
+                                    }
+                                }
+                            } else {
+                                Log.d("TAG", "Reauthentication failed: ${reauthTask.exception?.message}")
+                            }
+                        }
+                    } ?: Log.d("TAG", "User's email is null.")
+                } ?: Log.d("TAG", "User not logged in.")
             }
 
         }
 
 
     }
+
+
 
 
     companion object {

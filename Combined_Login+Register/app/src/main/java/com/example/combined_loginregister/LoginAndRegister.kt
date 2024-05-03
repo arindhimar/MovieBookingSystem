@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
@@ -38,11 +39,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
@@ -90,6 +87,8 @@ class LoginAndRegister : AppCompatActivity() {
         setContentView(binding.root)
 
 
+
+
         // No Internet Dialog: Signal
         NoInternetDialogSignal.Builder(
             this,
@@ -131,36 +130,9 @@ class LoginAndRegister : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
 
+        //Checking previous login
+        checkPrevLogin()
 
-        encryption = Encryption(this)
-
-
-
-        if(encryption.decrypt("userId")!=""){
-
-
-
-            val loadingDialogHelper = LoadingDialogHelper()
-            loadingDialogHelper.showLoadingDialog(this)
-            val firebaseRestManager = FirebaseRestManager<UserTb>()
-            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", encryption.decrypt("userId")) { user ->
-
-
-                if(user!!.utype=="owner"){
-                    val intent = Intent(this,OwnerActivity::class.java)
-                    startActivity(intent)
-                }
-                else if(user.utype=="cinemaowner") {
-
-                    intent = Intent(this@LoginAndRegister, CinemaOwnerActivity::class.java)
-                    startActivity(intent)
-                }
-                mGoogleSignInClient.signOut()
-
-                finish()
-                loadingDialogHelper.dismissLoadingDialog()
-            }
-        }
 
         // Initialize front card and flip button
         val scale = applicationContext.resources.displayMetrics.density
@@ -358,7 +330,6 @@ class LoginAndRegister : AppCompatActivity() {
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance()
 
-
         // Validating user input
         val username = binding.textInputLayout1.editText!!.text.toString()
         val email = binding.textInputLayout2.editText!!.text.toString()
@@ -370,75 +341,78 @@ class LoginAndRegister : AppCompatActivity() {
             loadingDialogHelper.dismissLoadingDialog()
             return
         }
-        val firebaseRestManager = FirebaseRestManager<UserTb>()
 
-        // Perform user registration with Firebase Authentication
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { authTask ->
-                if (authTask.isSuccessful) {
-                    // Registration successful, get the authenticated user
-                    val firebaseUser = firebaseAuth.currentUser
-                    if (firebaseUser != null) {
-                        // Use the user ID from Firebase Authentication as the key for database storage
-                        val userId = firebaseUser.uid
-
-                        // Create a UserTb object with the obtained user ID
-                        val tempUser = UserTb(userId, username, email, password, mobile, "user")
-                        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
-
-                        firebaseRestManager.addItemWithCustomId(tempUser,userId, dbRef) { success, error ->
-                            if (success) {
-                                binding.CloseIcon.performClick()
-                                EnableAndCleanRegisterFields()
-
-                                showLoading("User Registered!!")
-                                val imageView =
-                                    loadingDialogBox.findViewById<ImageView>(R.id.imageView)
-                                imageView.setImageResource(R.drawable.green_tick)
-                                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
-                                ButtonLayout.isVisible = false
-                                loadingDialogHelper.dismissLoadingDialog()
-
-                                loadingDialogBox.show() // Show success message
-
-                                // Create the user in Firebase Authentication
-                                val auth = FirebaseAuth.getInstance()
-                                auth.createUserWithEmailAndPassword(
-                                    tempUser.uemail!!,
-                                    tempUser.upassword!!
-                                )
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            // User registration successful, navigate to the next screen or perform desired action
-                                            Log.d("TAG", "createUserWithEmail:success")
-                                        }
-                                    }
-
-                                val handler = Handler()
-                                handler.postDelayed({
-                                    loadingDialogBox.dismiss()
-                                }, 2000)
-                            } else {
-                                // Handle failure to add user data to the database
-                                loadingDialogHelper.dismissLoadingDialog()
-
-                                Log.e("TAG", "Error adding user data to the database: $error")
-                                // Display error message or take appropriate action
-                            }
-                        }
-
-
-                    } else {
+        // Check if the email is already registered
+        firebaseAuth.fetchSignInMethodsForEmail(email)
+            .addOnCompleteListener { fetchTask ->
+                if (fetchTask.isSuccessful) {
+                    val signInMethods = fetchTask.result?.signInMethods
+                    if (signInMethods != null && signInMethods.isNotEmpty()) {
+                        // Email is already registered, handle accordingly
                         loadingDialogHelper.dismissLoadingDialog()
+                        Log.e("TAG", "Email already registered")
+                        Toast.makeText(this, "Email already registered", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Email is not registered, proceed with user registration
+                        // Perform user registration with Firebase Authentication
+                        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { authTask ->
+                                if (authTask.isSuccessful) {
+                                    val firebaseUser = firebaseAuth.currentUser
+                                    if (firebaseUser != null) {
+                                        // Use the user ID from Firebase Authentication as the key for database storage
+                                        val userId = firebaseUser.uid
 
-                        // Registration failed, display error message
-                        Log.e("TAG", "User registration failed: ${authTask.exception}")
-                        Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
+                                        // Create a UserTb object with the obtained user ID
+                                        val tempUser = UserTb(userId,email, username,mobile, "user")
+                                        val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                                        val firebaseRestManager = FirebaseRestManager<UserTb>()
+
+                                        firebaseRestManager.addItemWithCustomId(tempUser, userId, dbRef) { success, error ->
+                                            if (success) {
+                                                binding.CloseIcon.performClick()
+                                                EnableAndCleanRegisterFields()
+
+                                                showLoading("User Registered!!")
+                                                val imageView = loadingDialogBox.findViewById<ImageView>(R.id.imageView)
+                                                imageView.setImageResource(R.drawable.green_tick)
+                                                val ButtonLayout = loadingDialogBox.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
+                                                ButtonLayout.isVisible = false
+                                                loadingDialogHelper.dismissLoadingDialog()
+                                                loadingDialogBox.show() // Show success message
+
+                                                val handler = Handler()
+                                                handler.postDelayed({
+                                                    loadingDialogBox.dismiss()
+                                                }, 2000)
+                                            } else {
+                                                // Handle failure to add user data to the database
+                                                loadingDialogHelper.dismissLoadingDialog()
+                                                Log.e("TAG", "Error adding user data to the database: $error")
+                                                // Display error message or take appropriate action
+                                            }
+                                        }
+                                    } else {
+                                        loadingDialogHelper.dismissLoadingDialog()
+                                        // Registration failed, display error message
+                                        Log.e("TAG", "User registration failed: ${authTask.exception}")
+                                        Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
+                                    }
+                                } else {
+                                    // Registration failed
+                                    loadingDialogHelper.dismissLoadingDialog()
+                                    Log.e("TAG", "User registration failed: ${authTask.exception}")
+                                    Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                     }
+                } else {
+                    // Error fetching sign-in methods
+                    loadingDialogHelper.dismissLoadingDialog()
+                    Log.e("TAG", "Error fetching sign-in methods: ${fetchTask.exception}")
+                    Toast.makeText(this, "Error fetching sign-in methods", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
     }
 
 
@@ -721,8 +695,6 @@ class LoginAndRegister : AppCompatActivity() {
                         val firebaseRestManager = FirebaseRestManager<UserTb>()
                         firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", userId) { user ->
 
-                            Log.d("encryption", "LoginUser: ${encryption.encrypt("userId",userId)} ")
-
                             if(user!!.utype=="owner"){
                                 val intent = Intent(this,OwnerActivity::class.java)
                                 startActivity(intent)
@@ -780,7 +752,7 @@ class LoginAndRegister : AppCompatActivity() {
         try {
             val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
             if (account != null) {
-                UpdateUI(account)
+                updateUI(account)
             }
         } catch (e: ApiException) {
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
@@ -788,64 +760,115 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
     // this is where we update the UI after Google signin takes place
-    private fun UpdateUI(account: GoogleSignInAccount) {
-        val email = account.email
+//    private fun UpdateUI(account: GoogleSignInAccount) {
+//        val email = account.email
+//
+//        if (email != null) {
+//            // Authenticate the user with Firebase
+//            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+//            FirebaseAuth.getInstance().signInWithCredential(credential)
+//                .addOnCompleteListener(this) { authTask ->
+//                    if (authTask.isSuccessful) {
+//
+//                        // User authenticated with Firebase successfully
+//                        // Check if the user exists in the Firebase database
+//                        val DbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+//                        DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+//                            override fun onDataChange(snapshot: DataSnapshot) {
+//                                if (snapshot.exists()) {
+//                                    for (userSnapshot in snapshot.children) {
+//                                        val user = userSnapshot.getValue(UserTb::class.java)
+//                                        if (user != null) {
+//                                            val username = user.uname
+//                                            if (username != null) {
+//
+//                                                if (user.utype == "owner") {
+//                                                    val intent =
+//                                                        Intent(this@LoginAndRegister, OwnerActivity::class.java)
+//                                                    startActivity(intent)
+//                                                    finish()
+//
+//                                                } else if (user.utype == "cinemaowner") {
+//                                                    intent = Intent(
+//                                                        this@LoginAndRegister,
+//                                                        CinemaOwnerActivity::class.java
+//                                                    )
+//                                                    startActivity(intent)
+//                                                    finish()
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                } else {
+//                                    // User does not exist in Firebase database, save their details
+//                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+//                                    firebaseUser?.let {
+//                                        val uid = it.uid
+//                                        val newUser = UserTb(uid, account.displayName, email, "user")
+//                                        DbRef.child(uid).setValue(newUser)
+//                                    }
+//                                }
+//                            }
+//
+//                            override fun onCancelled(error: DatabaseError) {
+//                                // Error occurred while checking for user existence
+//                                Log.d("Login Error", "Error in Firebase query: ${error.message}")
+//                            }
+//                        })
+//                    } else {
+//                        // Authentication  failed
+//                        Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
+//                    }
+//                }
+//        } else {
+//            // Email address is null
+//            Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
+    private fun updateUI(account: GoogleSignInAccount) {
+        val email = account.email
         if (email != null) {
-            // Authenticate the user with Firebase
+            // Authenticate the user with Firebase using Google credentials
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(this) { authTask ->
                     if (authTask.isSuccessful) {
                         // User authenticated with Firebase successfully
-                        // Check if the user exists in the Firebase database
-                        val DbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
-                        DbRef.orderByChild("uemail").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if (snapshot.exists()) {
-                                    for (userSnapshot in snapshot.children) {
-                                        val user = userSnapshot.getValue(UserTb::class.java)
-                                        if (user != null) {
-                                            val username = user.uname
-                                            if (username != null) {
-                                                Log.d(
-                                                    "encryption",
-                                                    "LoginUser: ${encryption.encrypt("userId", user.uid!!)} "
-                                                )
+                        val firebaseUser = FirebaseAuth.getInstance().currentUser
+                        firebaseUser?.let { user ->
+                            val uid = user.uid
+                            Log.d("TAG", "User UID: $uid")
 
-                                                if (user.utype == "owner") {
-                                                    val intent =
-                                                        Intent(this@LoginAndRegister, OwnerActivity::class.java)
-                                                    startActivity(intent)
-                                                    finish()
+                            // Check if the user already exists in Firebase Authentication
+                            FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
+                                .addOnCompleteListener { signInMethodsTask ->
+                                    if (signInMethodsTask.isSuccessful) {
+                                        val signInMethods = signInMethodsTask.result?.signInMethods ?: emptyList()
+                                        if (signInMethods.isNotEmpty()) {
 
-                                                } else if (user.utype == "cinemaowner") {
-                                                    intent = Intent(
-                                                        this@LoginAndRegister,
-                                                        CinemaOwnerActivity::class.java
-                                                    )
+                                            val firebaseRestManager = FirebaseRestManager<UserTb>()
+                                            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",uid){user->
+                                                if(user!!.utype=="owner"){
+                                                    intent = Intent(this,OwnerActivity::class.java)
                                                     startActivity(intent)
                                                     finish()
                                                 }
+                                                else if(user.utype=="cinemaowner"){
+                                                    intent = Intent(this,OwnerActivity::class.java)
+                                                    startActivity(intent)
+                                                }
                                             }
+
+                                        } else {
+                                            // User does not exist, do not add new data
+                                            Log.d("TAG", "User with email $email does not exist")
                                         }
-                                    }
-                                } else {
-                                    // User does not exist in Firebase database, save their details
-                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
-                                    firebaseUser?.let {
-                                        val uid = it.uid
-                                        val newUser = UserTb(uid, account.displayName, email, "user")
-                                        DbRef.child(uid).setValue(newUser)
+                                    } else {
+                                        Log.d("TAG", "Failed to fetch sign-in methods: ${signInMethodsTask.exception?.message}")
                                     }
                                 }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                // Error occurred while checking for user existence
-                                Log.d("Login Error", "Error in Firebase query: ${error.message}")
-                            }
-                        })
+                        }
                     } else {
                         // Authentication failed
                         Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
@@ -855,7 +878,42 @@ class LoginAndRegister : AppCompatActivity() {
             // Email address is null
             Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
         }
+
     }
+
+    private fun checkPrevLogin(){
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(this)
+        val temp = firebaseAuth.currentUser
+        if(temp!=null){
+                Log.d("TAG", "checkPrevLogin:${temp!!.uid} ")
+
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",temp.uid){user->
+
+                if(user!!.utype=="owner"){
+                    intent = Intent(this,OwnerActivity::class.java)
+                    startActivity(intent)
+                    loadingDialogHelper.dismissLoadingDialog()
+
+                    finish()
+
+                }
+                else if(user.utype=="cinemaowner"){
+                    intent = Intent(this,OwnerActivity::class.java)
+                    startActivity(intent)
+                    loadingDialogHelper.dismissLoadingDialog()
+
+                    finish()
+                }
+            }
+        }
+        else{
+            Log.d("TAG", "checkPrevLogin:bruhhhhhhhhhhhhhhhh ")
+            loadingDialogHelper.dismissLoadingDialog()
+        }
+    }
+
 
     private fun validateRegisterPage1(): Boolean {
         // Validation for name

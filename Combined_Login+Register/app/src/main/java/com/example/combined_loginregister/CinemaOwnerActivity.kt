@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import com.example.combined_loginregister.databinding.ActivityCinemaOwnerBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
@@ -27,9 +26,14 @@ class CinemaOwnerActivity : AppCompatActivity() {
 
         init()
 
+        validateUser()
 
 
+    }
 
+    private fun validateUser(){
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        Log.d("TAG", "validateUser: ${currentUser!!.uid}")
     }
 
     private fun init(){
@@ -64,15 +68,6 @@ class CinemaOwnerActivity : AppCompatActivity() {
 
 
 
-
-
-        val encryption=Encryption(this)
-        if(encryption.decrypt("userId")==null){
-            val warningLoadingHelper = WarningLoadingHelper()
-            warningLoadingHelper.showLoadingDialog(this)
-
-            warningLoadingHelper.dismissLoadingDialog()
-        }
 
 
 
@@ -139,13 +134,9 @@ class CinemaOwnerActivity : AppCompatActivity() {
             auth.signOut()
 
             val encryption = Encryption(this)
+            val intent = Intent(this, LoginAndRegister::class.java)
+            startActivity(intent)
 
-            if(encryption.decrypt("userId")!=""){
-                encryption.removeData("userId")
-                val intent = Intent(this, LoginAndRegister::class.java)
-                startActivity(intent)
-                finish()
-            }
 
         }
 

@@ -63,47 +63,11 @@ class OwnerActivity : AppCompatActivity() {
         setSupportActionBar(binding.ToolBaar)
 
 
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            val newEmail = "arindhimar111@gmail.com"
-            val newPassword = "Dhimar@99"
-
-            val email = user.email
-            Log.d("TAG", "User Email -  $email")
-
-            val credential = EmailAuthProvider.getCredential(email!!, newPassword)
-
-            user.reauthenticate(credential).addOnCompleteListener { reauthTask ->
-                if (reauthTask.isSuccessful) {
-                    Log.d("TAG", "Reauthentication successful.")
-
-                    user.verifyBeforeUpdateEmail(newEmail).addOnCompleteListener { emailUpdateTask ->
-                        if (emailUpdateTask.isSuccessful) {
-                            Log.d("TAG", "User email address updated successfully to $newEmail.")
-
-                            // Email address updated successfully, now update password
-                            user.updatePassword(newPassword).addOnCompleteListener { passwordUpdateTask ->
-                                if (passwordUpdateTask.isSuccessful) {
-                                    Log.d("TAG", "User password updated.")
-                                } else {
-                                    Log.d("TAG", "Failed to update password: ${passwordUpdateTask.exception?.message}")
-                                }
-                            }
-                        } else {
-                            Log.d("TAG", "Failed to update email address: ${emailUpdateTask.exception?.message}")
-                        }
-                    }
-                } else {
-                    Log.d("TAG", "Reauthentication failed: ${reauthTask.exception?.message}")
-                }
-            }
-        } else {
-            Log.d("TAG", "User not logged in.")
-        }
 
 
 
-        Log.d("TAG", "onCreate: ahsdjkhasjkhdkhasjkhdkhaskdh")
+
+//        Log.d("TAG", "onCreate: ahsdjkhasjkhdkhasjkhdkhaskdh")
 
         binding.ToolBaar.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navView)
@@ -162,18 +126,13 @@ class OwnerActivity : AppCompatActivity() {
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
             mGoogleSignInClient.signOut()
-            val encryption = Encryption(this)
 
             val auth = FirebaseAuth.getInstance()
             auth.signOut()
 
+            val intent = Intent(this, LoginAndRegister::class.java)
+            startActivity(intent)
 
-            if(encryption.decrypt("userId")!=""){
-                encryption.removeData("userId")
-                val intent = Intent(this, LoginAndRegister::class.java)
-                startActivity(intent)
-                finish()
-            }
         }
 
     }

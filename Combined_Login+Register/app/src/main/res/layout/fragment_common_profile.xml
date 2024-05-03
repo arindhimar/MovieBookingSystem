@@ -59,7 +59,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Username"
-                    android:enabled="false"
                     android:inputType="text"
                     android:maxLines="1"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
@@ -93,7 +92,6 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email"
                     android:enabled="false"
 
                     android:inputType="textEmailAddress"
@@ -129,7 +127,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:enabled="false"
 
                     android:hint="Password"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
@@ -164,7 +161,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Phone Number"
-                    android:enabled="false"
 
                     android:inputType="phone"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
@@ -182,7 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Enable Controls"
+                android:text="Disable Controls"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:cornerRadius="25dp"
