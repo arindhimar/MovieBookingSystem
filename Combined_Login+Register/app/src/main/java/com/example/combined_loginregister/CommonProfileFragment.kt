@@ -168,6 +168,8 @@ class CommonProfileFragment : Fragment() {
                                                                 successLoadingHelper.hideButtons()
                                                                 successLoadingHelper.updateText("User Data has been Updated!!")
 
+                                                                passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
                                                                 fetchAndSetUserData()
 
                                                                 val handler = Handler()
@@ -178,14 +180,20 @@ class CommonProfileFragment : Fragment() {
 
                                                             } else {
                                                                 Log.e("TAG", "Failed to update data: $error")
+                                                                passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
                                                             }
                                                         }
                                                     } else {
                                                         Log.e("TAG", "Error updating user email.", task.exception)
+                                                        passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
                                                     }
                                                 }
                                         } else {
                                             Log.e("TAG", "Error re-authenticating user.", task.exception)
+                                            passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
                                         }
                                     }
                             }

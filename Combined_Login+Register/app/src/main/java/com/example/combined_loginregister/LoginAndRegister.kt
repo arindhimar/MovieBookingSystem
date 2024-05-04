@@ -195,6 +195,12 @@ class LoginAndRegister : AppCompatActivity() {
             
         }
 
+        binding.sendEmailVerification.setOnClickListener {
+            if(validateRegisterPage1()){
+
+            }
+        }
+
 
         binding.loginbtn2.setOnClickListener {
             // Set the animation target to the front card
@@ -572,6 +578,8 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout5.isVisible = currentVisibility
 
         binding.loginbtn.isVisible = !currentVisibility
+        binding.sendEmailVerification.isVisible = !currentVisibility
+
         binding.loginbtn2.isVisible = currentVisibility
         binding.loginbtn3.isVisible = currentVisibility
         binding.CloseIcon.isVisible = true
@@ -597,6 +605,8 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout5.isVisible = false
 
         binding.loginbtn.isVisible = false
+        binding.sendEmailVerification.isVisible = false
+
         binding.imageView2.isVisible = false
         binding.imageView.isVisible=false
         binding.loginbtn2.isVisible = false
@@ -749,16 +759,9 @@ class LoginAndRegister : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Req_Code) {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val googleUser: GoogleSignInAccount = data!!.getParcelableExtra("googleSignInAccount")!!
-
-            Log.d("TAG", "wtf isbthis: ${googleUser.account}")
 
 
-
-
-
-
-//            handleResult(task)
+            handleResult(task)
         }
     }
 

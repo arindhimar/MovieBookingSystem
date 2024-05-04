@@ -88,32 +88,41 @@ class CinemaOwnerActivity : AppCompatActivity() {
         }
 
         binding.navView.setNavigationItemSelectedListener { menuItem ->
-            // Set checked state for the selected item
-            menuItem.isChecked = true
             // Close the drawer when item is tapped
             binding.drawerLayout.closeDrawers()
+
+            // Set checked state for the selected item
+            menuItem.isChecked = true
+
             // Handle navigation item clicks here
             when (menuItem.itemId) {
                 R.id.nav_cinema_owner_dashboard -> {
                     binding.CinemaOwnerDashBoard.isVisible = true
+                    // Add any additional logic specific to this item
                 }
                 R.id.nav_manage_cinema_admin -> {
                     binding.dashboardManageCinemaAdmin.performClick()
+                    // Add any additional logic specific to this item
                 }
                 R.id.nav_rent_movies -> {
                     binding.dashboardLeaseMovies.performClick()
+                    // Add any additional logic specific to this item
                 }
                 R.id.manage_booking -> {
                     binding.dashboardCinemaOwnerManageBooking.performClick()
+                    // Add any additional logic specific to this item
                 }
                 R.id.nav_menu_account -> {
                     binding.dashboardManageProfile.performClick()
+                    // Add any additional logic specific to this item
                 }
-                R.id.logoutuser-> {
+                R.id.logoutuser -> {
                     binding.logOut.performClick()
+                    // Add any additional logic specific to this item
                 }
                 // Add more cases for other menu items if needed
             }
+
             true
         }
 
@@ -121,15 +130,19 @@ class CinemaOwnerActivity : AppCompatActivity() {
         binding.dashboardManageCinemaAdmin.setOnClickListener {
             replaceFragment(CinemaOwnerManageCInemaAdmin())
         }
+
         binding.dashboardLeaseMovies.setOnClickListener {
             replaceFragment(CinemaOwnerLeaseMovie())
         }
+
         binding.dashboardCinemaOwnerManageBooking.setOnClickListener {
             replaceFragment(CinemaOwnerManageBooking())
         }
+
         binding.dashboardManageProfile.setOnClickListener {
             replaceFragment(CommonProfileFragment())
         }
+
         binding.logOut.setOnClickListener {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")

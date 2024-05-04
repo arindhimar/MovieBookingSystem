@@ -517,9 +517,30 @@
                 android:id="@+id/loginbtn"
                 style="@style/Widget.Material3.Button.IconButton.Outlined"
 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-50dp"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/white"
+
+
+                app:cornerRadius="25dp"
 
                 app:icon="@drawable/baseline_arrow_forward_24"
 
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sendEmailVerification"
+                app:layout_constraintVertical_bias="0.819"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+            <Button
+                android:id="@+id/sendEmailVerification"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+
+                app:icon="@drawable/send_data"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-50dp"
@@ -536,6 +557,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
