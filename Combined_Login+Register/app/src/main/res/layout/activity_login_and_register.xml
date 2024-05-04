@@ -403,8 +403,6 @@
                 app:boxCornerRadiusTopEnd="25dp"
                 app:boxCornerRadiusTopStart="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-                app:counterEnabled="true"
-                app:counterMaxLength="10"
                 app:counterTextColor="@color/m3_textfield_login_page_colors"
                 app:endIconMode="clear_text"
 
@@ -418,6 +416,7 @@
                 app:layout_constraintHorizontal_bias="0.52"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/imageView"
+
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.47000003"
                 app:startIconDrawable="@drawable/baseline_person_24"

@@ -20,7 +20,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import com.example.combined_loginregister.databinding.ActivityLoginAndRegisterBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -31,7 +30,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
@@ -379,10 +377,13 @@ class LoginAndRegister : AppCompatActivity() {
 
                                                 successLoadingHelper.showLoadingDialog(this)
                                                 successLoadingHelper.hideButtons()
-                                                successLoadingHelper.updateText("User Registered!!")
+                                                successLoadingHelper.updateText("User Registered!!\nA link has been sent to the mail , verify the email to start using the application!!")
                                                 val handler = Handler()
                                                 handler.postDelayed({
                                                     successLoadingHelper.dismissLoadingDialog()
+                                                    firebaseAuth.currentUser!!.sendEmailVerification().addOnCompleteListener {
+                                                        Log.d("TAG", "registerUser:email sent!! ")
+                                                    }
                                                 }, 2000)
                                             } else {
                                                 // Handle failure to add user data to the database
@@ -737,6 +738,10 @@ class LoginAndRegister : AppCompatActivity() {
         startActivityForResult(signInIntent, Req_Code)
     }
 
+
+
+
+
     // onActivityResult() function : this is where
     // we provide the task and data for the Google Account
     @Deprecated("Deprecated in Java")
@@ -744,7 +749,16 @@ class LoginAndRegister : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Req_Code) {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleResult(task)
+            val googleUser: GoogleSignInAccount = data!!.getParcelableExtra("googleSignInAccount")!!
+
+            Log.d("TAG", "wtf isbthis: ${googleUser.account}")
+
+
+
+
+
+
+//            handleResult(task)
         }
     }
 
@@ -758,7 +772,6 @@ class LoginAndRegister : AppCompatActivity() {
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun updateUI(account: GoogleSignInAccount) {
         val email = account.email
         if (email != null) {
@@ -775,17 +788,24 @@ class LoginAndRegister : AppCompatActivity() {
 
                             val firebaseRestManager = FirebaseRestManager<UserTb>()
                             firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
+                                if(user!=null) {
+                                    if (user!!.utype == "owner") {
+                                        val intent = Intent(this, OwnerActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    } else if (user.utype == "cinemaowner") {
+                                        intent = Intent(
+                                            this@LoginAndRegister,
+                                            CinemaOwnerActivity::class.java
+                                        )
+                                        startActivity(intent)
+                                        finish()
 
-                                if(user!!.utype=="owner"){
-                                    val intent = Intent(this,OwnerActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                    }
                                 }
-                                else if(user.utype=="cinemaowner"){
-                                    intent = Intent(this@LoginAndRegister,CinemaOwnerActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
-
+                                else{
+                                    firebaseAuth.signOut()
+                                    mGoogleSignInClient.signOut()
                                 }
 
                             }
@@ -819,22 +839,31 @@ class LoginAndRegister : AppCompatActivity() {
                     temp.uid
                 ) { user ->
 
-                    if (user!!.utype == "owner") {
-                        intent = Intent(this, OwnerActivity::class.java)
-                        startActivity(intent)
+                    if(user!=null) {
+
+                        if (user.utype == "owner") {
+                            intent = Intent(this, OwnerActivity::class.java)
+                            startActivity(intent)
+                            loadingDialogHelper.dismissLoadingDialog()
+
+                            finish()
+
+                        } else if (user.utype == "cinemaowner") {
+                            intent = Intent(this, CinemaOwnerActivity::class.java)
+                            startActivity(intent)
+                            loadingDialogHelper.dismissLoadingDialog()
+
+                            finish()
+                        } else {
+                            loadingDialogHelper.dismissLoadingDialog()
+
+                        }
+
+                    }
+                    else{
                         loadingDialogHelper.dismissLoadingDialog()
-
-                        finish()
-
-                    } else if (user.utype == "cinemaowner") {
-                        intent = Intent(this, CinemaOwnerActivity::class.java)
-                        startActivity(intent)
-                        loadingDialogHelper.dismissLoadingDialog()
-
-                        finish()
-                    } else {
-                        loadingDialogHelper.dismissLoadingDialog()
-
+                        firebaseAuth.signOut()
+                        mGoogleSignInClient.signOut()
                     }
                 }
             }

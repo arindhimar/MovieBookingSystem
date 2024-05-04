@@ -146,10 +146,40 @@ class CommonProfileFragment : Fragment() {
                                 userData.reauthenticate(credential)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
-                                            userData.updateEmail(newEmail)
+                                            userData.verifyBeforeUpdateEmail(newEmail)
                                                 .addOnCompleteListener { task ->
                                                     if (task.isSuccessful) {
-                                                        Log.d("TAG", "User email updated.")
+                                                        val database = FirebaseDatabase.getInstance()
+                                                        val dbRef = database.getReference("moviedb/usertb")
+
+                                                        val newData = UserTb(
+                                                            userId,
+                                                            binding.textInputLayout1.editText!!.text.toString(),
+                                                            binding.textInputLayout4.editText!!.text.toString(),
+                                                            user.utype
+                                                        )
+
+                                                        firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
+                                                            if (success) {
+                                                                Log.d("TAG", "Data updated successfully!")
+                                                                loadingDialogHelper.dismissLoadingDialog()
+                                                                val successLoadingHelper = SuccessLoadingHelper()
+                                                                successLoadingHelper.showLoadingDialog(requireContext())
+                                                                successLoadingHelper.hideButtons()
+                                                                successLoadingHelper.updateText("User Data has been Updated!!")
+
+                                                                fetchAndSetUserData()
+
+                                                                val handler = Handler()
+                                                                handler.postDelayed({
+                                                                    successLoadingHelper.dismissLoadingDialog()
+                                                                    ToggleControls()
+                                                                }, 2000)
+
+                                                            } else {
+                                                                Log.e("TAG", "Failed to update data: $error")
+                                                            }
+                                                        }
                                                     } else {
                                                         Log.e("TAG", "Error updating user email.", task.exception)
                                                     }
@@ -169,7 +199,8 @@ class CommonProfileFragment : Fragment() {
                         val newData = UserTb(
                             userId,
                             binding.textInputLayout1.editText!!.text.toString(),
-                            binding.textInputLayout4.editText!!.text.toString()
+                            binding.textInputLayout4.editText!!.text.toString(),
+                            user.utype
                         )
 
                         firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
