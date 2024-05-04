@@ -3,29 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainContainer"
-    android:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
-        android:layout_centerInParent="true"
-        android:id="@+id/card_front"
-        android:layout_width="320dp"
-        android:layout_height="520dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.5"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp">
+
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-
-            android:layout_height="match_parent">
+            android:layout_width="320dp"
+            android:layout_centerInParent="true"
+            android:layout_height="520dp">
             <!-- TextInputLayout 1 for Name  -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout1"
@@ -36,10 +23,10 @@
                 android:layout_marginRight="25dp"
                 app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
                 app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
 
                 app:counterTextColor="@color/m3_textfield_login_page_colors"
@@ -68,18 +55,18 @@
             <!-- TextInputLayout 2  Email -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout2"
-                android:hint="Email Address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="25dp"
+                android:hint="Email Address"
                 app:boxBackgroundColor="#00ECECF3"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
                 app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.52"
@@ -101,7 +88,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout4"
                 android:layout_width="0dp"
@@ -111,10 +97,10 @@
                 android:layout_marginRight="25dp"
                 app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
                 app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
                 app:endIconMode="clear_text"
                 app:endIconScaleType="centerInside"
@@ -136,7 +122,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-        <!--Enable Editing Button-->
+            <!--Enable Editing Button-->
 
 
             <!-- Register Button -->
@@ -181,7 +167,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </androidx.cardview.widget.CardView>
 
 
 

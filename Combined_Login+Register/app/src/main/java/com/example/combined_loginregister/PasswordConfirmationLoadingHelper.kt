@@ -7,13 +7,14 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
+import com.google.android.material.textfield.TextInputLayout
 
-class SuccessLoadingHelper {
+class PasswordConfirmationLoadingHelper {
     private lateinit var dialog: AlertDialog
     private lateinit var view:View
     fun showLoadingDialog(context: Context) {
         val inflater = LayoutInflater.from(context)
-        view = inflater.inflate(R.layout.success_dialog, null)
+        view = inflater.inflate(R.layout.password_verification_dialog, null)
 
         val builder = AlertDialog.Builder(context)
         builder.setView(view)
@@ -23,14 +24,17 @@ class SuccessLoadingHelper {
         dialog.show()
     }
 
-    fun hideButtons(){
-        val btnLayout = view.findViewById<LinearLayout>(R.id.CustomDialogButtonLayout)
-        btnLayout.isVisible = false
+    fun getPassword():String{
+        val password = view.findViewById<TextInputLayout>(R.id.textInputLayout3)
+        return password.editText!!.text.toString()
     }
-    fun updateText(message:String){
-        val txt = view.findViewById<TextView>(R.id.textView2)
-        txt.text = message
+
+    fun getView():View{
+        return view
     }
+
+
+
     fun dismissLoadingDialog() {
         if (dialog.isShowing) {
             dialog.dismiss()
