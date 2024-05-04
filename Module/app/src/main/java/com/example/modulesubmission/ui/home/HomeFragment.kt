@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
             val databaseReference = Firebase.database.getReference("arindb/usertb")
 
             //first add data to firebase authentication
-            firebaseAuth.createUserWithEmailAndPassword("alvfcoc@gmail.com","Try@99").addOnCompleteListener { authtask->
+            firebaseAuth.createUserWithEmailAndPassword("mralvf@gmail.com","Try@99").addOnCompleteListener { authtask->
                 if(authtask.isSuccessful){
                     firebaseAuth.currentUser!!.sendEmailVerification()
                     val tempUser = UserTb(firebaseAuth.currentUser!!.uid,"arin","owner")
