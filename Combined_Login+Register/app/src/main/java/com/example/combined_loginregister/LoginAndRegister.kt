@@ -744,8 +744,9 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
     private fun signInGoogle() {
-        val signInIntent: Intent = mGoogleSignInClient.signInIntent
-        startActivityForResult(signInIntent, Req_Code)
+        // val auth = FirebaseAuth.getInstance()
+       val signInIntent: Intent = mGoogleSignInClient.signInIntent
+      startActivityForResult(signInIntent, Req_Code)
     }
 
 
