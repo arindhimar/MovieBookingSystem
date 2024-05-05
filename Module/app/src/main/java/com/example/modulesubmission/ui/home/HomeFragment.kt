@@ -51,7 +51,6 @@ class HomeFragment : Fragment() {
 
         //adding data
         binding.addOwnerData.setOnClickListener {
-            val tempData = UserTb("1","arin","owner")
             val databaseReference = Firebase.database.getReference("arindb/usertb")
 
             //first add data to firebase authentication
