@@ -15,6 +15,7 @@ import com.example.modulesubmission.R
 import com.example.modulesubmission.databinding.FragmentHomeBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
 
 class HomeFragment : Fragment() {
@@ -43,6 +44,10 @@ class HomeFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         fetchOwnerData()
 
+//        updateOwnerData()
+//        delelteData()
+
+
 
         //adding data
         binding.addOwnerData.setOnClickListener {
@@ -61,6 +66,8 @@ class HomeFragment : Fragment() {
                             firebaseAuth.signOut()
 
                             fetchOwnerData()
+
+
                         }
                         else{
                             Log.e("TAG", "onCreateView: ${error!!.message}", )
@@ -78,18 +85,62 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    private fun deleteOwnerData(tempId:String) {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("arindb/usertb")
+        firebaseRestManager.deleteItem(databaseReference, tempId) { success ->
+            if (success) {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "Data deleted!!", Toast.LENGTH_SHORT).show()
+                }
+                fetchOwnerData()
+            } else {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "Failed to delete data", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+    }
+
+
+    private fun updateOwnerData() {
+        firebaseRestManager.updateItem(dbRef = FirebaseDatabase.getInstance().getReference("arindb/usertb"),"o7i9dGu3ArS9yITdcQdwVFPgRAb2",UserTb("o7i9dGu3ArS9yITdcQdwVFPgRAb2","updatedName","CinemaOwner")){success,error->
+            if(success){
+                Toast.makeText(requireContext(),"Data updated!!",Toast.LENGTH_SHORT).show()
+                fetchOwnerData()
+            }
+            else{
+                Log.e("TAG", "updateOwnerData:${error!!.message}", )
+            }
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private fun fetchOwnerData(){
-        binding.OwnerCardsHere.removeAllViews()
+        requireActivity().runOnUiThread {
+
+            binding.OwnerCardsHere.removeAllViews()
+        }
         firebaseRestManager.getAllItems(UserTb::class.java,"arindb/usertb"){items->
             if(items.isNotEmpty()){
-                for(item in items){
-                    val card = layoutInflater.inflate(R.layout.display_card, binding.OwnerCardsHere, false)
+                requireActivity().runOnUiThread {
 
-                    val txt = card.findViewById<TextView>(R.id.text)
-                    txt.text = "Name : ${item.userName}\nUserType : ${item.userType}"
+                    for (item in items) {
+                        val card = layoutInflater.inflate(
+                            R.layout.display_card,
+                            binding.OwnerCardsHere,
+                            false
+                        )
 
-                    binding.OwnerCardsHere.addView(card)
+                        val txt = card.findViewById<TextView>(R.id.text)
+                        txt.text = "Name : ${item.userName}\nUserType : ${item.userType}"
+
+                        card.setOnClickListener {
+                            deleteOwnerData(item.userId.toString())
+                        }
+
+//                        binding.OwnerCardsHere.addView(card)
+                    }
                 }
             }
         }
