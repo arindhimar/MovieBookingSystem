@@ -227,8 +227,6 @@ class ManageMovies : Fragment() {
 
 
     private fun uploadImageToFirebaseStorage(imageUri: MutableList<Uri>?) {
-
-
         // Show loading dialog
         val loadingScreen = LoadingDialogHelper()
         loadingScreen.showLoadingDialog(requireContext())
@@ -305,7 +303,6 @@ class ManageMovies : Fragment() {
                             ).show()
                             loadingScreen.dismissLoadingDialog()
                             alertDialog.dismiss() // Close the alert dialog
-
                         }
                     )
                 }

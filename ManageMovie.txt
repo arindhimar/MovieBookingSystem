@@ -1,57 +1,6 @@
-package com.example.modulesubmission.ui.gallery
-
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.example.modulesubmission.FirebaseRestManager
-import com.example.modulesubmission.FirebaseStorageHelper
-import com.example.modulesubmission.R
-import com.example.modulesubmission.databinding.FragmentGalleryBinding
-import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.database.FirebaseDatabase
-
 private const val PICK_IMAGES_REQUEST = 1
 
-class GalleryFragment : Fragment() {
-
-    private var _binding: FragmentGalleryBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
     private var selectedUris: MutableList<Uri>? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val galleryViewModel =
-            ViewModelProvider(this)[GalleryViewModel::class.java]
-
-        _binding = FragmentGalleryBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        displayMovies()
-
-
-        binding.btnAddMovie.setOnClickListener{
-            openGallery()
-        }
-
-        return root
-    }
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -196,10 +145,3 @@ class GalleryFragment : Fragment() {
             }
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-}
