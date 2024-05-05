@@ -141,21 +141,15 @@ class FirebaseRestManager<T> {
     }
 
 
-    fun deleteItem(itemId: String) {
-        val request = Request.Builder()
-            .url("$firebaseUrl/items/$itemId.json")
-            .delete()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
+    fun deleteItem(dbRef: DatabaseReference, itemId: String, callback: (Boolean) -> Unit) {
+        dbRef.child(itemId).removeValue()
+            .addOnSuccessListener {
+                callback(true) // Indicate deletion success
+            }
+            .addOnFailureListener { e ->
                 e.printStackTrace()
+                callback(false) // Indicate deletion failure
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                println("Delete Item Response: ${response.body?.string()}")
-            }
-        })
     }
 
     private inline fun <reified R> String.parseItems(): List<R> {
