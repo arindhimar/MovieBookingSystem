@@ -17,7 +17,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.database
 
-class HomeFragment : Fragment() {
+class 0HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
         //adding data
         binding.addOwnerData.setOnClickListener {
             val tempData = UserTb("1","arin","owner")
-            val databaseReference = Firebase.database.getReference("arindb/usertb")
+            val databaseReference = Firebase.database.getReference("pratignadb/usertb")
 
             //first add data to firebase authentication
             firebaseAuth.createUserWithEmailAndPassword("alvfcoc@gmail.com","Try@99").addOnCompleteListener { authtask->
