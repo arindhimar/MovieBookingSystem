@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.combined_loginregister.databinding.ActivityCinemaOwnerBinding
@@ -24,6 +25,8 @@ class CinemaOwnerActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCinemaOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         validateUser()
 
         init()

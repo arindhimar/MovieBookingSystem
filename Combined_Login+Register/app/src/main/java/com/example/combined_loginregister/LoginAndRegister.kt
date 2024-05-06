@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import com.example.combined_loginregister.databinding.ActivityLoginAndRegisterBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -85,6 +86,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding = ActivityLoginAndRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
 
