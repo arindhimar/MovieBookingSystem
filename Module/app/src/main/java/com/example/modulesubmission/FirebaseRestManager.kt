@@ -1,4 +1,4 @@
-package com.example.combined_loginregister
+package com.example.modulesubmission
 
 import android.util.Log
 import android.widget.Toast
@@ -151,6 +151,7 @@ class FirebaseRestManager<T> {
                 callback(false) // Indicate deletion failure
             }
     }
+
 
     private inline fun <reified R> String.parseItems(): List<R> {
         val items = mutableListOf<R>()

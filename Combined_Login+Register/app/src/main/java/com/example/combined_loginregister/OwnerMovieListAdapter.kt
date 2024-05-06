@@ -48,7 +48,6 @@ class OwnerMovieListAdapter(private val movieList: ArrayList<MovieTB>) : Recycle
                         Glide.with(holder.itemView.context)
                             .load(item2.mlink)
                             .into(holder.MainPoster)
-
                         break
                     }
                 }
