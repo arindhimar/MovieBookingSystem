@@ -240,7 +240,7 @@ class ManageMovies : Fragment() {
         val movieId = dbRef.push().key
         // Create a UserTb object with the obtained user ID
         val tempMovie = MovieTB(movieId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString())
-        firebaseRestManager.addItem(tempMovie, dbRef) { success, error ->
+        firebaseRestManager.addItemWithCustomId(tempMovie,movieId!!, dbRef) { success, error ->
             if (success) {
                 // Movie added successfully, now upload the image
                 for (i in 0 until selectedUris!!.size) {

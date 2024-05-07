@@ -13,6 +13,15 @@
                 android:title="Cinema Owner DashBoard"
 
                 />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_manage_cinema"
+                android:icon="@drawable/ic_menu_screenboth"
+                android:title="Manage Cinema"
+
+                />
+
             <item
                 android:checkable="true"
                 android:id="@+id/nav_manage_cinema_admin"

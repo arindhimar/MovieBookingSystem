@@ -103,6 +103,9 @@ class CinemaOwnerActivity : AppCompatActivity() {
                     binding.CinemaOwnerDashBoard.isVisible = true
                     // Add any additional logic specific to this item
                 }
+                R.id.nav_manage_cinema->{
+                    binding.dashboardManageCinema.performClick()
+                }
                 R.id.nav_manage_cinema_admin -> {
                     binding.dashboardManageCinemaAdmin.performClick()
                     // Add any additional logic specific to this item
@@ -127,6 +130,10 @@ class CinemaOwnerActivity : AppCompatActivity() {
             }
 
             true
+        }
+
+        binding.dashboardManageCinema.setOnClickListener {
+            replaceFragment(CinemaOwnerManageCinema())
         }
 
 
