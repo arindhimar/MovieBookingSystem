@@ -247,7 +247,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="90dp"
                 android:layout_marginRight="25dp"
                 android:visibility="invisible"
                 app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
@@ -281,13 +281,36 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <Button
+                android:id="@+id/sendEmailVerification"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+
+                app:icon="@drawable/send_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-190dp"
+                android:layout_marginBottom="16dp"
+
+
+                android:textColor="@color/white"
+
+                app:cornerRadius="25dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout4"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E" />
+
+
             <!-- TextInputLayout 5 -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:layout_marginTop="-120dp"
+                android:layout_marginTop="-40dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginBottom="100dp"
                 android:visibility="invisible"
@@ -304,7 +327,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayout4"
+                app:layout_constraintTop_toBottomOf="@id/sendEmailVerification"
                 app:passwordToggleEnabled="false"
                 app:passwordToggleTint="@color/login_button"
                 app:startIconDrawable="@drawable/otp"
@@ -326,13 +349,13 @@
             <Button
                 android:id="@+id/loginbtn2"
                 style="@style/Widget.Material3.Button.IconButton.Outlined"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout5"
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-50dp"
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/white"
-
+                android:layout_marginTop="-70dp"
                 app:cornerRadius="25dp"
 
                 app:icon="@drawable/baseline_arrow_back_24"
@@ -341,7 +364,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayout5"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
 
@@ -530,32 +552,11 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sendEmailVerification"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
                 app:layout_constraintVertical_bias="0.819"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
 
-            <Button
-                android:id="@+id/sendEmailVerification"
-                style="@style/Widget.Material3.Button.IconButton.Outlined"
-
-                app:icon="@drawable/send_data"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-50dp"
-                android:layout_marginBottom="16dp"
-
-
-                android:textColor="@color/white"
-
-                app:cornerRadius="25dp"
-
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayout3"
-                app:rippleColor="#90FFFFFF"
-                app:strokeColor="#1E1E8E" />
 
 
 

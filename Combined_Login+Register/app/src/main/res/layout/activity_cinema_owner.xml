@@ -70,9 +70,50 @@
                     android:layout_gravity="center_horizontal"
                     android:columnOrderPreserved="false">
 
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="5dp"
+                        app:cardBackgroundColor="@color/gray"
+                        android:layout_margin="10dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:animateLayoutChanges="true"
+                        android:clipChildren="false">
+
+
+                        <LinearLayout
+                            android:id="@+id/dashboard_manage_cinema"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            >
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/movie_icon_dashboard"
+                                android:layout_marginTop="18dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:text="Manage \n Cinema"
+                                android:fontFamily="@font/googlesans_bold"
+                                android:textSize="18sp"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="20dp"/>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView"
                         android:layout_width="170dp"
                         android:layout_height="170dp"
                         app:cardCornerRadius="12dp"
@@ -113,6 +154,8 @@
                         </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
+
+
 
 
                     <androidx.cardview.widget.CardView

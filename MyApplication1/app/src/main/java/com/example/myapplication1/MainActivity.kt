@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(),PaymentResultListener {
            options.put("description", "*************************")
            options.put("theme.color", "#FFBB86FC");
            options.put("currency", "INR");
-           options.put("amount", amount * 10);
+           options.put("amount", amount * 100)
 
 
            val retryObj = JSONObject();
@@ -64,12 +64,12 @@ class MainActivity : AppCompatActivity(),PaymentResultListener {
     }
 
     override fun onPaymentSuccess(p0: String?) {
-       txt.text=p0
+       txt.text="success payment"
         txt.setTextColor(Color.GREEN)
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
-        txt.text=p1
+        txt.text="payment fail"
         txt.setTextColor(Color.RED)
     }
 }

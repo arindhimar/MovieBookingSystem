@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.combined_loginregister.Encryption
 import com.example.combined_loginregister.FirebaseRestManager
 import com.example.combined_loginregister.ListAllUserAdapter
 import com.example.combined_loginregister.LoadingDialogHelper
@@ -24,6 +25,7 @@ import com.example.combined_loginregister.UserTb
 
 import com.example.combined_loginregister.databinding.FragmentManageCinemaownerBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -44,6 +46,7 @@ class ManageCinemaOwner : Fragment() {
     lateinit var binding: FragmentManageCinemaownerBinding
     lateinit var dialogView:View
     lateinit var alertDialog:AlertDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +97,7 @@ class ManageCinemaOwner : Fragment() {
 
     }
 
-    fun registerUser() {
+    private fun registerUser() {
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance()
 
@@ -116,6 +119,8 @@ class ManageCinemaOwner : Fragment() {
 
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(requireContext())
+
+
 
         // Check if the email is already registered
         firebaseAuth.fetchSignInMethodsForEmail(email.toString())
@@ -144,16 +149,23 @@ class ManageCinemaOwner : Fragment() {
                                     val firebaseRestManager = FirebaseRestManager<UserTb>()
 
                                     firebaseRestManager.addItemWithCustomId(tempUser, userId, dbRef) { success, error ->
+
                                         if (success) {
+                                            firebaseAuth.currentUser!!.sendEmailVerification()
                                             loadingDialogHelper.dismissLoadingDialog()
                                             val successLoadingHelper = SuccessLoadingHelper()
-                                            successLoadingHelper.hideButtons()
                                             successLoadingHelper.showLoadingDialog(requireContext())
+                                            successLoadingHelper.hideButtons()
+                                            successLoadingHelper.updateText("User bas been registered!!")
+
 
                                             val handler = Handler()
                                             handler.postDelayed({
                                                 successLoadingHelper.dismissLoadingDialog()
                                                 displayCinemaOwner()
+                                                alertDialog.dismiss()
+                                                val encryption = Encryption(requireContext())
+                                                firebaseAuth.signInWithEmailAndPassword(encryption.decrypt("userEmail"),encryption.decrypt("userPassword"))
                                             }, 2000)
                                         } else {
                                             // Handle failure to add user data to the database

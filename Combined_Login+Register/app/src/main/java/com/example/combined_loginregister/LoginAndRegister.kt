@@ -197,11 +197,7 @@ class LoginAndRegister : AppCompatActivity() {
             
         }
 
-        binding.sendEmailVerification.setOnClickListener {
-            if(validateRegisterPage1()){
 
-            }
-        }
 
 
         binding.loginbtn2.setOnClickListener {
@@ -389,9 +385,13 @@ class LoginAndRegister : AppCompatActivity() {
                                                 val handler = Handler()
                                                 handler.postDelayed({
                                                     successLoadingHelper.dismissLoadingDialog()
-                                                    firebaseAuth.currentUser!!.sendEmailVerification().addOnCompleteListener {
-                                                        Log.d("TAG", "registerUser:email sent!! ")
-                                                    }
+                                                    firebaseAuth.currentUser!!.sendEmailVerification()
+                                                        .addOnCompleteListener {
+                                                            Log.d(
+                                                                "TAG",
+                                                                "registerUser:email sent!! "
+                                                            )
+                                                        }
                                                 }, 2000)
                                             } else {
                                                 // Handle failure to add user data to the database
@@ -580,7 +580,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout5.isVisible = currentVisibility
 
         binding.loginbtn.isVisible = !currentVisibility
-        binding.sendEmailVerification.isVisible = !currentVisibility
+        binding.sendEmailVerification.isVisible = currentVisibility
 
         binding.loginbtn2.isVisible = currentVisibility
         binding.loginbtn3.isVisible = currentVisibility
@@ -707,6 +707,11 @@ class LoginAndRegister : AppCompatActivity() {
                         // access other details like displayName, photoUrl, etc. as needed
                         val firebaseRestManager = FirebaseRestManager<UserTb>()
                         firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", userId) { user ->
+
+                            val encryption = Encryption(this)
+                            encryption.encrypt("userId",userId)
+                            encryption.encrypt("userEmail",userLogin)
+                            encryption.encrypt("userPassword",password)
 
                             if(user!!.utype=="owner"){
                                 val intent = Intent(this,OwnerActivity::class.java)

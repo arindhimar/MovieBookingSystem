@@ -38,8 +38,7 @@
                 app:boxCornerRadiusBottomStart="25dp"
                 app:boxCornerRadiusBottomEnd="25dp"
                 app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-                app:counterEnabled="true"
-                app:counterMaxLength="10"
+
                 app:counterTextColor="@color/m3_textfield_login_page_colors"
                 app:endIconMode="clear_text"
                 app:endIconScaleType="centerInside"
