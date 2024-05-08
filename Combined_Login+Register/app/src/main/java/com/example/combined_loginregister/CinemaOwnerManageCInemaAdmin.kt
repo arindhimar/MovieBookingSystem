@@ -5,6 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.combined_loginregister.databinding.FragmentCinemaOwnerManageCInemaAdminBinding
+import com.example.combined_loginregister.databinding.FragmentCinemaOwnerManageCinemaBinding
+import com.google.firebase.auth.FirebaseAuth
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +25,8 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var binding: FragmentCinemaOwnerManageCInemaAdminBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +39,50 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(
-            R.layout.fragment_cinema_owner_manage_c_inema_admin,
+        binding = FragmentCinemaOwnerManageCInemaAdminBinding.inflate(
+            layoutInflater,
             container,
             false
         )
+
+        getOwnedCinemaList(binding.cinemaAdminHereForCO)
+
+        binding.btnOpenAddCinemaAdminDialog.setOnClickListener {
+        }
+
+
+
+        return binding.root
     }
+
+    private fun getOwnedCinemaList(cinemaAdminHereForCO: RecyclerView) {
+        val firebaseRestManager = FirebaseRestManager<CinemaOwnerTb>()
+        firebaseRestManager.getAllItems(CinemaOwnerTb::class.java,"moviedb/CinemaOwnerTb"){items->
+            if(items.isNotEmpty()){
+                val onwedCinemaList = ArrayList<CinemaTb>()
+                for(item in items){
+                    if(item.uid==FirebaseAuth.getInstance().currentUser!!.uid){
+                        val firebaseRestManager2 = FirebaseRestManager<CinemaTb>()
+
+                        firebaseRestManager2.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",item.cinemaId!!){tempCinemaItem->
+                            onwedCinemaList.add(tempCinemaItem!!)
+                        }
+                    }
+
+                }
+
+                val adapter = CinemaOwnerCinemaListAdapter(onwedCinemaList)
+
+                cinemaAdminHereForCO.adapter = adapter
+                cinemaAdminHereForCO.layoutManager = LinearLayoutManager(requireContext())
+
+            }
+        }
+
+    }
+
 
     companion object {
         /**

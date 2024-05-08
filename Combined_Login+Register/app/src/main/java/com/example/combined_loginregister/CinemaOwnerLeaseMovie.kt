@@ -51,6 +51,8 @@ class CinemaOwnerLeaseMovie : Fragment() {
 
         binding = FragmentCinemaOwnerLeaseMovieBinding.inflate(layoutInflater, container, false)
 
+        getLeasedMovies(binding.LeasedMovieCardsHereForCO)
+
         binding.btnOpenAddLeaseMovieDialog.setOnClickListener {
             // Inflate the custom layout
             dialogView = layoutInflater.inflate(R.layout.addleasemoviesdialog, null)
@@ -75,12 +77,11 @@ class CinemaOwnerLeaseMovie : Fragment() {
         return binding.root
     }
 
-
     private fun getUnleasedMovies(recyclerView: RecyclerView) {
         val loadingScreen = LoadingDialogHelper()
         loadingScreen.showLoadingDialog(requireContext())
 
-        //get data of all the move in movietb
+        // Get data of all the movies in movietb
         val movieClass = MovieTB::class.java
         val node = "moviedb/movietb"
 
@@ -90,82 +91,119 @@ class CinemaOwnerLeaseMovie : Fragment() {
                 loadingScreen.dismissLoadingDialog()
 
                 if (items.isNotEmpty()) {
-                    val movieList = ArrayList<MovieTB>(items)
-                    val adapter = OwnerMovieListAdapter(movieList)
-                    adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
-                        override fun onItemClick(movie: MovieTB) {
-                            Log.d("ye leeee movie ka data", "onItemClick: ${movie.mid}")
+                    val movieList = ArrayList<MovieTB>()
 
-                            val yesOrNoLoadingHelper = YesOrNoLoadingHelper()
-                            yesOrNoLoadingHelper.showLoadingDialog(requireContext())
-                            yesOrNoLoadingHelper.updateCheckBoxText("Do you agree with terms and condition for leasing the movie??")
-                            yesOrNoLoadingHelper.hideText()
-
-
-                            val view = yesOrNoLoadingHelper.getView()
-
-                            val yesBtn = view.findViewById<Button>(R.id.btn_yes)
-                            val noBtn = view.findViewById<Button>(R.id.btn_no)
-
-                            noBtn.setOnClickListener {
-                                yesOrNoLoadingHelper.dismissLoadingDialog()
+                    // Iterate through each movie item
+                    for (tempMovieItem in items) {
+                        val firebaseRestManager2 = FirebaseRestManager<LeaseMovieTb>()
+                        firebaseRestManager2.getAllItems(
+                            LeaseMovieTb::class.java,
+                            "moviedb/leasemovietb"
+                        ) { leaseMovies ->
+                            // Check if the movie is not leased by the current user
+                            val isLeased = leaseMovies.any {
+                                it.userId == FirebaseAuth.getInstance().currentUser?.uid && it.movieId == tempMovieItem.mid
+                            }
+                            if (!isLeased) {
+                                movieList.add(tempMovieItem)
+                                Log.d("ye leeee movie ka data", "onItemClick: ashdjashdkjashjdksahd")
                             }
 
-                            yesBtn.setOnClickListener {
-                                val checkBox = view.findViewById<CheckBox>(R.id.checkBox)
-                                if(checkBox.isChecked){
-                                    yesOrNoLoadingHelper.dismissLoadingDialog()
 
-                                    val loadingHelper = LoadingDialogHelper()
-                                    loadingScreen.showLoadingDialog(requireContext())
+                                Log.d("TAG", "getUnleasedMovies: mkc ashdkhaskjdhkjashdjkhasjkdh")
+
+                                // Set up RecyclerView adapter and layout manager
+                                val adapter = OwnerMovieListAdapter(movieList)
+                                adapter.setOnItemClickListener(object :
+                                    OwnerMovieListAdapter.OnItemClickListener {
+                                    override fun onItemClick(movie: MovieTB) {
+                                        Log.d("ye leeee movie ka data", "onItemClick: ${movie.mid}")
+
+                                        val yesOrNoLoadingHelper = YesOrNoLoadingHelper()
+                                        yesOrNoLoadingHelper.showLoadingDialog(requireContext())
+                                        yesOrNoLoadingHelper.updateCheckBoxText("Do you agree with terms and condition for leasing the movie??")
+                                        yesOrNoLoadingHelper.hideText()
 
 
-                                    val firebaseRestManager = FirebaseRestManager<LeaseMovieTb>()
-                                    val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/leasemovietb")
-                                    val tempId = dbRef.push().key
-                                    val tempData = LeaseMovieTb(tempId,movie.mid,FirebaseAuth.getInstance().currentUser!!.uid)
-                                    firebaseRestManager.addItem(tempData,dbRef){success,error->
-                                        if(success){
-                                            loadingHelper.dismissLoadingDialog()
-                                            val successLoadingHelper = SuccessLoadingHelper()
-                                            successLoadingHelper.showLoadingDialog(requireContext())
-                                            successLoadingHelper.hideButtons()
-                                            successLoadingHelper.updateText("Congratulations you have successfully leased the movie!!")
+                                        val view = yesOrNoLoadingHelper.getView()
 
-                                            val handler = Handler()
-                                            handler.postDelayed({
-                                                successLoadingHelper.dismissLoadingDialog()
-                                            },2000)
+                                        val yesBtn = view.findViewById<Button>(R.id.btn_yes)
+                                        val noBtn = view.findViewById<Button>(R.id.btn_no)
 
-                                        }
-                                        else{
-                                            loadingHelper.dismissLoadingDialog()
-                                            Log.e("Error while adding to the db", "${error!!.message}: ", )
+                                        noBtn.setOnClickListener {
                                             yesOrNoLoadingHelper.dismissLoadingDialog()
+                                        }
+
+                                        yesBtn.setOnClickListener {
+                                            val checkBox = view.findViewById<CheckBox>(R.id.checkBox)
+                                            if (checkBox.isChecked) {
+                                                yesOrNoLoadingHelper.dismissLoadingDialog()
+
+
+
+
+                                                val firebaseRestManager =
+                                                    FirebaseRestManager<LeaseMovieTb>()
+                                                val dbRef = FirebaseDatabase.getInstance()
+                                                    .getReference("moviedb/leasemovietb")
+                                                val tempId = dbRef.push().key
+                                                val tempData = LeaseMovieTb(
+                                                    tempId,
+                                                    movie.mid,
+                                                    FirebaseAuth.getInstance().currentUser!!.uid
+                                                )
+                                                firebaseRestManager.addItem(
+                                                    tempData,
+                                                    dbRef
+                                                ) { success, error ->
+                                                    if (success) {
+                                                        val successLoadingHelper = SuccessLoadingHelper()
+                                                        successLoadingHelper.showLoadingDialog(
+                                                            requireContext()
+                                                        )
+                                                        getLeasedMovies(binding.LeasedMovieCardsHereForCO)
+
+                                                        alertDialog.dismiss()
+
+                                                        successLoadingHelper.hideButtons()
+                                                        successLoadingHelper.updateText("Congratulations you have successfully leased the movie!!")
+
+                                                        val handler = Handler()
+                                                        handler.postDelayed({
+                                                            successLoadingHelper.dismissLoadingDialog()
+                                                        }, 2000)
+
+                                                    } else {
+                                                        Log.e(
+                                                            "Error while adding to the db",
+                                                            "${error!!.message}: ",
+                                                        )
+                                                        yesOrNoLoadingHelper.dismissLoadingDialog()
+
+                                                    }
+                                                }
+                                            } else {
+                                                val warningDialogBinding = WarningLoadingHelper()
+                                                warningDialogBinding.showLoadingDialog(requireContext())
+                                                warningDialogBinding.hideButtons()
+                                                warningDialogBinding.updateText("Please accept the terms and conditions to lease the movie!!")
+
+                                                val handler = Handler()
+                                                handler.postDelayed({
+                                                    warningDialogBinding.dismissLoadingDialog()
+                                                }, 2000)
+                                            }
 
                                         }
+
                                     }
-                                }
-                                else{
-                                    val warningDialogBinding = WarningLoadingHelper()
-                                    warningDialogBinding.showLoadingDialog(requireContext())
-                                    warningDialogBinding.hideButtons()
-                                    warningDialogBinding.updateText("Please accept the terms and conditions to lease the movie!!")
 
-                                    val handler = Handler()
-                                    handler.postDelayed({
-                                        warningDialogBinding.dismissLoadingDialog()
-                                    }, 2000)
-                                }
+                                })
+                                recyclerView.adapter = adapter
+                                recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-                            }
-                            
                         }
-                    })
-
-
-                    recyclerView.adapter = adapter
-                    recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                    }
                 } else {
                     Toast.makeText(requireContext(), "No movies found", Toast.LENGTH_SHORT).show()
                 }
@@ -173,11 +211,15 @@ class CinemaOwnerLeaseMovie : Fragment() {
         }
     }
 
-    private fun getLeasedMovies(){
+
+
+
+
+    private fun getLeasedMovies(recyclerView: RecyclerView) {
         val loadingScreen = LoadingDialogHelper()
         loadingScreen.showLoadingDialog(requireContext())
 
-        //get data of all the move in movietb
+        // Get data of all the movies in movietb
         val movieClass = MovieTB::class.java
         val node = "moviedb/movietb"
 
@@ -187,14 +229,43 @@ class CinemaOwnerLeaseMovie : Fragment() {
                 loadingScreen.dismissLoadingDialog()
 
                 if (items.isNotEmpty()) {
-                    val movieList = ArrayList<MovieTB>(items)
-                    val adapter = OwnerMovieListAdapter(movieList)
+                    val movieList = ArrayList<MovieTB>()
+
+                    // Iterate through each movie item
+                    for (tempMovieItem in items) {
+                        val firebaseRestManager2 = FirebaseRestManager<LeaseMovieTb>()
+                        firebaseRestManager2.getAllItems(
+                            LeaseMovieTb::class.java,
+                            "moviedb/leasemovietb"
+                        ) { leaseMovies ->
+                            // Check if the movie is not leased by the current user
+                            val isLeased = leaseMovies.any {
+                                it.userId == FirebaseAuth.getInstance().currentUser?.uid && it.movieId == tempMovieItem.mid
+
+                            }
+                            if (isLeased) {
+                                Log.d("ye leeee movie ka data", "onItemClick: ashdjashdkjashjdksahd")
+                                movieList.add(tempMovieItem)
+
+                            }
 
 
+                            Log.d("TAG", "getUnleasedMovies: mkc ashdkhaskjdhkjashdjkhasjkdh")
 
+                            // Set up RecyclerView adapter and layout manager
+                            val adapter = OwnerMovieListAdapter(movieList)
+                            adapter.setOnItemClickListener(object :
+                                OwnerMovieListAdapter.OnItemClickListener {
+                                override fun onItemClick(movie: MovieTB) {
+                                    TODO("Not yet implemented")
+                                }
 
-                    binding.LeasedMovieCardsHereForCO.adapter = adapter
-                    binding.LeasedMovieCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
+                            })
+                            recyclerView.adapter = adapter
+                            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+                        }
+                    }
                 } else {
                     Toast.makeText(requireContext(), "No movies found", Toast.LENGTH_SHORT).show()
                 }

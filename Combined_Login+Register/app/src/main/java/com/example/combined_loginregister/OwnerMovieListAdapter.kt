@@ -62,6 +62,7 @@ class OwnerMovieListAdapter(private val movieList: ArrayList<MovieTB>) : Recycle
     }
 
     override fun getItemCount(): Int {
+        Log.d("TAG", "getItemCount:${movieList.size} ")
         return movieList.size
     }
 
