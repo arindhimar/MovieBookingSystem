@@ -83,7 +83,6 @@ class ManageCinemaOwner : Fragment() {
 
                 if(validateRegisterPage()){
                     registerUser()
-
                 }
             }
 
