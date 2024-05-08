@@ -15,8 +15,8 @@
         android:id="@+id/btnOpenAddCinemaDialog"
         android:src="@drawable/add_icon"
         android:layout_margin="25dp"
-        android:layout_alignEnd="@+id/CinemaAdminHereForCO"
-        android:layout_alignBottom="@+id/CinemaAdminHereForCO"
+        android:layout_alignEnd="@+id/CinemaCardsHereForCO"
+        android:layout_alignBottom="@+id/CinemaCardsHereForCO"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
