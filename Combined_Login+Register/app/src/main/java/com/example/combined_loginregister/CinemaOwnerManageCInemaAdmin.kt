@@ -89,32 +89,30 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     }
 
     private fun getCinemaAdminsForCurrentOwner(cinemaAdminHereForCO: RecyclerView) {
-        val firebaseRestManager1 = FirebaseRestManager<CinemaOwnerTb>()
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(requireContext())
+        val firebaseRestManager = FirebaseRestManager<CinemaOwnerTb>()
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
 
-        val ownedCinemaList = ArrayList<CinemaAdminTb>()
+        firebaseRestManager.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerItems ->
+            val currentOwner = cinemaOwnerItems.find { it.uid == currentUserUid }
+            if (currentOwner == null) return@getAllItems
 
-
-        firebaseRestManager1.getAllItems(CinemaOwnerTb::class.java,"moviedb/CinemaOwnerTb"){items->
-            if(items.isNotEmpty()){
-
-
-
-                for(tempcoitem in items){
-                    if(tempcoitem.uid==FirebaseAuth.getInstance().currentUser!!.uid){
-                        val firebaseRestManager2 = FirebaseRestManager<CinemaAdminTb>()
-                        firebaseRestManager2.getAllItems(CinemaAdminTb::class.java,"moviedb/cinemaadmintb"){items->
-                            if(items.isNotEmpty()){
-                                for(item in items){
-                                    if(item.cinemaOwnerId==tempcoitem.cinemaOwnerId){
-                                        ownedCinemaList.add(item)
-                                        Log.d("TAG", "getCinemaAdminsForCurrentOwner: chlta hai bhaiiii")
-                                    }
-                                }
-                            }
-                        }
-                        break
+            firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
+                val cinemaAdminsForCurrentOwner = ArrayList<CinemaAdminTb>()
+                for (cinemaAdmin in cinemaAdminItems) {
+                    if (cinemaAdmin.cinemaOwnerId == currentOwner.cinemaOwnerId) {
+                        cinemaAdminsForCurrentOwner.add(cinemaAdmin)
                     }
+                    loadingDialogHelper.dismissLoadingDialog()
                 }
+                if (cinemaAdminsForCurrentOwner.isEmpty()) return@getAllItems
+
+                Log.d("TAG", "getCinemaAdminsForCurrentOwner: ${cinemaAdminsForCurrentOwner.size}")
+                val adapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner)
+
+                cinemaAdminHereForCO.adapter = adapter
+                cinemaAdminHereForCO.layoutManager = LinearLayoutManager(requireContext())
             }
         }
     }
