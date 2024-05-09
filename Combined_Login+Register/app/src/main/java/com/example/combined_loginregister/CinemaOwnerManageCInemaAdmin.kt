@@ -89,7 +89,34 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     }
 
     private fun getCinemaAdminsForCurrentOwner(cinemaAdminHereForCO: RecyclerView) {
+        val firebaseRestManager1 = FirebaseRestManager<CinemaOwnerTb>()
 
+        val ownedCinemaList = ArrayList<CinemaAdminTb>()
+
+
+        firebaseRestManager1.getAllItems(CinemaOwnerTb::class.java,"moviedb/CinemaOwnerTb"){items->
+            if(items.isNotEmpty()){
+
+
+
+                for(tempcoitem in items){
+                    if(tempcoitem.uid==FirebaseAuth.getInstance().currentUser!!.uid){
+                        val firebaseRestManager2 = FirebaseRestManager<CinemaAdminTb>()
+                        firebaseRestManager2.getAllItems(CinemaAdminTb::class.java,"moviedb/cinemaadmintb"){items->
+                            if(items.isNotEmpty()){
+                                for(item in items){
+                                    if(item.cinemaOwnerId==tempcoitem.cinemaOwnerId){
+                                        ownedCinemaList.add(item)
+                                        Log.d("TAG", "getCinemaAdminsForCurrentOwner: chlta hai bhaiiii")
+                                    }
+                                }
+                            }
+                        }
+                        break
+                    }
+                }
+            }
+        }
     }
 
 
