@@ -25,9 +25,9 @@ class MainActivity2 : AppCompatActivity() {
         val seats = mutableListOf<Seat>()
 
 
-
+        //  val seats = mutableListOf<Seat>()
         for (i in 1..50) {
-            seats.add(Seat(" $i"))
+            seats.add(Seat("$i"))
         }
 
 
@@ -35,13 +35,14 @@ class MainActivity2 : AppCompatActivity() {
             val seat = seats[position]
             seat.isSelected = !seat.isSelected
             seatAdapter.notifyItemChanged(position)
+            updateTotal()
         }
 
         recyclerView.apply {
-            layoutManager = GridLayoutManager(this@MainActivity2, 10 )
+            layoutManager = GridLayoutManager(this@MainActivity2, 10)
             adapter = seatAdapter
         }
-
+        updateTotal()
         buttonBook.setOnClickListener {
             val selectedSeats = seatAdapter.getSelectedSeats()
             val selectedSeatsMessage = if (selectedSeats.isNotEmpty()) {
@@ -51,22 +52,24 @@ class MainActivity2 : AppCompatActivity() {
             }
             Toast.makeText(this, selectedSeatsMessage, Toast.LENGTH_SHORT).show()
         }
-        updateTotal()
+
     }
+
     private fun updateTotal() {
         val totalTickets = seatAdapter.getTotalTickets()
         val totalAmount = seatAdapter.getTotalAmount()
 
         totalTicketsTextView.text = "Total Tickets: $totalTickets"
-        totalAmountTextView.text = "Total Amount: $$totalAmount"
+        totalAmountTextView.text = "Total Amount: $totalAmount"
     }
 
-        class SeatAdapter(private val seats: List<Seat>, private val onItemClick: (Int) -> Unit) :
+    class SeatAdapter(private val seats: List<Seat>, private val onItemClick: (Int) -> Unit) :
         RecyclerView.Adapter<SeatAdapter.SeatViewHolder>() {
 
         private var totalTickets = 0
         private var totalAmount = 0
-       // private val selectedSeats = mutableListOf<Seat>()
+
+        // private val selectedSeats = mutableListOf<Seat>()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeatViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_seats, parent, false)
@@ -87,26 +90,53 @@ class MainActivity2 : AppCompatActivity() {
         inner class SeatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val textViewSeat: TextView = itemView.findViewById(R.id.textViewSeat)
 
-
-
             fun bind(seat: Seat) {
+                textViewSeat.text = seat.seatNumber
+                when (seat.status) {
+                    "Booked" -> {
+                        textViewSeat.setBackgroundResource(R.drawable.ic_launcher_background)
+                        itemView.setOnClickListener(null)
+                    }
+
+                    "Available" -> {
+                        if (seat.isSelected) {
+                            textViewSeat.setBackgroundResource(R.drawable.chair)
+                            totalTickets++
+                            totalAmount = totalAmount + seat.ticketPrice
+                        } else {
+                            // Reset background color or image for unselected seats
+                            textViewSeat.setBackgroundResource(R.drawable.seat)
+                            totalTickets--
+                            totalAmount = seat.ticketPrice
+                        }
+                        itemView.setOnClickListener {
+                            onItemClick(adapterPosition)
+                        }
+                    }
+                }
+            }
+        }
+
+        /* fun bind(seat: Seat) {
                 textViewSeat.text = seat.seatNumber
 
                 if (seat.isSelected) {
                     // Change background color or image for selected seats
                     textViewSeat.setBackgroundResource(R.drawable.chair)
-                    totalAmount += seat.ticketPrice
+                    totalTickets++
+                    totalAmount =totalAmount+ seat.ticketPrice
                 } else {
                     // Reset background color or image for unselected seats
                     textViewSeat.setBackgroundResource(R.drawable.seat)
-                    totalAmount -= seat.ticketPrice
+                    totalTickets--
+                    totalAmount =seat.ticketPrice
                 }
                 itemView.setOnClickListener {
                     onItemClick(adapterPosition)
                 }
             }
+*/
 
-        }
 
         fun getSelectedSeats(): List<String> {
             val selectedSeatNumbers = mutableListOf<String>()
@@ -117,12 +147,13 @@ class MainActivity2 : AppCompatActivity() {
             }
             return selectedSeatNumbers
         }
+
         fun getTotalTickets(): Int {
-            return totalTickets
+            return seats.count { it.isSelected }
         }
 
         fun getTotalAmount(): Int {
-            return totalAmount
+            return seats.filter { it.isSelected }.sumOf { it.ticketPrice }
         }
     }
 }
