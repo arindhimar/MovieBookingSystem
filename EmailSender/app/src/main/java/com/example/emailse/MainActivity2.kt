@@ -2,6 +2,7 @@ package com.example.emailse
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,18 +24,17 @@ open class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val btn = findViewById<Button>(R.id.button)
+        btn.setOnClickListener {
+            buttonSendEmail(listOf("alvfcoc@gmail.com","bansibhimani99@gmail.com"))
         }
+
     }
 
-    fun buttonSendEmail(view: View) {
-
+    fun buttonSendEmail( recipients: List<String>) {
         try {
             val stringSenderEmail = "thecinemacub@gmail.com"
-            val stringReceiverEmail = "alvfcoc@gmail.com"
             val stringPasswordSenderEmail = "gxfx oybn edba vtlc"
 
             val stringHost = "smtp.gmail.com"
@@ -52,9 +52,10 @@ open class MainActivity2 : AppCompatActivity() {
                 }
             })
 
-
             val mimeMessage = MimeMessage(session)
-            mimeMessage.addRecipient(Message.RecipientType.TO, InternetAddress(stringReceiverEmail))
+            for (recipient in recipients) {
+                mimeMessage.addRecipient(Message.RecipientType.TO, InternetAddress(recipient))
+            }
 
             mimeMessage.subject = "Subject: Android App email"
             mimeMessage.setText("Hello Programmer, \n\nProgrammer World has sent you this 2nd email. \n\n Cheers!\nProgrammer World")
