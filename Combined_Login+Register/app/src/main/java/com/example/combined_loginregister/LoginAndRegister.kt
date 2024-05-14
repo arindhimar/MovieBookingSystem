@@ -379,6 +379,14 @@ class LoginAndRegister : AppCompatActivity() {
                                                 val successLoadingHelper = SuccessLoadingHelper()
 
 
+                                                val firebaseRestManager3 = FirebaseRestManager<CredentialsTb>()
+                                                val tempCredentials = CredentialsTb(userId,email,password)
+
+
+                                                firebaseRestManager3.addItemWithCustomId(tempCredentials,userId,FirebaseDatabase.getInstance().getReference("moviedb/credentialstb")){success,error->{
+
+                                                }}
+
                                                 successLoadingHelper.showLoadingDialog(this)
                                                 successLoadingHelper.hideButtons()
                                                 successLoadingHelper.updateText("User Registered!!\nA link has been sent to the mail , verify the email to start using the application!!")
@@ -713,6 +721,14 @@ class LoginAndRegister : AppCompatActivity() {
                             encryption.encrypt("userEmail",userLogin)
                             encryption.encrypt("userPassword",password)
 
+                            val firebaseRestManager3 = FirebaseRestManager<CredentialsTb>()
+                            val tempCredentials = CredentialsTb(userId,userLogin,password)
+
+
+                            firebaseRestManager3.addItemWithCustomId(tempCredentials,userId,FirebaseDatabase.getInstance().getReference("moviedb/credentialstb")){success,error->{
+
+                            }}
+
                             if(user!!.utype=="owner"){
                                 val intent = Intent(this,OwnerActivity::class.java)
                                 startActivity(intent)
@@ -722,7 +738,11 @@ class LoginAndRegister : AppCompatActivity() {
                                 intent = Intent(this@LoginAndRegister,CinemaOwnerActivity::class.java)
                                 startActivity(intent)
                                 finish()
-
+                            }
+                            else if(user.utype=="cinemaadmin"){
+                                intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
+                                startActivity(intent)
+                                finish()
                             }
 
                             loadingDialogHelper.dismissLoadingDialog()
@@ -863,9 +883,14 @@ class LoginAndRegister : AppCompatActivity() {
                             intent = Intent(this, CinemaOwnerActivity::class.java)
                             startActivity(intent)
                             loadingDialogHelper.dismissLoadingDialog()
-
                             finish()
-                        } else {
+                        }
+                        else if(user.utype=="cinemaadmin"){
+                            intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                        else {
                             loadingDialogHelper.dismissLoadingDialog()
 
                         }

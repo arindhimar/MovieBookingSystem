@@ -85,7 +85,7 @@
 
 
                         <LinearLayout
-                            android:id="@+id/dashboard_manage_cinema"
+                            android:id="@+id/dashboard_manage_shows"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
@@ -102,7 +102,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
-                                android:text="Manage \n Cinema"
+                                android:text="Manage \n Shows"
                                 android:fontFamily="@font/googlesans_bold"
                                 android:textSize="18sp"
                                 android:textColor="@color/white"
@@ -128,7 +128,7 @@
 
 
                         <LinearLayout
-                            android:id="@+id/dashboard_lease_movies"
+                            android:id="@+id/dashboard_view_booking"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
@@ -145,7 +145,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
-                                android:text="Lease \n Movies"
+                                android:text="Lease \n Booking"
                                 android:fontFamily="@font/googlesans_bold"
                                 android:textSize="18sp"
                                 android:textColor="@color/white"
@@ -157,81 +157,6 @@
 
 
 
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="170dp"
-                        android:layout_height="170dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="5dp"
-                        android:foreground="@drawable/ripple_effect"
-                        app:cardBackgroundColor="@color/gray"
-                        android:layout_margin="10dp">
-
-                        <LinearLayout
-                            android:id="@+id/dashboard_manage_cinema_admin"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            >
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/account_profile_48px"
-                                android:layout_marginTop="18dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Manage\nCinema Admin"
-                                android:textAlignment="center"
-                                android:fontFamily="@font/googlesans_bold"
-                                android:textSize="18sp"
-                                android:textColor="@color/white"
-                                android:layout_marginTop="20dp"/>
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="170dp"
-                        android:layout_height="170dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="5dp"
-                        android:foreground="@drawable/ripple_effect"
-                        app:cardBackgroundColor="@color/gray"
-                        android:layout_margin="10dp">
-
-                        <LinearLayout
-                            android:id="@+id/dashboard_cinema_owner_manage_booking"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            >
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-
-                                android:src="@drawable/feedback_dashboard_icon"
-                                android:layout_marginTop="18dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAlignment="center"
-                                android:text="Manage\nBooking"
-                                android:fontFamily="@font/googlesans_bold"
-                                android:textSize="18sp"
-                                android:textColor="@color/white"
-                                android:layout_marginTop="20dp"/>
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="170dp"
@@ -320,7 +245,7 @@
 
     <com.google.android.material.navigation.NavigationView
         app:headerLayout="@layout/layout_nav_header"
-        app:menu="@menu/cinema_owner_menu"
+        app:menu="@menu/cinemaadminmenu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/nav_view"

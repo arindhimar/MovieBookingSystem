@@ -318,6 +318,7 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                                                                                 successLoadingHelper.updateText("Cinema Admin bas been registered!!Also a verification mail has been sent!!")
 
 
+                                                                                getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
 
 
 

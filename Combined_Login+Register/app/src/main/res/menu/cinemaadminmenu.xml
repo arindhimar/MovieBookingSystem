@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+
+        android:title="Management Options">
+        <menu>
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_cinema_admin_dashboard"
+                android:icon="@drawable/ic_menu_screenboth"
+                android:title="Cinema Admin DashBoard"
+
+                />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_manage_shows"
+                android:icon="@drawable/ic_menu_screenboth"
+                android:title="Manage Shows"
+
+                />
+
+
+            <item
+                android:checkable="true"
+                android:id="@+id/view_booking"
+                android:icon="@drawable/feedback_dashboard_icon"
+                android:title="View Bookings" />
+
+            <!--            <item-->
+            <!--                android:checkable="true"-->
+            <!--                android:id="@+id/nav_view_booking"-->
+            <!--                android:icon="@drawable/ic_menu_bookingboth"-->
+            <!--                android:title="View Bookings" />-->
+        </menu>
+    </item>
+
+
+
+
+
+    <item
+        android:title="Profile Options"
+        >
+        <menu>
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_menu_account"
+                android:icon="@drawable/ic_menu_accountboth"
+                android:title="My Account" />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/logoutuser"
+                android:icon="@drawable/logout_icon"
+                android:title="LogOut" />
+        </menu>
+    </item>
+</menu>
+
+
+
+
+
+
+
+
+
+
+

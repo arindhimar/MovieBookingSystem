@@ -46,6 +46,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation (":android-sdk")
+    implementation ("com.instamojo:android-sdk:1.2.0")
 
 
 }
