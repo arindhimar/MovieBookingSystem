@@ -855,6 +855,8 @@ class LoginAndRegister : AppCompatActivity() {
     }
 
     private fun checkPrevLogin(){
+
+
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(this)
 

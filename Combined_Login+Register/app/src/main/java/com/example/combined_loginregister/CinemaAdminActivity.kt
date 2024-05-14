@@ -3,12 +3,14 @@ package com.example.combined_loginregister
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.example.combined_loginregister.databinding.ActivityCinemaAdminBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -81,25 +83,34 @@ class CinemaAdminActivity : AppCompatActivity() {
             // Handle navigation item clicks here
             when (menuItem.itemId) {
                 R.id.nav_cinema_admin_dashboard -> {
-                    binding.CinemaOwnerDashBoard.isVisible = true
+                    binding.CinemaAdminDashBoard.isVisible = true
                     // Add any additional logic specific to this item
                 }
                 R.id.nav_manage_shows->{
+//                    Log.d("TAG", "init: mkc chl toh raha hai!!")
                 }
                 R.id.view_booking -> {
-                    // Add any additional logic specific to this item
+
                 }
-                R.id.nav_rent_movies -> {
-                    binding.dashboardLeaseMovies.performClick()
-                    // Add any additional logic specific to this item
-                }
+
                 R.id.nav_menu_account -> {
-                    binding.dashboardManageProfile.performClick()
-                    // Add any additional logic specific to this item
+                    replaceFragment(CommonProfileFragment())
                 }
                 R.id.logoutuser -> {
-                    binding.logOut.performClick()
-                    // Add any additional logic specific to this item
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                        .requestEmail()
+                        .build()
+
+                    val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+                    mGoogleSignInClient.signOut()
+
+                    val auth = FirebaseAuth.getInstance()
+                    auth.signOut()
+
+                    val intent = Intent(this, LoginAndRegister::class.java)
+                    startActivity(intent)
                 }
                 // Add more cases for other menu items if needed
             }
@@ -107,39 +118,31 @@ class CinemaAdminActivity : AppCompatActivity() {
             true
         }
 
-        binding.dashboardManageCinema.setOnClickListener {
+        binding.navView.setCheckedItem(R.id.nav_cinema_admin_dashboard)
+
+
+
+
+        binding.dashboardManageShows.setOnClickListener {
+            binding.navView.setCheckedItem(R.id.nav_manage_shows)
+            binding.navView.menu.performIdentifierAction(R.id.nav_manage_shows, 0)
         }
 
 
-        binding.dashboardManageCinemaAdmin.setOnClickListener {
+        binding.dashboardViewBooking.setOnClickListener {
+            binding.navView.setCheckedItem(R.id.view_booking)
+            binding.navView.menu.performIdentifierAction(R.id.view_booking, 0)
         }
 
-        binding.dashboardLeaseMovies.setOnClickListener {
-        }
-
-        binding.dashboardCinemaOwnerManageBooking.setOnClickListener {
-        }
 
         binding.dashboardManageProfile.setOnClickListener {
+            binding.navView.setCheckedItem(R.id.nav_menu_account)
+            binding.navView.menu.performIdentifierAction(R.id.nav_menu_account, 0)
         }
 
         binding.logOut.setOnClickListener {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
-                .requestEmail()
-                .build()
-
-            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-            mGoogleSignInClient.signOut()
-
-            val auth = FirebaseAuth.getInstance()
-            auth.signOut()
-
-            val intent = Intent(this, LoginAndRegister::class.java)
-            startActivity(intent)
-
-
+            binding.navView.setCheckedItem(R.id.logoutuser)
+            binding.navView.menu.performIdentifierAction(R.id.logoutuser, 0)
         }
 
     }
@@ -158,5 +161,12 @@ class CinemaAdminActivity : AppCompatActivity() {
                 warningLoadingHelper.dismissLoadingDialog()
             }, 2000)
         }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        binding.CinemaAdminDashBoard.isVisible = false
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }
