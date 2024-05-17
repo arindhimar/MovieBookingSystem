@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
@@ -89,7 +90,22 @@ class CInemaAdminManageShows : Fragment() {
                             val adapter = OwnerMovieListAdapter(movies)// movies should be an arraylist
                             adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
                                 override fun onItemClick(movie: MovieTB) {
-                                    
+                                    val yesOrNoLoadingHelper = YesOrNoLoadingHelper()
+                                    yesOrNoLoadingHelper.showLoadingDialog(requireContext())
+                                    yesOrNoLoadingHelper.hideCheckBox()
+                                    yesOrNoLoadingHelper.updateText("Are you sure you want to add this movie , You won;t be able to make any changes to it")
+                                    val view = yesOrNoLoadingHelper.getView()
+                                    val btnYes = view.findViewById<Button>(R.id.btn_yes)
+                                    val btnNo = view.findViewById<Button>(R.id.btn_no)
+
+                                    btnNo.setOnClickListener {
+                                        yesOrNoLoadingHelper.dismissLoadingDialog()
+                                    }
+
+                                    btnYes.setOnClickListener {
+                                        showAddShowDialog()
+                                    }
+
                                 }
                             })
                             recyclerView.adapter = adapter
@@ -99,6 +115,10 @@ class CInemaAdminManageShows : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showAddShowDialog() {
+
     }
 
     private fun loadCinemaOwner(cinemaOwnerId: String, callback: (String?) -> Unit) {
