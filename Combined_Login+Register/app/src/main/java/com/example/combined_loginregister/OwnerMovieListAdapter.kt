@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class OwnerMovieListAdapter(private val movieList: ArrayList<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
+class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
 
     private lateinit var onItemClickListener: OnItemClickListener
 

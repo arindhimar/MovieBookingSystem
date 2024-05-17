@@ -88,9 +88,11 @@ class CinemaAdminActivity : AppCompatActivity() {
                 }
                 R.id.nav_manage_shows->{
 //                    Log.d("TAG", "init: mkc chl toh raha hai!!")
+                    replaceFragment(CInemaAdminManageShows())
+
                 }
                 R.id.view_booking -> {
-
+                    replaceFragment(CinemaAdminViewBookings())
                 }
 
                 R.id.nav_menu_account -> {

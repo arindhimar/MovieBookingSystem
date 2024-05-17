@@ -96,9 +96,12 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
 
         firebaseRestManager.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerItems ->
             val currentOwner = cinemaOwnerItems.find { it.uid == currentUserUid }
-            if (currentOwner == null) return@getAllItems
+            if (currentOwner == null) {
+                loadingDialogHelper.dismissLoadingDialog()
+                return@getAllItems
+            }
 
-            firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
+                firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
                 val cinemaAdminsForCurrentOwner = ArrayList<CinemaAdminTb>()
                 for (cinemaAdmin in cinemaAdminItems) {
                     if (cinemaAdmin.cinemaOwnerId == currentOwner.cinemaOwnerId) {
@@ -106,7 +109,10 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                     }
                     loadingDialogHelper.dismissLoadingDialog()
                 }
-                if (cinemaAdminsForCurrentOwner.isEmpty()) return@getAllItems
+                if (cinemaAdminsForCurrentOwner.isEmpty()){
+                    loadingDialogHelper.dismissLoadingDialog()
+                    return@getAllItems
+                }
 
                 Log.d("TAG", "getCinemaAdminsForCurrentOwner: ${cinemaAdminsForCurrentOwner.size}")
                 val adapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner)
@@ -278,6 +284,7 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                                 if (authTask.isSuccessful) {
                                     // Use the user ID from Firebase Authentication as the key for database storage
                                     val userId = firebaseAuth.currentUser!!.uid
+                                    val tempId = userId
 
                                     // Create a UserTb object with the obtained user ID
                                     val tempUser = UserTb(userId, username.toString(),mobile.toString(), "cinemaadmin")
@@ -309,13 +316,13 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                                                                     if(cinema.cinemaID==tempItem.cinemaId&&firebaseAuth.currentUser!!.uid==tempItem.uid){
                                                                         Log.d("TAG", "registerUser: idhr bhi aya")
                                                                         val tempData = CinemaAdminTb(id,newUserId,tempItem.cinemaOwnerId)
-                                                                        firebaseRestManager2.addItem(tempData,dbRef2){success2,error2->
+                                                                        firebaseRestManager2.addItemWithCustomId(tempData,id!!,dbRef2){success2,error2->
                                                                             if(success2){
                                                                                 loadingDialogHelper.dismissLoadingDialog()
                                                                                 val successLoadingHelper = SuccessLoadingHelper()
                                                                                 successLoadingHelper.showLoadingDialog(requireContext())
                                                                                 successLoadingHelper.hideButtons()
-                                                                                successLoadingHelper.updateText("Cinema Admin bas been registered!!Also a verification mail has been sent!!")
+                                                                                successLoadingHelper.updateText("Cinema Admin bas been registered!!\nAlso a verification mail has been sent!!")
 
 
                                                                                 getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
@@ -356,16 +363,7 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                                                         // You can provide feedback to the user or take appropriate action
                                                     }
                                                 }
-
-
-
-
-
                                         }
-
-
-
-
                                     }
                                 } else {
                                     // Registration failed

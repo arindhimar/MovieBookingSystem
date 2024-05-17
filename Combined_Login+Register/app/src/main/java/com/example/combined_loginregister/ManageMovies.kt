@@ -246,7 +246,7 @@ class ManageMovies : Fragment() {
                 for (i in 0 until selectedUris!!.size) {
                     FirebaseStorageHelper.uploadImage(
                         selectedUris!![i],
-                        movieId!!, // pass the movie ID instead of the movie title
+                        "MoviePosters/$movieId", // pass the movie ID instead of the movie title
                         onSuccess = { downloadUrl ->
                             // Image uploaded successfully
                             Toast.makeText(
@@ -278,6 +278,7 @@ class ManageMovies : Fragment() {
                                     loadingScreen.dismissLoadingDialog()
                                     displayMovies()
                                     alertDialog.dismiss() // Close the alert dialog
+                                    selectedUris!!.clear()
 
 
                                 } else {
