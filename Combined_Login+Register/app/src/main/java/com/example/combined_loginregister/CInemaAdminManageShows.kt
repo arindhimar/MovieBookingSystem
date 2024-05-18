@@ -9,8 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
+import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarSetUp
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -24,8 +28,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CInemaAdminManageShows.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CInemaAdminManageShows : Fragment() {
-    // TODO: Rename and change types of parameters
+class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClickListener {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var tvDateMonth: TextView
+    private lateinit var ivCalendarNext: ImageView
+    private lateinit var ivCalendarPrevious: ImageView
+
     private var param1: String? = null
     private var param2: String? = null
     lateinit var binding:FragmentCInemaAdminManageShowsBinding
@@ -45,6 +53,8 @@ class CInemaAdminManageShows : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentCInemaAdminManageShowsBinding.inflate(layoutInflater, container, false)
+
+
 
         binding.btnOpenAddShowDialog?.setOnClickListener {
             if (FirebaseAuth.getInstance().currentUser == null) {
@@ -70,6 +80,46 @@ class CInemaAdminManageShows : Fragment() {
 
             loadLeasedMovies(recyclerView)
         }
+
+
+
+
+
+
+
+
+        tvDateMonth = binding.textDateMonth
+        ivCalendarNext = binding.ivCalendarNext
+        ivCalendarPrevious = binding.ivCalendarPrevious
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        val calendarSetUp = HorizontalCalendarSetUp()
+        val tvMonth = calendarSetUp.setUpCalendarAdapter(binding.recyclerView, this@CInemaAdminManageShows)
+        tvDateMonth.text = tvMonth
+
+        calendarSetUp.setUpCalendarPrevNextClickListener(ivCalendarNext, ivCalendarPrevious, this@CInemaAdminManageShows) {
+            tvDateMonth.text = it
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return binding.root
     }
@@ -228,5 +278,11 @@ class CInemaAdminManageShows : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onItemClick(ddMmYy: String, dd: String, day: String) {
+        binding.selectedDate.text = "Selected date: $ddMmYy"
+        binding.selectedDD.text = "Selected DD: $dd"
+        binding.selectedDay.text = "Selected day: $day"
     }
 }

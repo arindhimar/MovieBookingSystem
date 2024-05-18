@@ -67,6 +67,8 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.furkanakdemir:surroundcardview:1.0.6")
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
+    implementation ("com.github.ArjunGupta08:Horizontal-CalendarDate-With-Click-listener:1.1.0")
+
 
 
 
