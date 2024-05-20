@@ -16,7 +16,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarSetUp
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
+import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -124,6 +132,21 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         return binding.root
     }
 
+    private fun fetchCinemaOwnerId() {
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val firebaseRestManager1 = FirebaseRestManager<CinemaAdminTb>()
+        firebaseRestManager1.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
+            val cinemaAdmin = cinemaAdminTbs.find { it.userId == userId }
+            val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
+            firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerTbs ->
+                val cinemaOwner =
+                    cinemaOwnerTbs.find { it.cinemaOwnerId == cinemaAdmin?.cinemaOwnerId.toString() }
+            }
+        }
+
+    }
+
     private fun loadLeasedMovies(recyclerView: RecyclerView) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let {
@@ -143,17 +166,21 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
                                     val yesOrNoLoadingHelper = YesOrNoLoadingHelper()
                                     yesOrNoLoadingHelper.showLoadingDialog(requireContext())
                                     yesOrNoLoadingHelper.hideCheckBox()
-                                    yesOrNoLoadingHelper.updateText("Are you sure you want to add this movie , You won;t be able to make any changes to it")
+                                    yesOrNoLoadingHelper.updateText("Are you sure you want to add this movie , You won't be able to make any changes to it")
                                     val view = yesOrNoLoadingHelper.getView()
                                     val btnYes = view.findViewById<Button>(R.id.btn_yes)
                                     val btnNo = view.findViewById<Button>(R.id.btn_no)
 
                                     btnNo.setOnClickListener {
                                         yesOrNoLoadingHelper.dismissLoadingDialog()
+                                        alertDialog.dismiss()
                                     }
 
                                     btnYes.setOnClickListener {
+                                        alertDialog.dismiss()
+
                                         showAddShowDialog()
+
                                     }
 
                                 }
@@ -168,7 +195,104 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
     }
 
     private fun showAddShowDialog() {
+        val dialogView2: View = layoutInflater.inflate(R.layout.custom_show_add_dialog, null)
+        val alertDialog2: AlertDialog
 
+        val dialogBuilder2 = AlertDialog.Builder(requireContext())
+        dialogBuilder2.setView(dialogView2)
+
+        alertDialog2 = dialogBuilder2.create()
+        alertDialog2.show()
+
+        val btnDate = dialogView2.findViewById<Button>(R.id.btnDate)
+        val btnTime = dialogView2.findViewById<Button>(R.id.btnTime)
+        val textView = dialogView2.findViewById<TextView>(R.id.textView)
+        val AddFinalShowBtn = dialogView2.findViewById<Button>(R.id.AddFinalShowBtn)
+
+        val currentDateTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"))
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        timeFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+        val currentIndianDate = dateFormat.format(currentDateTime.time)
+        val currentIndianTime = timeFormat.format(currentDateTime.time)
+
+        textView.text = "Date: $currentIndianDate\nTime: $currentIndianTime"
+
+        var selectedDateText = currentIndianDate
+        var selectedTimeText = currentIndianTime
+
+        btnDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Show Date")
+                .setSelection(currentDateTime.timeInMillis)
+                .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener {
+                val selectedDateInMillis = datePicker.selection
+                if (selectedDateInMillis != null) {
+                    val selectedDate = Calendar.getInstance().apply {
+                        timeInMillis = selectedDateInMillis
+                        timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+                    }
+
+                    val formattedSelectedDate = dateFormat.format(selectedDate.time)
+                    selectedDateText = formattedSelectedDate
+
+                    textView.text = "Date: $selectedDateText\nTime: $selectedTimeText"
+                }
+            }
+            datePicker.show(parentFragmentManager, "date")
+        }
+
+        btnTime.setOnClickListener {
+            val timePicker =
+                MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(currentDateTime.get(Calendar.HOUR_OF_DAY))
+                    .setMinute(currentDateTime.get(Calendar.MINUTE))
+                    .setTitleText("Select Movie time")
+                    .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
+                    .build()
+
+            timePicker.addOnPositiveButtonClickListener {
+                val selectedHour = timePicker.hour
+                val selectedMinute = timePicker.minute
+                val formattedSelectedTime = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
+                selectedTimeText = formattedSelectedTime
+
+                textView.text = "Date: $selectedDateText\nTime: $selectedTimeText"
+            }
+            timePicker.show(parentFragmentManager, "Time")
+        }
+
+        AddFinalShowBtn.setOnClickListener {
+            val selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedDateText)
+            val startingDate = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, 1)
+            }.time
+
+            val finalDate = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, 7)
+            }.time
+
+            if (selectedDate != null && selectedDate in startingDate..finalDate) {
+                // The selected date is within the specified range
+                // Your logic here...
+                // For example:
+                Toast.makeText(requireContext(), "Selected date is within the range", Toast.LENGTH_SHORT).show()
+            } else {
+                // The selected date is not within the specified range
+                // Your logic here...
+                // For example:
+                Toast.makeText(requireContext(), "Selected date is not within the range", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+        alertDialog2.window?.attributes?.windowAnimations = R.style.DialogAnimation
     }
 
     private fun loadCinemaOwner(cinemaOwnerId: String, callback: (String?) -> Unit) {

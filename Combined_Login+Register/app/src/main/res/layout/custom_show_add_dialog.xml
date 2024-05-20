@@ -16,7 +16,6 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="5dp"
         android:foreground="@drawable/ripple_effect"
-        app:cardBackgroundColor="@color/gray"
         android:layout_margin="10dp"
         >
 
@@ -24,146 +23,75 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- TextInputLayout 1 for Movie Name  -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="90dp"
-                android:layout_marginRight="25dp"
-                android:hint="Movie Name"
-                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusBottomEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-                app:counterEnabled="false"
-
-                app:counterTextColor="@color/m3_textfield_login_page_colors"
-                app:endIconMode="clear_text"
-                app:endIconScaleType="centerInside"
-                app:endIconTint="@color/login_button"
-                app:helperTextEnabled="false"
-                app:helperTextTextColor="@color/m3_textfield_login_page_colors"
-                app:hintTextColor="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.32"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-
-
-                app:startIconDrawable="@drawable/baseline_person_24"
-                app:startIconTint="@color/white">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-
-
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/m3_textfield_login_page_colors" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- TextInputLayout 2 for Movie Duration  -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="120dp"
-                android:layout_marginRight="25dp"
-                android:hint="Movie Duration(in minutes)"
-                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusBottomEnd="25dp"
-                app:boxCornerRadiusBottomStart="25dp"
-                app:boxCornerRadiusTopEnd="25dp"
-                app:boxCornerRadiusTopStart="25dp"
-                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
-                app:counterEnabled="false"
-
-                app:counterTextColor="@color/m3_textfield_login_page_colors"
-                app:endIconMode="clear_text"
-                app:endIconScaleType="centerInside"
-                app:endIconTint="@color/login_button"
-                app:helperTextEnabled="false"
-                app:helperTextTextColor="@color/m3_textfield_login_page_colors"
-                app:hintTextColor="@color/white"
-                app:layout_constraintBottom_toTopOf="@id/uploadImagesBtn"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-
-                app:layout_constraintVertical_bias="0.627"
-                app:startIconDrawable="@drawable/baseline_person_24"
-                app:startIconTint="@color/white">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:maxLines="1"
-
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/m3_textfield_login_page_colors" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <!-- Button 1 for Date  -->
 
             <Button
-                android:id="@+id/uploadImagesBtn"
+                android:id="@+id/btnDate"
+                android:layout_width="wrap_content"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                android:text="Date"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                app:rippleColor="#90FFFFFF"
+                app:strokeColor="#1E1E8E"
+                android:layout_marginTop="90dp"
+                android:layout_marginRight="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintVertical_bias="0.627"
+                app:icon="@drawable/calendar_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!-- Button 2 for Time  -->
+
+
+            <Button
+                android:id="@+id/btnTime"
                 style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="Upload Posters"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                app:cornerRadius="25dp"
-
-                app:icon="@drawable/upload_up_icon"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:text="Time"
+                app:icon="@drawable/clock_icon"
                 app:layout_constraintBottom_toTopOf="@id/textView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.474"
+                app:layout_constraintHorizontal_bias="0.506"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.786"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
 
-            <!-- Register Button -->
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
 
+                android:text="Select Date and Time will appear here"
                 android:textAlignment="center"
-                android:text="The first image uploaded will be\nshown to users as the main poster**"
                 android:textColor="@color/colorredwarning"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@id/AddMovieBtnFinal"
+                app:layout_constraintBottom_toTopOf="@id/AddFinalShowBtn"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.503"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Button
-                android:id="@+id/AddMovieBtnFinal"
+                android:id="@+id/AddFinalShowBtn"
                 style="Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="80dp"
-                android:text="Register"
+                android:layout_marginBottom="92dp"
+                android:text="ADD"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:cornerRadius="25dp"
 
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.488"
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
