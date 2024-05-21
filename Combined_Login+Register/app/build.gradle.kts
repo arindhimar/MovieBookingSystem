@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.storage)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.core.i18n)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,11 +69,7 @@ dependencies {
     implementation ("com.furkanakdemir:surroundcardview:1.0.6")
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
     implementation ("com.github.ArjunGupta08:Horizontal-CalendarDate-With-Click-listener:1.1.0")
-
-
-
-
-
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 
 

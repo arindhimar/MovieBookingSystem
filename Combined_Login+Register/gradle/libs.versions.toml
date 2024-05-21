@@ -19,6 +19,7 @@ firebaseMessagingKtx = "23.4.1"
 firebaseStorageKtx = "20.3.0"
 firebaseStorage = "20.3.0"
 recyclerview = "1.3.2"
+coreI18n = "1.0.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,7 @@ firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messa
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
