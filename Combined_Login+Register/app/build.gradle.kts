@@ -70,8 +70,5 @@ dependencies {
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
     implementation ("com.github.ArjunGupta08:Horizontal-CalendarDate-With-Click-listener:1.1.0")
     implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-
-
-
+    implementation ("nl.joery.animatedbottombar:library:1.1.0")
 }

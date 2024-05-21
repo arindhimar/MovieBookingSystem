@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserActivity">
+    tools:context=".MainActivity">
+
 
 
     <nl.joery.animatedbottombar.AnimatedBottomBar
@@ -19,10 +20,7 @@
         app:abb_indicatorAppearance="round"
         app:abb_indicatorMargin="16dp"
         app:abb_indicatorHeight="4dp"
-        app:abb_tabs="@menu/user_tabs"
-        app:abb_rippleEnabled = "true"
-        app:abb_indicatorLocation = "bottom"
-        app:abb_tabAnimationSelected = "slide"
-        app:abb_selectedIndex="0" />
+        app:abb_tabs="@menu/tabs"
+        app:abb_selectedIndex="1" />
 
 </RelativeLayout>
