@@ -10,8 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: Context) : HorizontalCalendarAdapter.OnItemClickListener {
+class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: Context) : HorizontalCalendarAdapter.OnItemClickListener {
     private lateinit var dialog: AlertDialog
     private lateinit var view: View
 
@@ -34,16 +36,16 @@ class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: 
         setUpCard()
     }
 
-    fun returnView():View{
+    fun returnView(): View {
         return view
     }
 
-    private fun setUpCard(){
+    private fun setUpCard() {
         val MainPoster: ImageView = view.findViewById(R.id.MainPoster)
         val Heading = view.findViewById<TextView>(R.id.Heading)
         val SubHeading1 = view.findViewById<TextView>(R.id.SubHeading1)
         val SubHeading2 = view.findViewById<TextView>(R.id.SubHeading2)
-        tvDateMonth =view.findViewById(R.id.text_date_month)
+        tvDateMonth = view.findViewById(R.id.text_date_month)
         ivCalendarNext = view.findViewById(R.id.iv_calendar_next)
         ivCalendarPrevious = view.findViewById(R.id.iv_calendar_previous)
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -58,10 +60,6 @@ class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: 
             tvDateMonth.text = it
         }
 
-
-
-
-
         //getting all the poster of all the movies
         val moviePosterClass = MoviePosterTb::class.java
         val node = "moviedb/moviepostertb"
@@ -75,9 +73,8 @@ class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: 
                             .load(item2.mlink)
                             .into(MainPoster)
 
-
                         Heading.text = movieData.mname
-                        SubHeading1.text = movieData.duration + " Minutes"
+                        SubHeading1.text = "${movieData.duration} Minutes"
                         break
                     }
                 }
@@ -85,7 +82,6 @@ class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: 
                 Log.d("Firebase", "No movie posters found")
             }
         }
-
     }
 
     fun dismissLoadingDialog() {
@@ -95,6 +91,23 @@ class MovieShowsHelperClass(private var movieData: MovieTB,val  requireContext: 
     }
 
     override fun onItemClick(ddMmYy: String, dd: String, day: String) {
-        TODO("Not yet implemented")
+        val selectedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(ddMmYy)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formattedSelectedDate = dateFormat.format(selectedDate)
+
+        val firebaseRestManager = FirebaseRestManager<ShowTb>()
+        firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
+            // Filter shows by the selected date
+            val filteredShows = showTbs.filter { it.showDate == formattedSelectedDate && it.movieId == movieData.mid }
+
+            // Group shows by cinema ID
+            val groupedShows = filteredShows.groupBy { it.cinemaId }
+
+            Log.d("TAG", "onItemClick: $groupedShows")
+            // Use the groupedShows to set up your adapter or process further
+
+            val adapter = CinemaShowsAdapter(groupedShows, requireContext)
+            recyclerView.adapter = adapter
+        }
     }
 }
