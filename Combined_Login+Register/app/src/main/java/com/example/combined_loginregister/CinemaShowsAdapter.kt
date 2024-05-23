@@ -30,7 +30,7 @@ class CinemaShowsAdapter(
 
         val firebaseRestManager = FirebaseRestManager<CinemaTb>()
         firebaseRestManager.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",cinemaId){
-            holder.cinemaName.text = "Cinema Name : ${it!!.cinemaName}" // Replace with cinema name if available
+            holder.cinemaName.text = "Cinema Name : ${it!!.cinemaName}"
         }
 
 
@@ -38,7 +38,7 @@ class CinemaShowsAdapter(
 
         for (show in shows) {
             val chip = Chip(context)
-            chip.text = show.showStartTime
+            chip.text = show.showStartTime + " to " + show.showEndTime
             holder.showTimings.addView(chip)
         }
     }

@@ -25,13 +25,7 @@ class UserActivity : AppCompatActivity() {
         setContentView(binding.root)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        val cityAdapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.city_name,
-            R.layout.spinner_item
-        )
-        cityAdapter.setDropDownViewResource(R.layout.spinner_item)
-        binding.LocationSelector.adapter = cityAdapter
+
 
         setUpBottomBar()
 

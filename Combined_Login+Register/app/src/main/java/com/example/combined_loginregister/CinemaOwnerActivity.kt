@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -47,6 +48,14 @@ class CinemaOwnerActivity : AppCompatActivity() {
                 warningLoadingHelper.dismissLoadingDialog()
             }, 2000)
         }
+        else{
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+
+            val userName:String?=null
+            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",FirebaseAuth.getInstance().currentUser!!.uid){
+
+            }
+        }
     }
 
     private fun init(){
@@ -86,9 +95,12 @@ class CinemaOwnerActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.ToolBaar)
 
+
+
         binding.ToolBaar.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navView)
         }
+
 
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             // Close the drawer when item is tapped
