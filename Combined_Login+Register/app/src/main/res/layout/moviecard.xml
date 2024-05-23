@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="290dp"
+    android:layout_height="430dp"
+    android:background="@color/black"
+    app:cardCornerRadius="24dp"
+    android:id="@+id/card_container"
+    app:cardElevation="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/MainPoster"
+            android:layout_width="240dp"
+            android:layout_height="300dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:scaleType="centerCrop"
+          />
+
+        <TextView
+            android:id="@+id/Heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/MainPoster"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="Heading"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/SubHeading1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Heading"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:text="SubHeading"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/SubHeading2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/SubHeading1"
+            android:layout_marginTop="4dp"
+            android:text="SubHeading2"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

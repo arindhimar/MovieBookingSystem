@@ -59,29 +59,28 @@
                         android:textSize="20sp" />
                 </LinearLayout>
 
+
+
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/LogoutButton"
+                android:layout_gravity="end"
+                android:src="@drawable/logout_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentLayout"
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:background="@color/black"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/appBarLayout"
         android:layout_above="@id/bottom_bar"
-        android:background="@color/black"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout"
-        app:layout_constraintBottom_toTopOf="@id/bottom_bar">
-
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:background="@color/black"
-            android:layout_height="match_parent"/>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar" />
 
     <nl.joery.animatedbottombar.AnimatedBottomBar
         android:id="@+id/bottom_bar"

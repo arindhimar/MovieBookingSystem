@@ -76,6 +76,7 @@ dependencies {
     implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation ("nl.joery.animatedbottombar:library:1.1.0")
     implementation("io.github.androidpoet:dropdown:1.1.2")
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
 
 
 }
