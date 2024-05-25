@@ -1,29 +1,48 @@
 package com.example.combined_loginregister
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
+import android.os.Handler
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.TextView
 import com.example.combined_loginregister.R
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class SeatManager(private val show: ShowTb, private val requireContext: Context) {
     private val selectedSeats = mutableSetOf<String>()
-    private lateinit var dialog: AlertDialog
+    private lateinit var dialog: Dialog
     private lateinit var view: View
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 
     fun showLoadingDialog(context: Context) {
-        val inflater = LayoutInflater.from(context)
-        view = inflater.inflate(R.layout.cinema_seat_layout, null)
+        // Inflate the cinema seat layout
+        view = LayoutInflater.from(context).inflate(R.layout.cinema_seat_layout, null)
 
-        val builder = AlertDialog.Builder(context)
-        builder.setView(view)
-        builder.setCancelable(true)
+        // Create the dialog with full screen theme
+        val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.setContentView(view)
+        dialog.setCancelable(true)
 
-        dialog = builder.create()
-        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        // Show the dialog
         dialog.show()
+
+        // Set the dialog to class variable for dismissing later if needed
+        this.dialog = dialog
+
+        // Call setup method after the dialog is shown
         setUpCard()
     }
 
@@ -57,14 +76,12 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
             seatContainer.post {
                 val containerWidth = seatContainer.width
 
-                // Dynamically determine the number of columns based on the capacity and container width
-                val maxSeatSize = 100 // Set a max seat size (adjust as needed)
-                val minSeatSize = 60 // Set a minimum seat size (adjust as needed)
+                val maxSeatSize = 150 // Set a max seat size (adjust as needed)
+                val minSeatSize = 100 // Set a minimum seat size (adjust as needed)
                 val minColumns = 5 // Set a minimum number of columns (adjust as needed)
-                val columns = Math.max(minColumns, containerWidth / maxSeatSize)
-
-                // Calculate the seat size, ensuring it's not below the minimum size
-                val seatSize = Math.max(minSeatSize, containerWidth / columns)
+                val columns = minColumns.coerceAtLeast(containerWidth / maxSeatSize)
+                // Calculate the seat size, ensuring it's not below the minimum size and not above the maximum size
+                val seatSize = minSeatSize.coerceAtLeast(containerWidth / columns).coerceAtMost(maxSeatSize)
 
                 // Set the column count
                 seatContainer.columnCount = columns
@@ -86,11 +103,30 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
                             seatSize / 8,
                             seatSize / 8
                         ) // uniform margin
+                        setGravity(Gravity.CENTER)   // Center the seat within the cell
                     }
 
                     val seatId = "${i / columns}-${i % columns}" // Unique identifier for the seat
 
                     seatContainer.addView(seatView, params)
+
+                    val confirm_seat_button = view.findViewById<TextView>(R.id.confirm_seat_button)
+                    confirm_seat_button.setOnClickListener {
+                        if(selectedSeats.size >0){
+                            showBottomSheet()
+                        }
+                        else{
+                            val warningLoadingHelper = WarningLoadingHelper()
+                            warningLoadingHelper.showLoadingDialog(requireContext)
+                            warningLoadingHelper.hideButtons()
+                            warningLoadingHelper.updateText("Select atleast one seat!!")
+
+                            val handler = Handler()
+                            handler.postDelayed({
+                                warningLoadingHelper.dismissLoadingDialog()
+                            }, 2000)
+                        }
+                    }
 
                     loadingDialogHelper.dismissLoadingDialog()
 
@@ -110,6 +146,38 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
             selectedSeats.add(seatId)
             seatView.setImageResource(R.drawable.chair_selected)
         }
+
+    }
+
+    private fun showBottomSheet() {
+        val inflater = LayoutInflater.from(requireContext)
+        val bottomSheetView = inflater.inflate(R.layout.user_seat_confirmation, null)
+
+        val textView = bottomSheetView.findViewById<TextView>(R.id.seat_text)
+        textView.text = "Selected Seats: ${selectedSeats.joinToString(", ")}"
+
+        val pricing_breakdown = bottomSheetView.findViewById<TextView>(R.id.pricing_breakdown)
+        val breakdownText = "Total Cost Breakdown\nTotal Selected Seats : ${selectedSeats.size}\nPrice : ${show.price}\nTotal Cost : ${selectedSeats.size} X ${show.price} =  ${selectedSeats.size * show.price.toInt()}"
+
+        val spannableString = SpannableString(breakdownText)
+        spannableString.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0, // Start index of "Total Cost Breakdown"
+            20, // End index of "Total Cost Breakdown" (assuming it has 20 characters)
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        pricing_breakdown.text = spannableString
+
+
+        val paymentButton = bottomSheetView.findViewById<TextView>(R.id.payment_button)
+        val totalCost = selectedSeats.size * show.price.toInt()
+        paymentButton.text = "Pay : $totalCost"
+
+
+        bottomSheetDialog = BottomSheetDialog(requireContext)
+        bottomSheetDialog.setContentView(bottomSheetView)
+        bottomSheetDialog.show()
     }
 
     fun getSelectedSeats(): List<String> {

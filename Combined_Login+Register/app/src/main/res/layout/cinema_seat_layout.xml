@@ -33,25 +33,41 @@
         android:layout_marginBottom="16dp" />
 
     <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/glowingText"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/confirm_seat_button">
 
         <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:fillViewport="true">
 
             <GridLayout
                 android:id="@+id/seatContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:padding="10dp"
+
                 android:columnCount="5" />
+
         </ScrollView>
     </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/confirm_seat_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Book"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
