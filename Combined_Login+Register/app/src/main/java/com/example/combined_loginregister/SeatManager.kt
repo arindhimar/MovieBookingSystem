@@ -1,6 +1,5 @@
 package com.example.combined_loginregister
 
-
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import com.example.combined_loginregister.R
 
 class SeatManager(private val show: ShowTb, private val requireContext: Context) {
     private val selectedSeats = mutableSetOf<Int>()
@@ -39,54 +39,69 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
     }
 
     private fun setUpCard() {
-//        val seatLayout: RelativeLayout = view.findViewById(R.id.seatLayout)
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(requireContext)
 
         val firebaseRestManager = FirebaseRestManager<CinemaTb>()
-        firebaseRestManager.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",show.cinemaId){
-            val cinema = it
-//
-//
-//            val capacity = cinema.
-//
-//            // Generate seats dynamically
-//            for (seatNumber in 1..capacity) {
-//                val seatView = ImageView(requireContext)
-//                val layoutParams = RelativeLayout.LayoutParams(
-//                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                    RelativeLayout.LayoutParams.WRAP_CONTENT
-//                )
-//
-//                // Set seat image or background
-//                seatView.setImageResource(R.drawable.seat_icon)
-//                seatView.id = View.generateViewId() // Set a unique ID for each seat view
-//                seatView.tag = seatNumber // Set seat number as tag
-//                seatView.setOnClickListener {
-//                    toggleSeatSelection(seatNumber, seatView)
-//                }
-//
-//                // Set seat position in the layout
-//                // Here you can define your logic to position seats according to your layout requirements
-//                layoutParams.leftMargin = 100 // Example left margin
-//                layoutParams.topMargin = 100 * seatNumber // Example top margin, adjust as needed
-//
-//                seatLayout.addView(seatView, layoutParams)
-//            }
+        firebaseRestManager.getSingleItem(CinemaTb::class.java, "moviedb/cinematb", show.cinemaId) {
+            val cinema = it ?: return@getSingleItem
+
+            val capacity = cinema.cinemaCapacity!!.toInt()
+            val seatContainer = view.findViewById<RelativeLayout>(R.id.seatContainer)
+            seatContainer.removeAllViews()
+
+            // Calculate the number of rows and columns
+            val columns = 10 // assuming fixed number of columns
+            val rows = (capacity + columns - 1) / columns // calculate the number of rows needed
+
+            // Get the container dimensions
+            seatContainer.post {
+                val containerWidth = seatContainer.width
+                val containerHeight = seatContainer.height
+
+                // Calculate seat size and margin
+                val seatSize = containerWidth / (columns + 1) // dynamic seat size
+                val horizontalSeatMargin = seatSize / 4 // increase horizontal margin
+                val verticalSeatMargin = seatSize / 2 // increase vertical margin
+
+                for (i in 0 until capacity) {
+                    val seatView = ImageView(requireContext)
+                    seatView.id = View.generateViewId()
+                    seatView.setImageResource(R.drawable.chair_default) // Replace with your seat drawable
+
+                    // Set seat layout params
+                    val params = RelativeLayout.LayoutParams(seatSize, seatSize)
+                    if (i % columns != 0) { // for all but the first seat in a row
+                        params.addRule(RelativeLayout.RIGHT_OF, seatContainer.getChildAt(i - 1).id)
+                        params.setMargins(horizontalSeatMargin, 0, 0, verticalSeatMargin)
+                    }
+                    if (i >= columns) { // for all seats not in the first row
+                        params.addRule(RelativeLayout.BELOW, seatContainer.getChildAt(i - columns).id)
+                        if (i % columns == 0) { // first seat in a row
+                            params.setMargins(0, verticalSeatMargin, 0, verticalSeatMargin)
+                        }
+                    }
+                    seatContainer.addView(seatView, params)
+
+                    loadingDialogHelper.dismissLoadingDialog()
+
+                    seatView.setOnClickListener {
+                        onSeatClicked(i, seatView)
+                    }
+                }
+            }
         }
-
-
     }
 
-//    private fun toggleSeatSelection(seatNumber: Int, seatView: ImageView) {
-//        if (selectedSeats.contains(seatNumber)) {
-//            selectedSeats.remove(seatNumber)
-//            // Deselect seat
-//            seatView.setImageResource(R.drawable.seat_icon)
-//        } else {
-//            selectedSeats.add(seatNumber)
-//            // Select seat
-//            seatView.setImageResource(R.drawable.selected_seat_icon)
-//        }
-//    }
+    private fun onSeatClicked(seatIndex: Int, seatView: ImageView) {
+        if (selectedSeats.contains(seatIndex)) {
+            selectedSeats.remove(seatIndex)
+            seatView.setImageResource(R.drawable.chair_default)
+        } else {
+            selectedSeats.add(seatIndex)
+            seatView.setImageResource(R.drawable.chair_selected)
+        }
+    }
 
     fun getSelectedSeats(): List<Int> {
         return selectedSeats.toList()

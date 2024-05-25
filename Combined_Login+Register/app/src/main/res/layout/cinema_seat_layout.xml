@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/black"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black">
 
     <ImageView
         android:id="@+id/screen"
-        android:src="@drawable/screen"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content"/>
-
+        android:src="@drawable/screen" />
 
     <TextView
         android:id="@+id/glowingText"
@@ -26,10 +24,16 @@
         android:shadowDx="0.0"
         android:shadowDy="0.0"
         android:shadowRadius="8"
-        android:textSize="20dp"
         android:text="Screen Here"
-        android:textColor="#1A38CF" />
+        android:textColor="#1A38CF"
+        android:textSize="20dp" />
 
-
+    <RelativeLayout
+        android:id="@+id/seatContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/glowingText"
+        android:layout_marginTop="20dp"
+        android:padding="10dp" />
 
 </RelativeLayout>
