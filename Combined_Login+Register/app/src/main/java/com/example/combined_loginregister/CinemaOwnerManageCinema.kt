@@ -216,30 +216,50 @@ class CinemaOwnerManageCinema : Fragment() {
             if (items.isNotEmpty()) {
                 for (item in items) {
                     if (item.uid == FirebaseAuth.getInstance().currentUser!!.uid) {
-                        firebaseRestManager2.getAllItems(
-                            CinemaTb::class.java,
-                            "moviedb/cinematb"
-                        ) { cinemaitems ->
-                            if (cinemaitems.isNotEmpty()) {
-                                for (cinemaitem in cinemaitems) {
-                                    if (cinemaitem.cinemaID == item.cinemaId) {
-                                        cinemaTbList.add(cinemaitem)
-                                    }
-                                }
 
-                                val cinemaOwnerCinemaListAdapter = CinemaOwnerCinemaListAdapter(cinemaTbList)
-                                binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
-                                binding.CinemaCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
 
-                                // Close loading dialog once data is loaded
-                                loadingDialogHelper.dismissLoadingDialog()
-                            }
+                        firebaseRestManager2.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",item.cinemaId!!) { cinemaitem ->
+
+                            cinemaTbList.add(cinemaitem!!)
+                            val cinemaOwnerCinemaListAdapter = CinemaOwnerCinemaListAdapter(cinemaTbList)
+                           cinemaOwnerCinemaListAdapter.setOnItemClickListener(object : CinemaOwnerCinemaListAdapter.OnItemClickListener {
+                               override fun onItemClick(cinema: CinemaTb) {
+
+                               }
+
+                           })
+
+                            binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
+                            binding.CinemaCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
+
+                            // Close loading dialog once data is loaded
+                            loadingDialogHelper.dismissLoadingDialog()
                         }
 
-                        // Break the loop after processing data for the current user
-                        break
+
+//                        firebaseRestManager2.getAllItems(
+//                            CinemaTb::class.java,
+//                            "moviedb/cinematb"
+//                        ) { cinemaitems ->
+//                            if (cinemaitems.isNotEmpty()) {
+//                                for (cinemaitem in cinemaitems) {
+//                                    if (cinemaitem.cinemaID == item.cinemaId) {
+//                                        cinemaTbList.add(cinemaitem)
+//                                    }
+//                                }
+//
+//                                val cinemaOwnerCinemaListAdapter = CinemaOwnerCinemaListAdapter(cinemaTbList)
+//                                binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
+//                                binding.CinemaCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
+//
+//                                // Close loading dialog once data is loaded
+//                                loadingDialogHelper.dismissLoadingDialog()
+//                            }
+//                        }
+
                     }
                 }
+
             } else {
                 // Close loading dialog if no items are found
                 loadingDialogHelper.dismissLoadingDialog()
