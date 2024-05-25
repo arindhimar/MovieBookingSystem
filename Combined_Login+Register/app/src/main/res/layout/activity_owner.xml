@@ -25,6 +25,8 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:id="@+id/ToolBaar"
+                android:layout_marginTop="25pt"
+
                 android:layout_height="wrap_content"
                 app:navigationIcon="@drawable/baseline_menu_24"
                 app:title="Cinema Admin Panel" />
@@ -37,6 +39,7 @@
         </com.google.android.material.appbar.AppBarLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/OwnerDashBoard"
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black"
@@ -44,6 +47,7 @@
 
 
             <LinearLayout
+                android:layout_marginTop="25pt"
 
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -288,6 +292,8 @@
 
     <com.google.android.material.navigation.NavigationView
         app:headerLayout="@layout/layout_nav_header"
+        android:layout_marginTop="25pt"
+
         app:menu="@menu/owner_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

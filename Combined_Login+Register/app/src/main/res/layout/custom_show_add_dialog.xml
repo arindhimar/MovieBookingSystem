@@ -57,13 +57,12 @@
                 app:icon="@drawable/clock_icon"
                 app:layout_constraintBottom_toTopOf="@id/textView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.471"
+                app:layout_constraintHorizontal_bias="0.506"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.598"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/price"
@@ -104,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:inputType="number"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textColorHint="@color/m3_textfield_login_page_colors" />
             </com.google.android.material.textfield.TextInputLayout>
 
