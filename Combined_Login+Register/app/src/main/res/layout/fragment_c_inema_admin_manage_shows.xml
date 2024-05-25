@@ -74,7 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
         android:src="@drawable/add_icon"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignEnd="@+id/ShowsCardForCa"
+        android:layout_alignBottom="@+id/ShowsCardForCa" />
 
 </RelativeLayout>

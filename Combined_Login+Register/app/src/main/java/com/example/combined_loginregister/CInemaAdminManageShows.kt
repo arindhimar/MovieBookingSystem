@@ -21,6 +21,7 @@ import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarSetUp
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.Firebase
@@ -211,6 +212,7 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         val btnTime = dialogView2.findViewById<Button>(R.id.btnTime)
         val textView = dialogView2.findViewById<TextView>(R.id.textView)
         val addFinalShowBtn = dialogView2.findViewById<Button>(R.id.AddFinalShowBtn)
+        val price = dialogView2.findViewById<TextInputLayout>(R.id.price)
 
         val currentDateTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"))
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -314,31 +316,44 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
                     }, 2000)
                 } else {
 
-                    val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
-                    firebaseRestManager2.getSingleItem(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb",cinemaOwnerId) { items ->
-                        if (items != null) {
-                            cinemaId = items.cinemaId.toString()
-                            val firebaseRestManager = FirebaseRestManager<ShowTb>()
-                            val db = Firebase.database.getReference("moviedb/showtb")
-                            val id = db.push().key ?: return@getSingleItem
-                            val tempData = ShowTb(id, cinemaId, FirebaseAuth.getInstance().currentUser!!.uid, movie.mid!!, selectedDateText, selectedTimeText, newTimeText!!)
+                    if(price.editText?.text.toString().isEmpty()){
+                        price.error = "Enter price"
+                    }
+                    else{
+                        if(price.editText?.text.toString().toInt() < 1){
+                            price.error = "Enter valid price"
+                        }
+                        else{
+                            price.error = null
+                            val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
+                            firebaseRestManager2.getSingleItem(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb",cinemaOwnerId) { items ->
+                                if (items != null) {
+                                    cinemaId = items.cinemaId.toString()
+                                    val firebaseRestManager = FirebaseRestManager<ShowTb>()
+                                    val db = Firebase.database.getReference("moviedb/showtb")
+                                    val id = db.push().key ?: return@getSingleItem
+                                    val tempData = ShowTb(id, cinemaId, FirebaseAuth.getInstance().currentUser!!.uid, movie.mid!!, selectedDateText, selectedTimeText, newTimeText!!)
 
-                            firebaseRestManager.addItem(tempData, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
-                                if (success) {
-                                    val successLoadingHelper = SuccessLoadingHelper()
-                                    successLoadingHelper.showLoadingDialog(requireContext())
-                                    successLoadingHelper.updateText("Show added successfully")
-                                    successLoadingHelper.hideButtons()
+                                    firebaseRestManager.addItem(tempData, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
+                                        if (success) {
+                                            val successLoadingHelper = SuccessLoadingHelper()
+                                            successLoadingHelper.showLoadingDialog(requireContext())
+                                            successLoadingHelper.updateText("Show added successfully")
+                                            successLoadingHelper.hideButtons()
 
-                                    val handler = Handler(Looper.getMainLooper())
-                                    handler.postDelayed({
-                                        successLoadingHelper.dismissLoadingDialog()
-                                        alertDialog2.dismiss()
-                                    }, 2000)
+                                            val handler = Handler(Looper.getMainLooper())
+                                            handler.postDelayed({
+                                                successLoadingHelper.dismissLoadingDialog()
+                                                alertDialog2.dismiss()
+                                            }, 2000)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+
+
                 }
             }
         }

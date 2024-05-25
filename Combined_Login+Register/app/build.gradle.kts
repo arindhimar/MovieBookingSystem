@@ -77,6 +77,10 @@ dependencies {
     implementation ("nl.joery.animatedbottombar:library:1.1.0")
     implementation("io.github.androidpoet:dropdown:1.1.2")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("androidx.browser:browser:1.3.0")
+    implementation ("com.google.android.gms:play-services-auth:20.1.0")
+    implementation("com.google.android.play:integrity:1.3.0")
+
 
 
 }

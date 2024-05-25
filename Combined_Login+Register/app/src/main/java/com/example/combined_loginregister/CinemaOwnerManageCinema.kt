@@ -80,11 +80,14 @@ class CinemaOwnerManageCinema : Fragment() {
             val AddCinemaData = dialogView.findViewById<Button>(R.id.AddCinemaData)
             val textInputLayout1: TextInputLayout = dialogView.findViewById(R.id.textInputLayout1)
             val textInputLayout2: TextInputLayout = dialogView.findViewById(R.id.textInputLayout2)
+            val textInputLayout3: TextInputLayout = dialogView.findViewById(R.id.textInputLayout3)
+
 
 
             uploadImagesBtn.setOnClickListener {
                 val cinemaName = textInputLayout1.editText?.text.toString()
                 val cinemaCity = textInputLayout2.editText?.text.toString()
+                val cinemaCapacity = textInputLayout3.editText?.text.toString()
 
                 if (cinemaName.isEmpty()) {
                     // Display error for empty movie name
@@ -102,8 +105,16 @@ class CinemaOwnerManageCinema : Fragment() {
                     textInputLayout2.error = null
                 }
 
+                if (cinemaCapacity.isEmpty()) {
+                    // Display error for empty movie duration
+                    textInputLayout3.error = "Please enter the capacity"
+                } else {
+                    // Clear any previous error
+                    textInputLayout3.error = null
+                }
+
                 // Open gallery only if both fields are not empty
-                if (textInputLayout1.error == null && textInputLayout2.error == null) {
+                if (textInputLayout1.error == null && textInputLayout2.error == null&& textInputLayout3.error == null) {
                     openGallery()
                 }
             }
@@ -113,6 +124,7 @@ class CinemaOwnerManageCinema : Fragment() {
                 // Perform action when Add Cinema button is clicked
                 val cinemaName = textInputLayout1.editText?.text.toString()
                 val cinemaCity = textInputLayout2.editText?.text.toString()
+                val cinemaCapacity = textInputLayout3.editText?.text.toString()
 
                 if (cinemaName.isEmpty()) {
                     // Display error for empty cinema name
@@ -128,6 +140,14 @@ class CinemaOwnerManageCinema : Fragment() {
                 } else {
                     // Clear any previous error
                     textInputLayout2.error = null
+                }
+
+                if (cinemaCapacity.isEmpty()) {
+                    // Display error for empty capacity
+                    textInputLayout3.error = "Please enter the capacity"
+                } else {
+                    // Clear any previous error
+                    textInputLayout3.error = null
                 }
 
                 // Check if a single image is selected
@@ -237,6 +257,7 @@ class CinemaOwnerManageCinema : Fragment() {
 
         val textInputLayout1: TextInputLayout = dialogView.findViewById(R.id.textInputLayout1)
         val textInputLayout2: TextInputLayout = dialogView.findViewById(R.id.textInputLayout2)
+        val textInputLayout3: TextInputLayout = dialogView.findViewById(R.id.textInputLayout3)
 
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val firebaseRestManager = FirebaseRestManager<CinemaTb>()
@@ -256,7 +277,7 @@ class CinemaOwnerManageCinema : Fragment() {
 //                    Toast.LENGTH_SHORT
 //                ).show()
                 Log.d("TAG", "uploadImageToFirebaseStorage: $downloadUrl")
-                val tempCinema = CinemaTb(cinemaId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString(),downloadUrl)
+                val tempCinema = CinemaTb(cinemaId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString(),downloadUrl,textInputLayout3.editText!!.text.toString())
 
                 // Add cinema data to the database
                 firebaseRestManager.addItemWithCustomId(tempCinema,cinemaId, dbRef) { success, error ->

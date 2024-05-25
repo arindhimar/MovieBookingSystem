@@ -57,12 +57,57 @@
                 app:icon="@drawable/clock_icon"
                 app:layout_constraintBottom_toTopOf="@id/textView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.506"
+                app:layout_constraintHorizontal_bias="0.471"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.786"
+                app:layout_constraintVertical_bias="0.598"
                 app:rippleColor="#90FFFFFF"
                 app:strokeColor="#1E1E8E" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/price"
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="180dp"
+                android:layout_marginRight="40dp"
+                android:hint="Price"
+
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:counterEnabled="false"
+                app:counterTextColor="@color/m3_textfield_login_page_colors"
+                app:endIconMode="clear_text"
+                app:endIconScaleType="centerInside"
+                app:endIconTint="@color/login_button"
+                app:helperTextEnabled="false"
+                app:helperTextTextColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toTopOf="@id/textView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:hintTextColor="@color/white"
+                app:layout_constraintVertical_bias="0.627"
+
+                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconTint="@color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <TextView
                 android:id="@+id/textView"
