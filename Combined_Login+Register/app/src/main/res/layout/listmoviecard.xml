@@ -34,7 +34,6 @@
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_margin="10dp"
-
             android:scaleType="centerCrop" />
 
         <!-- Text Content -->

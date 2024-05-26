@@ -4,10 +4,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <application
         android:allowBackup="true"
-
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="false"
@@ -19,8 +23,6 @@
         android:theme="@style/Theme.Combined_LoginRegister"
         tools:targetApi="31">
         <activity
-<<<<<<< HEAD
-=======
             android:name=".PaymentActivity"
             android:exported="false" />
 
@@ -38,7 +40,6 @@
             android:name=".UserActivity"
             android:exported="false" />
         <activity
->>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
             android:name=".CinemaAdminActivity"
             android:exported="false" />
         <activity
@@ -56,8 +57,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
-=======
 
         <meta-data
             android:name="preloaded_fonts"
@@ -65,7 +64,6 @@
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_test_bsU4eAerb7lXGD" />
->>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
     </application>
 
 </manifest>

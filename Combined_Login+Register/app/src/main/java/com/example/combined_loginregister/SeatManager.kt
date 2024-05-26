@@ -180,7 +180,10 @@ class SeatManager(
 
         paymentButton.setOnClickListener {
             val intent = Intent(requireContext, PaymentActivity::class.java)
+
+            intent.putExtra("key_amount", totalCost) // Amount in paise
             requireContext.startActivity(intent)
+
         }
 
 

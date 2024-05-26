@@ -62,39 +62,6 @@ class HorizontalCalendarSetUp() {
     /*
      * Function to setup calendar for every month
      */
-<<<<<<< HEAD
-    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
-        val calendarList = ArrayList<CalendarDateModel>()
-        val calendar = Calendar.getInstance()
-        val currentDate = Date()
-        calendar.time = currentDate
-        val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
-        dates.clear()
-        calendar.set(Calendar.DAY_OF_MONTH, 1)
-        while (dates.size < maxDaysInMonth) {
-            val date = calendar.time
-            val isEnabled = (calendar.time.time - currentDate.time) <= (7 * 24 * 60 * 60 * 1000) // 7 days in milliseconds
-            dates.add(date)
-            calendarList.add(CalendarDateModel(date, isEnabled))
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        calendarList2.clear()
-        calendarList2.addAll(calendarList)
-        adapter.setOnItemClickListener(listener)
-        adapter.setData(calendarList)
-        return sdf.format(cal.time)
-    }
-//    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
-//        val calendarList = ArrayList<CalendarDateModel>()
-//        val monthCalendar = cal.clone() as Calendar
-//        val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
-//        dates.clear()
-//        monthCalendar.set(Calendar.DAY_OF_MONTH, 1)
-//        while (dates.size < maxDaysInMonth) {
-//            dates.add(monthCalendar.time)
-//            calendarList.add(CalendarDateModel(monthCalendar.time))
-//            monthCalendar.add(Calendar.DAY_OF_MONTH, 1)
-=======
 //    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener): String {
 //        val calendarList = ArrayList<CalendarDateModel>()
 //        val currentDate = Date()
@@ -116,7 +83,6 @@ class HorizontalCalendarSetUp() {
 //            dates.add(date)
 //            calendarList.add(CalendarDateModel(date, isEnabled))
 //            cal.add(Calendar.DAY_OF_MONTH, 1)
->>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
 //        }
 //
 //        calendarList2.clear()

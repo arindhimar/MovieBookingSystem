@@ -2,9 +2,11 @@ package com.example.combined_loginregister
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
+import org.json.JSONException
 import org.json.JSONObject
 
 class PaymentActivity : AppCompatActivity(), PaymentResultListener {
@@ -13,43 +15,36 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
 
-        Checkout.preload(applicationContext)
-        savepayment(100)
-    }
+        val checkout = Checkout()
+        checkout.setKeyID("rzp_test_bsU4eAerb7lXGD")
 
-    private fun savepayment(amount:Int) {
-        val Checkout = Checkout()
-        Checkout.setKeyID("rzp_test_W8LTpPgYV93bIS")
+        val amount = intent.getIntExtra("key_amount", 0)
+
+
+        val paymentOptions = JSONObject().apply {
+            put("name", "TheCinemaCub")
+            put("description", "Payment for the movie")
+            put("currency", "INR")
+            put("amount", amount*100)
+        }
+
         try {
-            val options = JSONObject()
-
-            options.put("name", "Razorpay Corp")
-            options.put("description", "*************************")
-            options.put("theme.color", "#FFBB86FC");
-            options.put("currency", "INR");
-            options.put("amount", amount * 100)
-
-
-            val retryObj = JSONObject();
-            retryObj.put("enabled", true);
-            retryObj.put("max_count", 4);
-            options.put("retry", retryObj);
-
-            Checkout.open(this, options)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            checkout.open(this, paymentOptions)
+        } catch (e: JSONException) {
+            Log.e("PaymentActivity", "Error in starting Razorpay Checkout", e)
         }
     }
 
+    override fun onPaymentSuccess(razorpayPaymentID: String?) {
 
-    override fun onPaymentSuccess(p0: String?) {
-        // Payment successful, handle the success case
-        Log.d("PaymentSuccess", "Payment Successful")
-        // You can send the payment ID and order ID to your server for verification
+        val firebaseRestManager
+
+        Toast.makeText(this, "Payment Successful: $razorpayPaymentID", Toast.LENGTH_LONG).show()
+
+
     }
 
-    override fun onPaymentError(p0: Int, p1: String?) {
-        // Payment failed, handle the error case
-        Log.d("PaymentError", "Payment Error: $p1")
+    override fun onPaymentError(code: Int, description: String?) {
+        Toast.makeText(this, "Payment failed: $description", Toast.LENGTH_LONG).show()
     }
 }
