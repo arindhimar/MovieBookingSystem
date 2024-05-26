@@ -98,11 +98,16 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnOpenAddShowDialog"
         android:src="@drawable/add_icon"
+<<<<<<< HEAD
         android:layout_margin="25dp"
         android:layout_alignEnd="@+id/ShowsCardForCa"
         android:layout_alignBottom="@+id/ShowsCardForCa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+=======
+        android:layout_alignEnd="@+id/ShowsCardForCa"
+        android:layout_alignBottom="@+id/ShowsCardForCa" />
+>>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
 
 
 </RelativeLayout>

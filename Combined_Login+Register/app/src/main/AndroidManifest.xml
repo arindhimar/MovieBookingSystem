@@ -19,6 +19,26 @@
         android:theme="@style/Theme.Combined_LoginRegister"
         tools:targetApi="31">
         <activity
+<<<<<<< HEAD
+=======
+            android:name=".PaymentActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.razorpay.RzpTokenReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".UserActivity"
+            android:exported="false" />
+        <activity
+>>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
             android:name=".CinemaAdminActivity"
             android:exported="false" />
         <activity
@@ -36,6 +56,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
+=======
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_test_bsU4eAerb7lXGD" />
+>>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
     </application>
 
 </manifest>

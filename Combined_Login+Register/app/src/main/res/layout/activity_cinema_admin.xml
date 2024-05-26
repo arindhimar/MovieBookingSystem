@@ -6,15 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:openDrawer="start"
+
     tools:context=".CinemaAdminActivity">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -24,6 +27,8 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
+                android:layout_marginTop="25pt"
+
                 android:id="@+id/ToolBaar"
                 android:layout_height="wrap_content"
                 app:navigationIcon="@drawable/baseline_menu_24"
@@ -46,6 +51,8 @@
 
 
             <LinearLayout
+                android:layout_marginTop="25pt"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -56,6 +63,8 @@
                     android:text="Cinema Admin Dashboard"
                     android:fontFamily="@font/googlesans_bold"
                     android:textSize="24sp"
+                    android:background="@color/black"
+
                     android:textColor="@color/white"
                     android:layout_margin="20dp"/>
 
@@ -244,6 +253,8 @@
 
 
     <com.google.android.material.navigation.NavigationView
+        android:layout_marginTop="25pt"
+
         app:headerLayout="@layout/layout_nav_header"
         app:menu="@menu/cinemaadminmenu"
         android:layout_width="wrap_content"

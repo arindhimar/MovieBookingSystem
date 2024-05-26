@@ -8,5 +8,6 @@ data class ShowTb(
     val movieId: String = "",
     val showDate: String = "",
     val showStartTime: String = "",
-    val showEndTime: String = ""
+    val showEndTime: String = "",
+    val price: String = "",
 )

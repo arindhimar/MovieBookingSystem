@@ -31,7 +31,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:layout_marginTop="90dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginRight="25dp"
                 android:hint="Cinema Name"
                 app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
@@ -93,7 +93,7 @@
                 app:endIconTint="@color/login_button"
                 app:helperTextEnabled="false"
                 app:helperTextTextColor="@color/m3_textfield_login_page_colors"
-                app:layout_constraintBottom_toTopOf="@id/uploadImagesBtn"
+                app:layout_constraintBottom_toTopOf="@id/textInputLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -110,6 +110,50 @@
                     android:textColorHint="@color/m3_textfield_login_page_colors"
                     app:simpleItems="@array/city_name"
                     />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- TextInputLayout 3 for Capacity  -->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout3"
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="180dp"
+                android:layout_marginRight="25dp"
+                android:hint="Capacity"
+                app:boxBackgroundColor="@color/m3_textfield_login_page_colors_bkg"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="25dp"
+                app:boxCornerRadiusBottomStart="25dp"
+                app:boxCornerRadiusTopEnd="25dp"
+                app:boxCornerRadiusTopStart="25dp"
+                app:boxStrokeColor="@color/m3_textfield_login_page_colors"
+                app:counterEnabled="false"
+                app:counterTextColor="@color/m3_textfield_login_page_colors"
+                app:endIconMode="clear_text"
+                app:endIconScaleType="centerInside"
+                app:endIconTint="@color/login_button"
+                app:helperTextEnabled="false"
+                app:helperTextTextColor="@color/m3_textfield_login_page_colors"
+                app:layout_constraintBottom_toTopOf="@id/uploadImagesBtn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:hintTextColor="@color/white"
+                app:layout_constraintVertical_bias="0.627"
+                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconTint="@color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/m3_textfield_login_page_colors" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -153,7 +197,7 @@
                 style="Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="80dp"
+                android:layout_marginBottom="24dp"
 
                 android:text="Add Cinema"
                 android:textColor="@color/white"

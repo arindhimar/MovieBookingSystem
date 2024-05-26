@@ -29,9 +29,9 @@
         android:id="@+id/AddMovieBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="50dp"
+        android:layout_alignEnd="@+id/CardsHere"
+        android:layout_alignBottom="@+id/CardsHere"
+        android:layout_margin="25dp"
         app:srcCompat="@drawable/add_icon"
         android:contentDescription="TODadasO" />
 

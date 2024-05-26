@@ -11,12 +11,17 @@ import com.google.android.material.chip.ChipGroup
 
 class CinemaShowsAdapter(
     private val groupedShows: Map<String, List<ShowTb>>,
-    private val context: Context
+    private val context: Context,
+    private val onChipClickListener: OnChipClickListener
 ) : RecyclerView.Adapter<CinemaShowsAdapter.CinemaViewHolder>() {
 
     class CinemaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cinemaName: TextView = view.findViewById(R.id.cinemaName)
         val showTimings: ChipGroup = view.findViewById(R.id.ShowTimingsHere)
+    }
+
+    interface OnChipClickListener {
+        fun onChipClick(show: ShowTb)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CinemaViewHolder {
@@ -29,16 +34,18 @@ class CinemaShowsAdapter(
         val shows = groupedShows[cinemaId] ?: emptyList()
 
         val firebaseRestManager = FirebaseRestManager<CinemaTb>()
-        firebaseRestManager.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",cinemaId){
+        firebaseRestManager.getSingleItem(CinemaTb::class.java, "moviedb/cinematb", cinemaId) {
             holder.cinemaName.text = "Cinema Name : ${it!!.cinemaName}"
         }
-
 
         holder.showTimings.removeAllViews()
 
         for (show in shows) {
             val chip = Chip(context)
             chip.text = show.showStartTime + " to " + show.showEndTime
+            chip.setOnClickListener {
+                onChipClickListener.onChipClick(show)
+            }
             holder.showTimings.addView(chip)
         }
     }

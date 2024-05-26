@@ -15,7 +15,7 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.Calendar
 
-class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: Context) : HorizontalCalendarAdapter.OnItemClickListener {
+class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: Context) : HorizontalCalendarAdapter.OnItemClickListener, CinemaShowsAdapter.OnChipClickListener {
     private lateinit var dialog: AlertDialog
     private lateinit var view: View
 
@@ -137,7 +137,7 @@ class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: 
                 Log.d("TAG", "onItemClick: $groupedShows")
                 // Use the groupedShows to set up your adapter or process further
 
-                val adapter = CinemaShowsAdapter(groupedShows, requireContext)
+                val adapter = CinemaShowsAdapter(groupedShows, requireContext, this)
                 showsHere.adapter = adapter
             }
         } else {
@@ -167,42 +167,14 @@ class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: 
                 Log.d("TAG", "onItemClick: $groupedShows")
                 // Use the groupedShows to set up your adapter or process further
 
-                val adapter = CinemaShowsAdapter(groupedShows, requireContext)
+                val adapter = CinemaShowsAdapter(groupedShows, requireContext, this)
                 showsHere.adapter = adapter
             }
         }
     }
 
-
-//    override fun onItemClick(ddMmYy: String, dd: String, day: String) {
-//        val selectedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(ddMmYy)
-//        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//        val formattedSelectedDate = dateFormat.format(selectedDate)
-//
-//        val firebaseRestManager = FirebaseRestManager<ShowTb>()
-//        firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
-//            // Get the current time in India
-//            val indiaTimeZone = TimeZone.getTimeZone("Asia/Kolkata")
-//            val indiaCalendar = Calendar.getInstance(indiaTimeZone)
-//            val currentTime = indiaCalendar.time
-//
-//            // Filter shows by the selected date and ensure they are at least 15 minutes from now
-//            val filteredShows = showTbs.filter { it.showDate == formattedSelectedDate && it.movieId == movieData.mid }
-//                .filter { show ->
-//                    val showStartTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-//                    showStartTimeFormat.timeZone = indiaTimeZone
-//                    val showStartTime = showStartTimeFormat.parse("${show.showDate} ${show.showStartTime}")
-//                    showStartTime?.let { it.time - currentTime.time >= 15 * 60 * 1000 } ?: false
-//                }
-//
-//            // Group shows by cinema ID
-//            val groupedShows = filteredShows.groupBy { it.cinemaId }
-//
-//            Log.d("TAG", "onItemClick: $groupedShows")
-//            // Use the groupedShows to set up your adapter or process further
-//
-//            val adapter = CinemaShowsAdapter(groupedShows, requireContext)
-//            showsHere.adapter = adapter
-//        }
-//    }
+    override fun onChipClick(show: ShowTb) {
+        val seatManager = SeatManager(show,requireContext)
+        seatManager.showLoadingDialog(requireContext)
+    }
 }

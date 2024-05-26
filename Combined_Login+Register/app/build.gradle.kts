@@ -68,11 +68,22 @@ dependencies {
     implementation ("com.furkanakdemir:surroundcardview:1.0.6")
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
     implementation ("com.github.ArjunGupta08:Horizontal-CalendarDate-With-Click-listener:1.1.0")
+<<<<<<< HEAD
 
 
 
 
 
+=======
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation ("nl.joery.animatedbottombar:library:1.1.0")
+    implementation("io.github.androidpoet:dropdown:1.1.2")
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("androidx.browser:browser:1.3.0")
+    implementation ("com.google.android.gms:play-services-auth:20.1.0")
+    implementation("com.google.android.play:integrity:1.3.0")
+    implementation("com.razorpay:checkout:1.6.33")
+>>>>>>> 7249331f80923bcd6c1ebf26e26936377b1a2884
 
 
 
