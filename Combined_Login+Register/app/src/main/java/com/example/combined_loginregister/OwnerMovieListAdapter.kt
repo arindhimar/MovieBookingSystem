@@ -1,6 +1,5 @@
 package com.example.combined_loginregister
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +28,6 @@ class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView
 
 
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: OwnerMovieViewHolder, position: Int) {
         val movie = movieList[position]
 

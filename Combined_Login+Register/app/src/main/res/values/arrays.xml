@@ -12,11 +12,87 @@
         <item>Pune</item>
         <item>Jaipur</item>
         <item>Lucknow</item>
+        <item>Kanpur</item>
+        <item>Nagpur</item>
+        <item>Indore</item>
+        <item>Thane</item>
+        <item>Bhopal</item>
         <item>Visakhapatnam</item>
+        <item>Patna</item>
         <item>Vadodara</item>
+        <item>Ghaziabad</item>
+        <item>Ludhiana</item>
+        <item>Agra</item>
+        <item>Madurai</item>
         <item>Nashik</item>
+        <item>Faridabad</item>
+        <item>Meerut</item>
         <item>Rajkot</item>
+        <item>Kalyan-Dombivali</item>
+        <item>Vasai-Virar</item>
+        <item>Varanasi</item>
+        <item>Srinagar</item>
+        <item>Aurangabad</item>
+        <item>Dhanbad</item>
+        <item>Amritsar</item>
+        <item>Navi Mumbai</item>
+        <item>Allahabad</item>
+        <item>Ranchi</item>
+        <item>Howrah</item>
+        <item>Jabalpur</item>
+        <item>Gwalior</item>
+        <item>Jodhpur</item>
+        <item>Raipur</item>
+        <item>Kota</item>
+        <item>Guwahati</item>
+        <item>Chandigarh</item>
+        <item>Solapur</item>
+        <item>Hubballi-Dharwad</item>
+        <item>Bareilly</item>
+        <item>Moradabad</item>
+        <item>Mysore</item>
+        <item>Gurgaon</item>
+        <item>Aligarh</item>
+        <item>Jalandhar</item>
+        <item>Tiruchirappalli</item>
+        <item>Bhubaneswar</item>
+        <item>Salem</item>
+        <item>Warangal</item>
+        <item>Guntur</item>
+        <item>Bhiwandi</item>
+        <item>Saharanpur</item>
+        <item>Gorakhpur</item>
+        <item>Bikaner</item>
+        <item>Amravati</item>
         <item>Noida</item>
-
+        <item>Jamshedpur</item>
+        <item>Bhilai</item>
+        <item>Cuttack</item>
+        <item>Firozabad</item>
+        <item>Kochi</item>
+        <item>Nellore</item>
+        <item>Bhavnagar</item>
+        <item>Dehradun</item>
+        <item>Durgapur</item>
+        <item>Asansol</item>
+        <item>Rourkela</item>
+        <item>Nanded</item>
+        <item>Kolhapur</item>
+        <item>Ajmer</item>
+        <item>Akola</item>
+        <item>Gulbarga</item>
+        <item>Jamnagar</item>
+        <item>Ujjain</item>
+        <item>Loni</item>
+        <item>Siliguri</item>
+        <item>Jhansi</item>
+        <item>Ulhasnagar</item>
+        <item>Jammu</item>
+        <item>Sangli-Miraj  Kupwad</item>
+        <item>Mangalore</item>
+        <item>Erode</item>
+        <item>Belgaum</item>
+        <item>Ambattur</item>
+        <item>Tirunelveli</item>
     </string-array>
 </resources>

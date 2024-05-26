@@ -1,10 +1,8 @@
 package com.example.combined_loginregister
 
 import android.app.AlertDialog
-import android.os.Build
+import android.graphics.Movie
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,27 +11,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.core.i18n.DateTimeFormatter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarSetUp
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.database
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.time.LocalTime
-import java.time.ZoneId
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,8 +39,6 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
     lateinit var binding:FragmentCInemaAdminManageShowsBinding
     lateinit var dialogView: View
     lateinit var alertDialog: AlertDialog
-    lateinit var cinemaOwnerId: String
-    lateinit var cinemaId: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -75,10 +56,7 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
 
 
 
-         cinemaOwnerId=null.toString()
-         cinemaId = null.toString().toString()
-
-        binding.btnOpenAddShowDialog.setOnClickListener {
+        binding.btnOpenAddShowDialog?.setOnClickListener {
             if (FirebaseAuth.getInstance().currentUser == null) {
                 // Handle user not logged in
                 return@setOnClickListener
@@ -125,25 +103,25 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         }
 
 
-        loadInitialData()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         return binding.root
-    }
-
-    private fun fetchCinemaOwnerId() {
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-
-        val firebaseRestManager1 = FirebaseRestManager<CinemaAdminTb>()
-        firebaseRestManager1.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
-            val cinemaAdmin = cinemaAdminTbs.find { it.userId == userId }
-            val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
-            firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerTbs ->
-                val cinemaOwner =
-                    cinemaOwnerTbs.find { it.cinemaOwnerId == cinemaAdmin?.cinemaOwnerId.toString() }
-            }
-        }
-
     }
 
     private fun loadLeasedMovies(recyclerView: RecyclerView) {
@@ -153,8 +131,6 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
             firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
                 val cinemaAdmin = cinemaAdminTbs.find { it.userId == currentUser.uid }
                 cinemaAdmin?.let {
-                    cinemaOwnerId = it.cinemaOwnerId.toString()
-
                     val cinemaOwnerId = it.cinemaOwnerId.toString()
                     loadCinemaOwner(cinemaOwnerId) { userId ->
                         loadLeasedMoviesForUser(userId) { movies ->
@@ -163,26 +139,21 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
                             Log.d("TAG", "loadLeasedMovies: waah re chl rha hai!! ${movies.size}")
                             val adapter = OwnerMovieListAdapter(movies)// movies should be an arraylist
                             adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
-                                @RequiresApi(Build.VERSION_CODES.O)
                                 override fun onItemClick(movie: MovieTB) {
                                     val yesOrNoLoadingHelper = YesOrNoLoadingHelper()
                                     yesOrNoLoadingHelper.showLoadingDialog(requireContext())
                                     yesOrNoLoadingHelper.hideCheckBox()
-                                    yesOrNoLoadingHelper.updateText("Are you sure you want to add this movie , You won't be able to make any changes to it")
+                                    yesOrNoLoadingHelper.updateText("Are you sure you want to add this movie , You won;t be able to make any changes to it")
                                     val view = yesOrNoLoadingHelper.getView()
                                     val btnYes = view.findViewById<Button>(R.id.btn_yes)
                                     val btnNo = view.findViewById<Button>(R.id.btn_no)
 
                                     btnNo.setOnClickListener {
-                                        alertDialog.dismiss()
+                                        yesOrNoLoadingHelper.dismissLoadingDialog()
                                     }
 
                                     btnYes.setOnClickListener {
-                                        alertDialog.dismiss()
-                                        yesOrNoLoadingHelper.dismissLoadingDialog()
-
-                                        showAddShowDialog(movie)
-
+                                        showAddShowDialog()
                                     }
 
                                 }
@@ -196,157 +167,9 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun showAddShowDialog(movie: MovieTB) {
-        val dialogView2: View = layoutInflater.inflate(R.layout.custom_show_add_dialog, null)
-        val alertDialog2: AlertDialog
+    private fun showAddShowDialog() {
 
-        val dialogBuilder2 = AlertDialog.Builder(requireContext())
-        dialogBuilder2.setView(dialogView2)
-
-        alertDialog2 = dialogBuilder2.create()
-        alertDialog2.show()
-
-        val btnDate = dialogView2.findViewById<Button>(R.id.btnDate)
-        val btnTime = dialogView2.findViewById<Button>(R.id.btnTime)
-        val textView = dialogView2.findViewById<TextView>(R.id.textView)
-        val addFinalShowBtn = dialogView2.findViewById<Button>(R.id.AddFinalShowBtn)
-
-        val currentDateTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"))
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        timeFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
-        val currentIndianDate = dateFormat.format(currentDateTime.time)
-        val currentIndianTime = timeFormat.format(currentDateTime.time)
-
-        textView.text = "Date: $currentIndianDate\nTime: $currentIndianTime"
-
-        var selectedDateText = currentIndianDate
-        var selectedTimeText = currentIndianTime
-        var newTimeText: String? = null
-
-        btnDate.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Show Date")
-                .setSelection(currentDateTime.timeInMillis)
-                .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
-                .build()
-
-            datePicker.addOnPositiveButtonClickListener {
-                val selectedDateInMillis = datePicker.selection
-                if (selectedDateInMillis != null) {
-                    val selectedDate = Calendar.getInstance().apply {
-                        timeInMillis = selectedDateInMillis
-                        timeZone = TimeZone.getTimeZone("Asia/Kolkata")
-                    }
-
-                    val formattedSelectedDate = dateFormat.format(selectedDate.time)
-                    selectedDateText = formattedSelectedDate
-
-                    textView.text = "Date: $selectedDateText\nTime: $selectedTimeText"
-                }
-            }
-            datePicker.show(parentFragmentManager, "date")
-        }
-
-        btnTime.setOnClickListener {
-            val timePicker = MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_12H)
-                .setHour(currentDateTime.get(Calendar.HOUR_OF_DAY))
-                .setMinute(currentDateTime.get(Calendar.MINUTE))
-                .setTitleText("Select Movie Time")
-                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
-                .build()
-
-            timePicker.addOnPositiveButtonClickListener {
-                val selectedHour = timePicker.hour
-                val selectedMinute = timePicker.minute
-
-                // Format the selected time
-                val formattedSelectedTime = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
-
-                // Add minutes to the selected time
-                val additionalMinutes = movie.duration!!.toInt()
-                val calendar = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, selectedHour)
-                    set(Calendar.MINUTE, selectedMinute)
-                    add(Calendar.MINUTE, additionalMinutes)
-                }
-
-                // Format the new time
-                val formattedNewTime = String.format(Locale.getDefault(), "%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
-
-                // Update the selected time text and new time text
-                selectedTimeText = formattedSelectedTime
-                newTimeText = formattedNewTime
-
-                textView.text = "Date: $selectedDateText\nSelected Time: $selectedTimeText\nEnd Time: $newTimeText"
-            }
-            timePicker.show(parentFragmentManager, "time")
-        }
-
-        addFinalShowBtn.setOnClickListener {
-            val firebaseRestManager = FirebaseRestManager<ShowTb>()
-            firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
-                val filteredShows = showTbs.filter { it.cinemaId == cinemaId && it.showDate == selectedDateText }
-
-                var isOverlap = false
-                for (show in filteredShows) {
-                    if (isTimeOverlap(selectedTimeText, newTimeText!!, show.showStartTime,
-                            show.showEndTime
-                        )) {
-                        isOverlap = true
-                        break
-                    }
-                }
-
-                if (isOverlap||newTimeText==null) {
-                    val warningLoadingHelper = WarningLoadingHelper()
-                    warningLoadingHelper.showLoadingDialog(requireContext())
-                    warningLoadingHelper.updateText("Selected time overlaps with an existing show.")
-                    warningLoadingHelper.hideButtons()
-
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.postDelayed({
-                        warningLoadingHelper.dismissLoadingDialog()
-                        alertDialog2.dismiss()
-                    }, 2000)
-                } else {
-
-                    val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
-                    firebaseRestManager2.getSingleItem(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb",cinemaOwnerId) { items ->
-                        if (items != null) {
-                            cinemaId = items.cinemaId.toString()
-                            val firebaseRestManager = FirebaseRestManager<ShowTb>()
-                            val db = Firebase.database.getReference("moviedb/showtb")
-                            val id = db.push().key ?: return@getSingleItem
-                            val tempData = ShowTb(id, cinemaId, FirebaseAuth.getInstance().currentUser!!.uid, movie.mid!!, selectedDateText, selectedTimeText, newTimeText!!)
-
-                            firebaseRestManager.addItem(tempData, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
-                                if (success) {
-                                    val successLoadingHelper = SuccessLoadingHelper()
-                                    successLoadingHelper.showLoadingDialog(requireContext())
-                                    successLoadingHelper.updateText("Show added successfully")
-                                    successLoadingHelper.hideButtons()
-
-                                    val handler = Handler(Looper.getMainLooper())
-                                    handler.postDelayed({
-                                        successLoadingHelper.dismissLoadingDialog()
-                                        alertDialog2.dismiss()
-                                    }, 2000)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        alertDialog2.window?.attributes?.windowAnimations = R.style.DialogAnimation
     }
-
-
 
     private fun loadCinemaOwner(cinemaOwnerId: String, callback: (String?) -> Unit) {
         val firebaseRestManager = FirebaseRestManager<CinemaOwnerTb>()
@@ -374,40 +197,68 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun isTimeOverlap(newShowStartTime: String, newShowEndTime: String, existingShowStartTime: String, existingShowEndTime: String): Boolean {
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-        return try {
-            val newStart = timeFormat.parse(newShowStartTime)
-            val newEnd = timeFormat.parse(newShowEndTime)
-            val existingStart = timeFormat.parse(existingShowStartTime)
-            val existingEnd = timeFormat.parse(existingShowEndTime)
-
-            newStart.before(existingEnd) && existingStart.before(newEnd)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-
-
-    private fun loadInitialData(){
-        val firebaseRestManager1 = FirebaseRestManager<CinemaAdminTb>()
-        firebaseRestManager1.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
-            val cinemaAdmin = cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
-            cinemaAdmin?.let { it ->
-                cinemaOwnerId = it.cinemaOwnerId.toString()
-                val firebaseRestManager2  = FirebaseRestManager<CinemaOwnerTb>()
-                firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerTbs ->
-                    val cinemaOwner = cinemaOwnerTbs.find { it.cinemaOwnerId == cinemaOwnerId }
-                    cinemaId = cinemaOwner?.cinemaId.toString()
-                }
-            }
-        }
-    }
-
+//    private fun loadLeasedMovies(recyclerView:RecyclerView) {
+//
+//        val firebaseRestManager1 = FirebaseRestManager<CinemaAdminTb>()
+//        var cinemaOwnerId:String = null.toString()
+//        firebaseRestManager1.getAllItems(CinemaAdminTb::class.java,"moviedb/cinemaadmintb"){cinemaAdminTbs ->
+//            if(cinemaAdminTbs.isNotEmpty()){
+//                for(tempcinemaAdminTbs in cinemaAdminTbs){
+//                    if(tempcinemaAdminTbs.userId==FirebaseAuth.getInstance().currentUser!!.uid){
+//                        cinemaOwnerId = tempcinemaAdminTbs.cinemaOwnerId.toString()
+//
+//                        val firebaseRestManager2  = FirebaseRestManager<CinemaOwnerTb>()
+//
+//                        var userId:String? = null
+//
+//                        firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java,"moviedb/CinemaOwnerTb"){cinemaOwnerTbs ->
+//                            if(cinemaOwnerTbs.isNotEmpty()){
+//                                for(tempcinemaOwnerTbs in cinemaOwnerTbs){
+//                                    if(tempcinemaOwnerTbs.cinemaOwnerId==cinemaOwnerId){
+//                                        userId = tempcinemaOwnerTbs.uid!!.toString()
+//
+//                                        val moviesList = ArrayList<MovieTB>()
+//                                        var movieId:String?=null
+//
+//                                        val firebaseRestManager3 = FirebaseRestManager<LeaseMovieTb>()
+//                                        firebaseRestManager3.getAllItems(LeaseMovieTb::class.java,"moviedb/leasemoviestb"){leaseMovieTbs ->
+//                                            if(leaseMovieTbs.isNotEmpty()){
+//                                                for(templeaseMovieTbs in leaseMovieTbs){
+//                                                    if(templeaseMovieTbs.userId==userId){
+//                                                        movieId = templeaseMovieTbs.movieId!!.toString()
+//                                                        val firebaseRestManager4 = FirebaseRestManager<MovieTB>()
+//                                                        firebaseRestManager4.getAllItems(MovieTB::class.java,"movied/movietb"){items->
+//                                                            for(item in items){
+//                                                                if(item.mid==movieId){
+//                                                                    moviesList.add(item)
+//                                                                }
+//                                                            }
+//                                                        }
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//
+//
+//
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//
+//
+//
+//
+//    }
 
     companion object {
         /**
@@ -430,21 +281,8 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
     }
 
     override fun onItemClick(ddMmYy: String, dd: String, day: String) {
-        // Parse the selected date from "01 May 2024" to "yyyy-MM-dd" format
-        val selectedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(ddMmYy)
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val formattedSelectedDate = dateFormat.format(selectedDate)
-
-        val firebaseRestManager = FirebaseRestManager<ShowTb>()
-        firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
-            val filteredShows = showTbs.filter { it.cinemaId == cinemaId && it.showDate == formattedSelectedDate }
-
-            Log.d("TAG", "onItemClick: $filteredShows")
-            // Set up the ShowAdapter with filtered shows and assign it to the RecyclerView
-            val showAdapter = ShowAdapter(filteredShows)
-//            showAdapter.setOnItemClickListener(this)
-            binding.ShowsHere.adapter = showAdapter
-        }
+        binding.selectedDate.text = "Selected date: $ddMmYy"
+        binding.selectedDD.text = "Selected DD: $dd"
+        binding.selectedDay.text = "Selected day: $day"
     }
-
 }

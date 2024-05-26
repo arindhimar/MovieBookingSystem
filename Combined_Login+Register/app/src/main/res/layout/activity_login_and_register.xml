@@ -440,7 +440,7 @@
 
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.47000003"
-                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconDrawable="@drawable/ic_menu_account"
                 app:startIconTint="@color/m3_textfield_login_page_colors">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -479,7 +479,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textInputLayout1"
                 app:passwordToggleEnabled="false"
                 app:passwordToggleTint="@color/login_button"
-                app:startIconDrawable="@drawable/baseline_alternate_email_24"
+                app:startIconDrawable="@drawable/baseline_email_24"
                 app:startIconTint="@color/m3_textfield_login_page_colors">
 
 

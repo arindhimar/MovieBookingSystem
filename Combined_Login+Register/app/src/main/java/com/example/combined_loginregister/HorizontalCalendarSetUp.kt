@@ -62,51 +62,37 @@ class HorizontalCalendarSetUp() {
     /*
      * Function to setup calendar for every month
      */
-    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener): String {
+    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
         val calendarList = ArrayList<CalendarDateModel>()
+        val calendar = Calendar.getInstance()
         val currentDate = Date()
-        val todayCalendar = Calendar.getInstance().apply {
-            time = currentDate
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
+        calendar.time = currentDate
         val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
         dates.clear()
-        cal.set(Calendar.DAY_OF_MONTH, 1)
-
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
         while (dates.size < maxDaysInMonth) {
-            val date = cal.time
-            val isEnabled = !date.before(todayCalendar.time)
+            val date = calendar.time
+            val isEnabled = (calendar.time.time - currentDate.time) <= (7 * 24 * 60 * 60 * 1000) // 7 days in milliseconds
             dates.add(date)
             calendarList.add(CalendarDateModel(date, isEnabled))
-            cal.add(Calendar.DAY_OF_MONTH, 1)
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
-
         calendarList2.clear()
         calendarList2.addAll(calendarList)
         adapter.setOnItemClickListener(listener)
         adapter.setData(calendarList)
-
         return sdf.format(cal.time)
     }
-
 //    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
 //        val calendarList = ArrayList<CalendarDateModel>()
-//        val calendar = Calendar.getInstance()
-//        val currentDate = Date()
-//        calendar.time = currentDate
+//        val monthCalendar = cal.clone() as Calendar
 //        val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
 //        dates.clear()
-//        calendar.set(Calendar.DAY_OF_MONTH, 1)
+//        monthCalendar.set(Calendar.DAY_OF_MONTH, 1)
 //        while (dates.size < maxDaysInMonth) {
-//            val date = calendar.time
-//            val isEnabled = (calendar.time.time - currentDate.time) <= (7 * 24 * 60 * 60 * 1000) // 7 days in milliseconds
-//            dates.add(date)
-//            calendarList.add(CalendarDateModel(date, isEnabled))
-//            calendar.add(Calendar.DAY_OF_MONTH, 1)
+//            dates.add(monthCalendar.time)
+//            calendarList.add(CalendarDateModel(monthCalendar.time))
+//            monthCalendar.add(Calendar.DAY_OF_MONTH, 1)
 //        }
 //        calendarList2.clear()
 //        calendarList2.addAll(calendarList)

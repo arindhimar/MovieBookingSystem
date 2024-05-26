@@ -56,11 +56,6 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.storage)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.core.i18n)
-    implementation(libs.androidx.animation.android)
-    implementation(libs.androidx.ui.tooling.preview.android)
-    implementation(libs.androidx.material3.android)
-    implementation(libs.androidx.foundation.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,10 +68,13 @@ dependencies {
     implementation ("com.furkanakdemir:surroundcardview:1.0.6")
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
     implementation ("com.github.ArjunGupta08:Horizontal-CalendarDate-With-Click-listener:1.1.0")
-    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation ("nl.joery.animatedbottombar:library:1.1.0")
-    implementation("io.github.androidpoet:dropdown:1.1.2")
-    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+
+
+
+
+
+
+
 
 
 }

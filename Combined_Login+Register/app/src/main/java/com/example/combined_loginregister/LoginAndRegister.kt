@@ -744,11 +744,6 @@ class LoginAndRegister : AppCompatActivity() {
                                 startActivity(intent)
                                 finish()
                             }
-                            else if(user.utype=="user"){
-                                intent = Intent(this@LoginAndRegister,UserActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
 
                             loadingDialogHelper.dismissLoadingDialog()
                         }
@@ -838,16 +833,6 @@ class LoginAndRegister : AppCompatActivity() {
                                         finish()
 
                                     }
-                                    else if(user.utype=="cinemaadmin"){
-                                        intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
-                                    else if(user.utype=="user"){
-                                        intent = Intent(this@LoginAndRegister,UserActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
                                 }
                                 else{
                                     firebaseAuth.signOut()
@@ -904,11 +889,6 @@ class LoginAndRegister : AppCompatActivity() {
                         }
                         else if(user.utype=="cinemaadmin"){
                             intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
-                        else if(user.utype=="user"){
-                            intent = Intent(this@LoginAndRegister,UserActivity::class.java)
                             startActivity(intent)
                             finish()
                         }
