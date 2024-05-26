@@ -14,24 +14,33 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
         setContentView(R.layout.activity_payment)
 
         Checkout.preload(applicationContext)
-
-        // Initialize Razorpay checkout
-        val checkout = Checkout()
-
-        // Set payment options
-        val options = JSONObject()
-        options.put("name", "TheCinemaCub")
-        options.put("description", "Payment for seats")
-        // You can get the amount from your server
-        options.put("amount", 500 * 100) // 500 rupees
-        options.put("image", R.drawable.application_logo)
-        options.put("theme.color", "#3399ff")
-        options.put("prefill.contact", "8888888888")
-        options.put("prefill.email", "test@example.com")
-
-        // Open checkout activity
-        checkout.open(this, options)
+        savepayment(100)
     }
+
+    private fun savepayment(amount:Int) {
+        val Checkout = Checkout()
+        Checkout.setKeyID("rzp_test_W8LTpPgYV93bIS")
+        try {
+            val options = JSONObject()
+
+            options.put("name", "Razorpay Corp")
+            options.put("description", "*************************")
+            options.put("theme.color", "#FFBB86FC");
+            options.put("currency", "INR");
+            options.put("amount", amount * 100)
+
+
+            val retryObj = JSONObject();
+            retryObj.put("enabled", true);
+            retryObj.put("max_count", 4);
+            options.put("retry", retryObj);
+
+            Checkout.open(this, options)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     override fun onPaymentSuccess(p0: String?) {
         // Payment successful, handle the success case
