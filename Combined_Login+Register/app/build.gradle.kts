@@ -80,6 +80,8 @@ dependencies {
     implementation ("androidx.browser:browser:1.3.0")
     implementation ("com.google.android.gms:play-services-auth:20.1.0")
     implementation("com.google.android.play:integrity:1.3.0")
+    implementation("com.razorpay:checkout:1.6.33")
+
 
 
 

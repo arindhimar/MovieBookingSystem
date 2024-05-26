@@ -1,11 +1,10 @@
 package com.example.combined_loginregister
 
-import android.app.AlertDialog
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
+import android.content.Intent
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
@@ -13,15 +12,17 @@ import android.text.style.StyleSpan
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import com.example.combined_loginregister.R
+import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
-class SeatManager(private val show: ShowTb, private val requireContext: Context) {
+class SeatManager(
+    private val show: ShowTb,
+    private val requireContext: Context
+) {
     private val selectedSeats = mutableSetOf<String>()
     private lateinit var dialog: Dialog
     private lateinit var view: View
@@ -103,7 +104,6 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
                             seatSize / 8,
                             seatSize / 8
                         ) // uniform margin
-                        setGravity(Gravity.CENTER)   // Center the seat within the cell
                     }
 
                     val seatId = "${i / columns}-${i % columns}" // Unique identifier for the seat
@@ -128,12 +128,16 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
                         }
                     }
 
-                    loadingDialogHelper.dismissLoadingDialog()
-
                     seatView.setOnClickListener {
                         onSeatClicked(seatId, seatView)
                     }
                 }
+
+                // Center the GridLayout in its parent
+                val parent = seatContainer.parent as LinearLayout
+                parent.gravity = Gravity.CENTER
+
+                loadingDialogHelper.dismissLoadingDialog()
             }
         }
     }
@@ -170,9 +174,14 @@ class SeatManager(private val show: ShowTb, private val requireContext: Context)
         pricing_breakdown.text = spannableString
 
 
-        val paymentButton = bottomSheetView.findViewById<TextView>(R.id.payment_button)
         val totalCost = selectedSeats.size * show.price.toInt()
+        val paymentButton = bottomSheetView.findViewById<TextView>(R.id.payment_button)
         paymentButton.text = "Pay : $totalCost"
+
+        paymentButton.setOnClickListener {
+            val intent = Intent(requireContext, PaymentActivity::class.java)
+            requireContext.startActivity(intent)
+        }
 
 
         bottomSheetDialog = BottomSheetDialog(requireContext)
