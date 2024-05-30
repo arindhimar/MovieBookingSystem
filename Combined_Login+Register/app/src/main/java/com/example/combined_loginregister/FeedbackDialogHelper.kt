@@ -17,6 +17,7 @@ class FeedbackDialogHelper(private val showId: String) {
     private lateinit var view: View
 
     // Declare views
+    private lateinit var ratingImage: ImageView
     private lateinit var movieImage: ImageView
     private lateinit var cinemaImage: ImageView
     private lateinit var cinemaRatingBar: RatingBar
@@ -36,18 +37,18 @@ class FeedbackDialogHelper(private val showId: String) {
         dialog.show()
 
         // Initialize views
+        ratingImage = view.findViewById(R.id.ratingImage)
         movieImage = view.findViewById(R.id.movieImage)
         cinemaImage = view.findViewById(R.id.cinemaImage)
-
         cinemaRatingBar = view.findViewById(R.id.cinemaRatingBar)
         movieRatingBar = view.findViewById(R.id.movieRatingBar)
         ratingNowBtn = view.findViewById(R.id.ratingNowBtn)
 
-        setupcard()
+        setupCard()
+        setupRatingListeners()
     }
 
-    private fun setupcard() {
-
+    private fun setupCard() {
         val firebaseRestManager = FirebaseRestManager<ShowTb>()
         firebaseRestManager.getSingleItem(
             ShowTb::class.java,
@@ -68,7 +69,6 @@ class FeedbackDialogHelper(private val showId: String) {
                                 Glide.with(view.context)
                                     .load(item2.mlink)
                                     .into(movieImage)
-
                                 break
                             }
                         }
@@ -76,7 +76,6 @@ class FeedbackDialogHelper(private val showId: String) {
                         Log.d("Firebase", "No movie posters found")
                     }
                 }
-
 
                 val firebaseRestManager3 = FirebaseRestManager<CinemaTb>()
                 firebaseRestManager3.getSingleItem(
@@ -91,18 +90,39 @@ class FeedbackDialogHelper(private val showId: String) {
                     }
                 }
             }
+        }
+    }
 
+    private fun setupRatingListeners() {
+        cinemaRatingBar.setOnRatingBarChangeListener { _, _, _ -> updateRatingImage() }
+        movieRatingBar.setOnRatingBarChangeListener { _, _, _ -> updateRatingImage() }
+    }
 
+    private fun updateRatingImage() {
+        val cinemaRating = cinemaRatingBar.rating
+        val movieRating = movieRatingBar.rating
+
+        val totalRating = (cinemaRating + movieRating) / 2
+
+        val ratingImageResource = when {
+            totalRating >= 4.5 -> R.drawable.five_star
+            totalRating >= 3.5 -> R.drawable.four_star
+            totalRating >= 2.5 -> R.drawable.three_star
+            totalRating >= 1.5 -> R.drawable.two_star
+            else -> R.drawable.one_star
         }
 
-        fun returnView(): View {
-            return view
-        }
+        ratingImage.setImageResource(ratingImageResource)
+    }
 
-        fun dismissFeedbackDialog() {
-            if (dialog.isShowing) {
-                dialog.dismiss()
-            }
+
+    fun returnView(): View {
+        return view
+    }
+
+    fun dismissFeedbackDialog() {
+        if (dialog.isShowing) {
+            dialog.dismiss()
         }
     }
 }
