@@ -5,15 +5,16 @@
         android:icon="@drawable/home"
         android:title="Home" />
     <item
-        android:id="@+id/tab_alarm"
-        android:icon="@drawable/alarm"
-        android:title="alarm" />
+        android:id="@+id/tab_bookings"
+        android:icon="@drawable/move_ticket"
+        android:title="Bookings" />
     <item
-        android:id="@+id/tab_bread"
+        android:id="@+id/tab_feedback"
+        android:iconTint="#FFFFFF"
         android:icon="@drawable/star"
-        android:title="Ratings" />
+        android:title="Feedback" />
     <item
-        android:id="@+id/tab_cart"
-        android:icon="@drawable/account_profile_48px"
+        android:id="@+id/tab_profile"
+        android:icon="@drawable/account_profile_48px_white"
         android:title="Profile" />
 </menu>

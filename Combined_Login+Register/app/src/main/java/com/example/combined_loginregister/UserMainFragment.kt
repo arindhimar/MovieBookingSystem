@@ -67,6 +67,10 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         }
     }
 
+
+
+
+
     private fun findShows(city: String) {
 
         val loadingDialogHelper = LoadingDialogHelper()
@@ -107,6 +111,12 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
                         currentISTDate.set(Calendar.MINUTE, 0)
                         currentISTDate.set(Calendar.SECOND, 0)
                         currentISTDate.set(Calendar.MILLISECOND, 0)
+
+
+                        // Get the current time in India
+                        val indiaTimeZone = TimeZone.getTimeZone("Asia/Kolkata")
+                        val indiaCalendar = Calendar.getInstance(indiaTimeZone)
+                        val currentTime = indiaCalendar.time
 
                         // Compare the show date with the current date
                         !showDateCalendar.before(currentISTDate)

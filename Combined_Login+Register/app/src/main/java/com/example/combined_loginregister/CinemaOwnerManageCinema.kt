@@ -114,7 +114,7 @@ class CinemaOwnerManageCinema : Fragment() {
                 }
 
                 // Open gallery only if both fields are not empty
-                if (textInputLayout1.error == null && textInputLayout2.error == null&& textInputLayout3.error == null) {
+                if (textInputLayout1.error == null && textInputLayout2.error == null && textInputLayout3.error == null) {
                     openGallery()
                 }
             }
@@ -175,7 +175,7 @@ class CinemaOwnerManageCinema : Fragment() {
         return binding.root
     }
 
-    fun init(){
+    fun init() {
 
 
     }
@@ -195,7 +195,11 @@ class CinemaOwnerManageCinema : Fragment() {
                 selectedUri = data.data
             } else {
                 // Handle multiple images selected (which should not happen in this case)
-                Toast.makeText(requireContext(), "Please select only one image!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Please select only one image!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -211,63 +215,60 @@ class CinemaOwnerManageCinema : Fragment() {
             CinemaOwnerTb::class.java,
             "moviedb/CinemaOwnerTb"
         ) { items ->
-            val cinemaTbList = ArrayList<CinemaTb>()
 
             if (items.isNotEmpty()) {
                 for (item in items) {
+
+                    val cinemaTbList = ArrayList<CinemaTb>()
+
+
                     if (item.uid == FirebaseAuth.getInstance().currentUser!!.uid) {
 
 
-                        firebaseRestManager2.getSingleItem(CinemaTb::class.java,"moviedb/cinematb",item.cinemaId!!) { cinemaitem ->
+                        firebaseRestManager2.getSingleItem(
+                            CinemaTb::class.java,
+                            "moviedb/cinematb",
+                            item.cinemaId!!
+                        ) { cinemaitem ->
+                            if (cinemaitem != null) {
+                                cinemaTbList.add(cinemaitem)
+                                val cinemaOwnerCinemaListAdapter =
+                                    CinemaOwnerCinemaListAdapter(cinemaTbList)
+                                cinemaOwnerCinemaListAdapter.setOnItemClickListener(object :
+                                    CinemaOwnerCinemaListAdapter.OnItemClickListener {
+                                    override fun onItemClick(cinema: CinemaTb) {
 
-                            cinemaTbList.add(cinemaitem!!)
-                            val cinemaOwnerCinemaListAdapter = CinemaOwnerCinemaListAdapter(cinemaTbList)
-                           cinemaOwnerCinemaListAdapter.setOnItemClickListener(object : CinemaOwnerCinemaListAdapter.OnItemClickListener {
-                               override fun onItemClick(cinema: CinemaTb) {
+                                    }
 
-                               }
+                                })
 
-                           })
+                                binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
+                                binding.CinemaCardsHereForCO.layoutManager =
+                                    LinearLayoutManager(requireContext())
 
-                            binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
-                            binding.CinemaCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
+                                // Close loading dialog once data is loaded
+                                loadingDialogHelper.dismissLoadingDialog()
+                            }
+                            else{
+                                loadingDialogHelper.dismissLoadingDialog()
 
-                            // Close loading dialog once data is loaded
-                            loadingDialogHelper.dismissLoadingDialog()
+                            }
+
+
                         }
 
 
-//                        firebaseRestManager2.getAllItems(
-//                            CinemaTb::class.java,
-//                            "moviedb/cinematb"
-//                        ) { cinemaitems ->
-//                            if (cinemaitems.isNotEmpty()) {
-//                                for (cinemaitem in cinemaitems) {
-//                                    if (cinemaitem.cinemaID == item.cinemaId) {
-//                                        cinemaTbList.add(cinemaitem)
-//                                    }
-//                                }
-//
-//                                val cinemaOwnerCinemaListAdapter = CinemaOwnerCinemaListAdapter(cinemaTbList)
-//                                binding.CinemaCardsHereForCO.adapter = cinemaOwnerCinemaListAdapter
-//                                binding.CinemaCardsHereForCO.layoutManager = LinearLayoutManager(requireContext())
-//
-//                                // Close loading dialog once data is loaded
-//                                loadingDialogHelper.dismissLoadingDialog()
-//                            }
-//                        }
-
+                    }
+                    else {
+                        loadingDialogHelper.dismissLoadingDialog()
                     }
                 }
-
             } else {
                 // Close loading dialog if no items are found
                 loadingDialogHelper.dismissLoadingDialog()
             }
         }
     }
-
-
 
 
     private fun uploadImageToFirebaseStorage(imageUri: Uri?) {
@@ -288,7 +289,7 @@ class CinemaOwnerManageCinema : Fragment() {
         // Upload image to Firebase Storage
         FirebaseStorageHelper.uploadImage(
             imageUri!!,
-            "CinemaPoster/"+cinemaId!!, // Pass the cinema ID instead of the movie title
+            "CinemaPoster/" + cinemaId!!, // Pass the cinema ID instead of the movie title
             onSuccess = { downloadUrl ->
                 // Image uploaded successfully
 //                Toast.makeText(
@@ -297,20 +298,39 @@ class CinemaOwnerManageCinema : Fragment() {
 //                    Toast.LENGTH_SHORT
 //                ).show()
                 Log.d("TAG", "uploadImageToFirebaseStorage: $downloadUrl")
-                val tempCinema = CinemaTb(cinemaId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString(),downloadUrl,textInputLayout3.editText!!.text.toString())
+                val tempCinema = CinemaTb(
+                    cinemaId,
+                    textInputLayout1.editText!!.text.toString(),
+                    textInputLayout2.editText!!.text.toString(),
+                    downloadUrl,
+                    textInputLayout3.editText!!.text.toString()
+                )
 
                 // Add cinema data to the database
-                firebaseRestManager.addItemWithCustomId(tempCinema,cinemaId, dbRef) { success, error ->
+                firebaseRestManager.addItemWithCustomId(
+                    tempCinema,
+                    cinemaId,
+                    dbRef
+                ) { success, error ->
                     if (success) {
                         // Cinema data added successfully now adding cinemaownertb
 
                         val tempKey = dbRef.push().key
-                        val tempCinemaOwnerTb = CinemaOwnerTb(tempKey,FirebaseAuth.getInstance().currentUser!!.uid,cinemaId)
+                        val tempCinemaOwnerTb = CinemaOwnerTb(
+                            tempKey,
+                            FirebaseAuth.getInstance().currentUser!!.uid,
+                            cinemaId
+                        )
 
                         val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
 
-                        firebaseRestManager2.addItemWithCustomId(tempCinemaOwnerTb,tempKey!!, dbRef = FirebaseDatabase.getInstance().getReference("moviedb/CinemaOwnerTb")){success, error ->
-                            if(success){
+                        firebaseRestManager2.addItemWithCustomId(
+                            tempCinemaOwnerTb,
+                            tempKey!!,
+                            dbRef = FirebaseDatabase.getInstance()
+                                .getReference("moviedb/CinemaOwnerTb")
+                        ) { success, error ->
+                            if (success) {
                                 loadingScreen.dismissLoadingDialog()
                                 alertDialog.dismiss() // Close the alert dialog
 
@@ -351,8 +371,6 @@ class CinemaOwnerManageCinema : Fragment() {
             }
         )
     }
-
-
 
 
     companion object {

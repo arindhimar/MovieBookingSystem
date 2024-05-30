@@ -116,26 +116,42 @@ class CinemaOwnerActivity : AppCompatActivity() {
                     // Add any additional logic specific to this item
                 }
                 R.id.nav_manage_cinema->{
-                    binding.dashboardManageCinema.performClick()
+                    replaceFragment(CinemaOwnerManageCinema())
+
                 }
                 R.id.nav_manage_cinema_admin -> {
-                    binding.dashboardManageCinemaAdmin.performClick()
-                    // Add any additional logic specific to this item
+                    replaceFragment(CinemaOwnerManageCInemaAdmin())
+
                 }
                 R.id.nav_rent_movies -> {
-                    binding.dashboardLeaseMovies.performClick()
+                    replaceFragment(CinemaOwnerLeaseMovie())
+
                     // Add any additional logic specific to this item
                 }
                 R.id.manage_booking -> {
-                    binding.dashboardCinemaOwnerManageBooking.performClick()
+                    replaceFragment(CinemaOwnerManageBooking())
                     // Add any additional logic specific to this item
                 }
                 R.id.nav_menu_account -> {
-                    binding.dashboardManageProfile.performClick()
+                    replaceFragment(CommonProfileFragment())
+
                     // Add any additional logic specific to this item
                 }
                 R.id.logoutuser -> {
-                    binding.logOut.performClick()
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                        .requestEmail()
+                        .build()
+
+                    val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+                    mGoogleSignInClient.signOut()
+
+                    val auth = FirebaseAuth.getInstance()
+                    auth.signOut()
+
+                    val intent = Intent(this, LoginAndRegister::class.java)
+                    startActivity(intent)
                     // Add any additional logic specific to this item
                 }
                 // Add more cases for other menu items if needed
@@ -145,43 +161,34 @@ class CinemaOwnerActivity : AppCompatActivity() {
         }
 
         binding.dashboardManageCinema.setOnClickListener {
-            replaceFragment(CinemaOwnerManageCinema())
+            binding.navView.setCheckedItem(R.id.nav_manage_cinema)
+            binding.navView.menu.performIdentifierAction(R.id.nav_manage_cinema, 0)
         }
 
 
         binding.dashboardManageCinemaAdmin.setOnClickListener {
-            replaceFragment(CinemaOwnerManageCInemaAdmin())
+            binding.navView.setCheckedItem(R.id.nav_manage_cinema_admin)
+            binding.navView.menu.performIdentifierAction(R.id.nav_manage_cinema_admin, 0)
         }
 
         binding.dashboardLeaseMovies.setOnClickListener {
-            replaceFragment(CinemaOwnerLeaseMovie())
+            binding.navView.setCheckedItem(R.id.nav_rent_movies)
+            binding.navView.menu.performIdentifierAction(R.id.nav_rent_movies, 0)
         }
 
         binding.dashboardCinemaOwnerManageBooking.setOnClickListener {
-            replaceFragment(CinemaOwnerManageBooking())
+            binding.navView.setCheckedItem(R.id.manage_booking)
+            binding.navView.menu.performIdentifierAction(R.id.manage_booking, 0)
         }
 
         binding.dashboardManageProfile.setOnClickListener {
-            replaceFragment(CommonProfileFragment())
+            binding.navView.setCheckedItem(R.id.nav_menu_account)
+            binding.navView.menu.performIdentifierAction(R.id.nav_menu_account, 0)
         }
 
         binding.logOut.setOnClickListener {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
-                .requestEmail()
-                .build()
-
-            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-            mGoogleSignInClient.signOut()
-
-            val auth = FirebaseAuth.getInstance()
-            auth.signOut()
-
-            val intent = Intent(this, LoginAndRegister::class.java)
-            startActivity(intent)
-
-
+            binding.navView.setCheckedItem(R.id.logoutuser)
+            binding.navView.menu.performIdentifierAction(R.id.logoutuser, 0)
         }
 
     }

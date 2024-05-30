@@ -31,7 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/CardsHere"
         android:layout_alignBottom="@+id/CardsHere"
-        android:layout_margin="25dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="15dp"
         app:srcCompat="@drawable/add_icon"
         android:contentDescription="TODadasO" />
 

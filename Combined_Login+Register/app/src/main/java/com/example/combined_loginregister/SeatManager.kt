@@ -70,11 +70,11 @@ class SeatManager(
             val cinema = cinema ?: return@getSingleItem
 
             val capacity = cinema.cinemaCapacity!!.toInt()
-            val seatContainer = view.findViewById<GridLayout>(R.id.seatContainer)
-            seatContainer.removeAllViews()
+            val seatContainer = view?.findViewById<GridLayout>(R.id.seatContainer)
+            seatContainer?.removeAllViews()
 
             // Get the container dimensions
-            seatContainer.post {
+            seatContainer?.post {
                 val containerWidth = seatContainer.width
 
                 val maxSeatSize = 150 // Set a max seat size (adjust as needed)
@@ -87,61 +87,78 @@ class SeatManager(
                 // Set the column count
                 seatContainer.columnCount = columns
 
-                for (i in 0 until capacity) {
-                    val seatView = ImageView(requireContext)
-                    seatView.id = View.generateViewId()
-                    seatView.setImageResource(R.drawable.chair_default) // Replace with your seat drawable
+                var bookedSeatsSet = mutableSetOf<String>()
 
-                    // Set seat layout params
-                    val params = GridLayout.LayoutParams().apply {
-                        width = seatSize
-                        height = seatSize
-                        columnSpec = GridLayout.spec(i % columns)
-                        rowSpec = GridLayout.spec(i / columns)
-                        setMargins(
-                            seatSize / 8,
-                            seatSize / 8,
-                            seatSize / 8,
-                            seatSize / 8
-                        ) // uniform margin
-                    }
-
-                    val seatId = "${i / columns}-${i % columns}" // Unique identifier for the seat
-
-                    seatContainer.addView(seatView, params)
-
-                    val confirm_seat_button = view.findViewById<TextView>(R.id.confirm_seat_button)
-                    confirm_seat_button.setOnClickListener {
-                        if(selectedSeats.size >0){
-                            showBottomSheet()
-                        }
-                        else{
-                            val warningLoadingHelper = WarningLoadingHelper()
-                            warningLoadingHelper.showLoadingDialog(requireContext)
-                            warningLoadingHelper.hideButtons()
-                            warningLoadingHelper.updateText("Select atleast one seat!!")
-
-                            val handler = Handler()
-                            handler.postDelayed({
-                                warningLoadingHelper.dismissLoadingDialog()
-                            }, 2000)
+                val firebaseRestManager = FirebaseRestManager<BookingTb>()
+                firebaseRestManager.getAllItems(BookingTb::class.java, "moviedb/bookingtb") { items ->
+                    for (item in items) {
+                        if (item.showId == show.showId) {
+                            val bookedSeats = item.bookedSeats
+                            bookedSeatsSet = bookedSeats.split(",").toMutableSet()
                         }
                     }
 
-                    seatView.setOnClickListener {
-                        onSeatClicked(seatId, seatView)
+                    for (i in 0 until capacity) {
+                        val seatView = ImageView(requireContext)
+                        seatView.id = View.generateViewId()
+
+                        seatView.setImageResource(R.drawable.chair_default)
+
+
+                        // Set seat layout params
+                        val params = GridLayout.LayoutParams().apply {
+                            width = seatSize
+                            height = seatSize
+                            columnSpec = GridLayout.spec(i % columns)
+                            rowSpec = GridLayout.spec(i / columns)
+                            setMargins(
+                                seatSize / 8,
+                                seatSize / 8,
+                                seatSize / 8,
+                                seatSize / 8
+                            ) // uniform margin
+                        }
+
+                        val seatId = "${i / columns}-${i % columns}" // Unique identifier for the seat
+
+                        if (bookedSeatsSet.contains(seatId)) {
+                            seatView.setImageResource(R.drawable.chair_booked)
+                            seatView.isEnabled = false
+                        }
+
+                        seatContainer.addView(seatView, params)
+
+                        seatView.setOnClickListener {
+                            onSeatClicked(seatId, seatView)
+                        }
                     }
+
+                    // Center the GridLayout in its parent
+                    val parent = seatContainer.parent as LinearLayout
+                    parent.gravity = Gravity.CENTER
+
+                    loadingDialogHelper.dismissLoadingDialog()
                 }
+            }
+        }
 
-                // Center the GridLayout in its parent
-                val parent = seatContainer.parent as LinearLayout
-                parent.gravity = Gravity.CENTER
+        val confirmSeatButton = view?.findViewById<TextView>(R.id.confirm_seat_button)
+        confirmSeatButton?.setOnClickListener {
+            if (selectedSeats.isNotEmpty()) {
+                showBottomSheet()
+            } else {
+                val warningLoadingHelper = WarningLoadingHelper()
+                warningLoadingHelper.showLoadingDialog(requireContext)
+                warningLoadingHelper.hideButtons()
+                warningLoadingHelper.updateText("Select at least one seat!!")
 
-                loadingDialogHelper.dismissLoadingDialog()
+                val handler = Handler()
+                handler.postDelayed({
+                    warningLoadingHelper.dismissLoadingDialog()
+                }, 2000)
             }
         }
     }
-
     private fun onSeatClicked(seatId: String, seatView: ImageView) {
         if (selectedSeats.contains(seatId)) {
             selectedSeats.remove(seatId)
@@ -181,8 +198,11 @@ class SeatManager(
         paymentButton.setOnClickListener {
             val intent = Intent(requireContext, PaymentActivity::class.java)
 
-            intent.putExtra("key_amount", totalCost) // Amount in paise
+            intent.putExtra("key_amount", totalCost)
+            intent.putExtra("key_showId", show.showId)
+            intent.putExtra("key_seats", ArrayList(selectedSeats))
             requireContext.startActivity(intent)
+
 
         }
 

@@ -1,13 +1,20 @@
 package com.example.combined_loginregister
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import org.json.JSONException
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class PaymentActivity : AppCompatActivity(), PaymentResultListener {
 
@@ -20,12 +27,11 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
 
         val amount = intent.getIntExtra("key_amount", 0)
 
-
         val paymentOptions = JSONObject().apply {
             put("name", "TheCinemaCub")
             put("description", "Payment for the movie")
             put("currency", "INR")
-            put("amount", amount*100)
+            put("amount", amount * 100)
         }
 
         try {
@@ -36,12 +42,72 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
     }
 
     override fun onPaymentSuccess(razorpayPaymentID: String?) {
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(this)
+        if (razorpayPaymentID != null) {
+            // Gather data
+            val showId = intent.getStringExtra("key_showId") ?: ""
+            val selectedSeats = intent.getStringArrayListExtra("key_seats")?.joinToString(",") ?: ""
 
-        val firebaseRestManager
+            // Generate bookingId
+            val bookingId = FirebaseDatabase.getInstance().reference.push().key ?: ""
 
-        Toast.makeText(this, "Payment Successful: $razorpayPaymentID", Toast.LENGTH_LONG).show()
+            // Set time zone to IST
+            val timeZone = TimeZone.getTimeZone("Asia/Kolkata")
 
+            // Get current date and time in IST
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+                this.timeZone = timeZone
+            }
+            val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply {
+                this.timeZone = timeZone
+            }
 
+            val bookingDate = dateFormat.format(Date())
+            val bookingTime = timeFormat.format(Date())
+
+            // Create BookingTb object
+            val booking = BookingTb(
+                bookingId = bookingId,
+                paymentId = razorpayPaymentID,
+                bookingDate = bookingDate,
+                bookingTime = bookingTime,
+                showId = showId,
+                userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                bookedSeats = selectedSeats
+            )
+
+            // Push to Firebase
+            val firebaseRestManager = FirebaseRestManager<BookingTb>()
+            firebaseRestManager.addItemWithCustomId(booking, bookingId, FirebaseDatabase.getInstance().getReference("moviedb/bookingtb")) { success, error ->
+                if (success) {
+                    loadingDialogHelper.dismissLoadingDialog()
+                    val successLoadingHelper = SuccessLoadingHelper()
+                    successLoadingHelper.showLoadingDialog(this)
+                    successLoadingHelper.hideButtons()
+
+                    successLoadingHelper.updateText("Ticket has been booked\nCheck ticket in the Booked Ticket Menu!!")
+
+                    val handler = Handler()
+                    handler.postDelayed({
+                        successLoadingHelper.dismissLoadingDialog()
+                        finish()
+                    }, 2000)
+
+                } else {
+                    val warningLoadingHelper = WarningLoadingHelper()
+                    warningLoadingHelper.showLoadingDialog(this)
+
+                    val handler = Handler()
+                    handler.postDelayed({
+                        warningLoadingHelper.dismissLoadingDialog()
+                        finish()
+                    }, 2000)
+                }
+            }
+        } else {
+            Toast.makeText(this, "Payment ID is null", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onPaymentError(code: Int, description: String?) {

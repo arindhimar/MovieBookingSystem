@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.combined_loginregister.CinemaOwnerTb
 import com.example.combined_loginregister.Encryption
 import com.example.combined_loginregister.FirebaseRestManager
 import com.example.combined_loginregister.ListAllUserAdapter
@@ -151,11 +152,12 @@ class ManageCinemaOwner : Fragment() {
 
                                         if (success) {
                                             firebaseAuth.currentUser!!.sendEmailVerification()
+
                                             loadingDialogHelper.dismissLoadingDialog()
                                             val successLoadingHelper = SuccessLoadingHelper()
                                             successLoadingHelper.showLoadingDialog(requireContext())
                                             successLoadingHelper.hideButtons()
-                                            successLoadingHelper.updateText("User bas been registered!!")
+                                            successLoadingHelper.updateText("User has been registered!!")
 
 
                                             val handler = Handler()

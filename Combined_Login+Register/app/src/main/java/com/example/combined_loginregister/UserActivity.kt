@@ -63,9 +63,18 @@ class UserActivity : AppCompatActivity() {
             ) {
                 when (newTab.title) {
                     "Home" -> replaceFragment(UserMainFragment())
-                    }
+                    "Bookings"-> replaceFragment(TicketFragment())
+                    "Feedback" -> replaceFragment(UserFeedbackFragment())
+                    "Profile" -> replaceFragment(CommonProfileFragment())
+                }
             }
         })
+
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+        val firebaseRestManager = FirebaseRestManager<UserTb>()
+        firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",currentUser){
+            binding.UserName.text = "Welcome Back "+it!!.uname
+        }
 
 
 

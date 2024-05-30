@@ -4,7 +4,7 @@
 
     <item
 
-        android:title="Management  Options">
+        android:title="Management Options">
         <menu>
             <item
                 android:checkable="true"

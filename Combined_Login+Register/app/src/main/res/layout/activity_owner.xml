@@ -29,7 +29,7 @@
 
                 android:layout_height="wrap_content"
                 app:navigationIcon="@drawable/baseline_menu_24"
-                app:title="Cinema Admin Panel" />
+                app:title="Owner Panel" />
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
@@ -39,7 +39,6 @@
         </com.google.android.material.appbar.AppBarLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/OwnerDashBoard"
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black"

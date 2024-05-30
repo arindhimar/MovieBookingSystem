@@ -104,18 +104,32 @@ class OwnerActivity : AppCompatActivity() {
                     binding.OwnerDashBoard.isVisible = true
                 }
                 R.id.nav_manage_cinemaowner -> {
-                    binding.dashboardManageCinemaOwner.performClick()
+                    replaceFragment(ManageCinemaOwner())
                 }
                 R.id.nav_movies -> {
-                    binding.dashboardManageMovies.performClick()
+                    replaceFragment(ManageMovies())
                 }
                 R.id.nav_menu_account -> {
-                    binding.dashboardManageProfile.performClick()
+                    replaceFragment(CommonProfileFragment())
                 }
                 R.id.manage_feedback -> {
                     //pending
                 }
                 R.id.logoutuser -> {
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                        .requestEmail()
+                        .build()
+
+                    val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+                    mGoogleSignInClient.signOut()
+
+                    val auth = FirebaseAuth.getInstance()
+                    auth.signOut()
+
+                    val intent = Intent(this, LoginAndRegister::class.java)
+                    startActivity(intent)
                     binding.logOut.performClick()
                 }
 
@@ -126,34 +140,29 @@ class OwnerActivity : AppCompatActivity() {
 
 
         binding.dashboardManageCinemaOwner.setOnClickListener {
-            replaceFragment(ManageCinemaOwner())
+            binding.navView.setCheckedItem(R.id.nav_manage_cinemaowner)
+            binding.navView.menu.performIdentifierAction(R.id.nav_manage_cinemaowner, 0)
         }
 
         binding.dashboardManageMovies.setOnClickListener {
-            replaceFragment(ManageMovies())
-
+            binding.navView.setCheckedItem(R.id.nav_movies)
+            binding.navView.menu.performIdentifierAction(R.id.nav_movies, 0)
         }
 
         binding.dashboardManageProfile.setOnClickListener {
-            replaceFragment(CommonProfileFragment())
+            binding.navView.setCheckedItem(R.id.nav_menu_account)
+            binding.navView.menu.performIdentifierAction(R.id.nav_menu_account, 0)
         }
         binding.logOut.setOnClickListener {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
-                .requestEmail()
-                .build()
 
-            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-            mGoogleSignInClient.signOut()
-
-            val auth = FirebaseAuth.getInstance()
-            auth.signOut()
-
-            val intent = Intent(this, LoginAndRegister::class.java)
-            startActivity(intent)
-
+            binding.navView.setCheckedItem(R.id.logoutuser)
+            binding.navView.menu.performIdentifierAction(R.id.logoutuser, 0)
         }
+
+        binding.navView.setCheckedItem(R.id.nav_ownerdashboard)
+
+
+
 
     }
 

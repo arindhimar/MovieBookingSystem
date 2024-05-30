@@ -334,7 +334,7 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
                                     val id = db.push().key ?: return@getSingleItem
                                     val tempData = ShowTb(id, cinemaId, FirebaseAuth.getInstance().currentUser!!.uid, movie.mid!!, selectedDateText, selectedTimeText, newTimeText!!, price.editText?.text.toString())
 
-                                    firebaseRestManager.addItem(tempData, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
+                                    firebaseRestManager.addItemWithCustomId(tempData,id, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
                                         if (success) {
                                             val successLoadingHelper = SuccessLoadingHelper()
                                             successLoadingHelper.showLoadingDialog(requireContext())

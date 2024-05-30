@@ -104,140 +104,180 @@ class CommonProfileFragment : Fragment() {
         }
 
         binding.updateBtn.setOnClickListener {
-            val loadingDialogHelper = LoadingDialogHelper()
-            loadingDialogHelper.showLoadingDialog(requireContext())
+            if (binding.enableControls.text == "Disable Controls") {
 
-            val userData = auth.currentUser
-            val userId = userData!!.uid
 
-            val firebaseRestManager = FirebaseRestManager<UserTb>()
-            firebaseRestManager.getSingleItem(
-                UserTb::class.java,
-                "moviedb/usertb",
-                userId
-            ) { user ->
-                if (user!!.uname!= binding.textInputLayout1.editText!!.text.toString() ||
-                    user.umobile!= binding.textInputLayout4.editText!!.text.toString() ||
-                    userData.email!= binding.textInputLayout2.editText!!.text.toString()) {
+                val loadingDialogHelper = LoadingDialogHelper()
+                loadingDialogHelper.showLoadingDialog(requireContext())
 
-                    if (userData.email!= binding.textInputLayout2.editText!!.text.toString()) {
-                        loadingDialogHelper.dismissLoadingDialog()
-                        val newEmail = binding.textInputLayout2.editText!!.text.toString()
-                        //detected change in email
+                val userData = auth.currentUser
+                val userId = userData!!.uid
 
-                        val warningLoadingHelper = WarningLoadingHelper()
-                        warningLoadingHelper.showLoadingDialog(requireContext())
-                        warningLoadingHelper.hideButtons()
-                        warningLoadingHelper.updateText("Change in email detected!!\nNeed password to verify the change.\nA link will be sent to the new email to verify, the email will be only updated after that!!\nRest details will be updated directly!!")
+                val firebaseRestManager = FirebaseRestManager<UserTb>()
+                firebaseRestManager.getSingleItem(
+                    UserTb::class.java,
+                    "moviedb/usertb",
+                    userId
+                ) { user ->
+                    if (user!!.uname != binding.textInputLayout1.editText!!.text.toString() ||
+                        user.umobile != binding.textInputLayout4.editText!!.text.toString() ||
+                        userData.email != binding.textInputLayout2.editText!!.text.toString()
+                    ) {
 
-                        val passwordConfirmationLoadingHelper = PasswordConfirmationLoadingHelper()
+                        if (userData.email != binding.textInputLayout2.editText!!.text.toString()) {
+                            loadingDialogHelper.dismissLoadingDialog()
+                            val newEmail = binding.textInputLayout2.editText!!.text.toString()
+                            //detected change in email
 
-                        val handler = Handler()
-                        handler.postDelayed({
-                            warningLoadingHelper.dismissLoadingDialog()
-                            passwordConfirmationLoadingHelper.showLoadingDialog(requireContext())
-                            ToggleControls()
-                            val view = passwordConfirmationLoadingHelper.getView()
-                            val btn = view.findViewById<Button>(R.id.passwordconfirmbutton)
-                            btn.setOnClickListener {
-                                val password = passwordConfirmationLoadingHelper.getPassword()
-                                val credential = EmailAuthProvider.getCredential(userData.email!!, password)
+                            val warningLoadingHelper = WarningLoadingHelper()
+                            warningLoadingHelper.showLoadingDialog(requireContext())
+                            warningLoadingHelper.hideButtons()
+                            warningLoadingHelper.updateText("Change in email detected!!\nNeed password to verify the change.\nRest details will be updated directly!!")
 
-                                userData.reauthenticate(credential)
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            userData.verifyBeforeUpdateEmail(newEmail)
-                                                .addOnCompleteListener { task ->
-                                                    if (task.isSuccessful) {
-                                                        val database = FirebaseDatabase.getInstance()
-                                                        val dbRef = database.getReference("moviedb/usertb")
+                            val passwordConfirmationLoadingHelper =
+                                PasswordConfirmationLoadingHelper()
 
-                                                        val newData = UserTb(
-                                                            userId,
-                                                            binding.textInputLayout1.editText!!.text.toString(),
-                                                            binding.textInputLayout4.editText!!.text.toString(),
-                                                            user.utype
-                                                        )
+                            val handler = Handler()
+                            handler.postDelayed({
+                                warningLoadingHelper.dismissLoadingDialog()
+                                passwordConfirmationLoadingHelper.showLoadingDialog(requireContext())
+                                ToggleControls()
+                                val view = passwordConfirmationLoadingHelper.getView()
+                                val btn = view.findViewById<Button>(R.id.passwordconfirmbutton)
+                                btn.setOnClickListener {
+                                    val password = passwordConfirmationLoadingHelper.getPassword()
+                                    val credential =
+                                        EmailAuthProvider.getCredential(userData.email!!, password)
 
-                                                        firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
-                                                            if (success) {
-                                                                Log.d("TAG", "Data updated successfully!")
-                                                                loadingDialogHelper.dismissLoadingDialog()
-                                                                val successLoadingHelper = SuccessLoadingHelper()
-                                                                successLoadingHelper.showLoadingDialog(requireContext())
-                                                                successLoadingHelper.hideButtons()
-                                                                successLoadingHelper.updateText("User Data has been Updated!!")
+                                    userData.reauthenticate(credential)
+                                        .addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                userData.updateEmail(newEmail)
+                                                    .addOnCompleteListener { task ->
+                                                        if (task.isSuccessful) {
+                                                            val database =
+                                                                FirebaseDatabase.getInstance()
+                                                            val dbRef =
+                                                                database.getReference("moviedb/usertb")
 
-                                                                passwordConfirmationLoadingHelper.dismissLoadingDialog()
+                                                            val newData = UserTb(
+                                                                userId,
+                                                                binding.textInputLayout1.editText!!.text.toString(),
+                                                                binding.textInputLayout4.editText!!.text.toString(),
+                                                                user.utype
+                                                            )
 
-                                                                fetchAndSetUserData()
+                                                            firebaseRestManager.updateItem(
+                                                                dbRef,
+                                                                userId,
+                                                                newData
+                                                            ) { success, error ->
+                                                                if (success) {
+                                                                    Log.d(
+                                                                        "TAG",
+                                                                        "Data updated successfully!"
+                                                                    )
+                                                                    loadingDialogHelper.dismissLoadingDialog()
+                                                                    val successLoadingHelper =
+                                                                        SuccessLoadingHelper()
+                                                                    successLoadingHelper.showLoadingDialog(
+                                                                        requireContext()
+                                                                    )
+                                                                    successLoadingHelper.hideButtons()
+                                                                    successLoadingHelper.updateText(
+                                                                        "User Data has been Updated!!"
+                                                                    )
 
-                                                                val handler = Handler()
-                                                                handler.postDelayed({
-                                                                    successLoadingHelper.dismissLoadingDialog()
-                                                                    ToggleControls()
-                                                                }, 2000)
+                                                                    passwordConfirmationLoadingHelper.dismissLoadingDialog()
 
-                                                            } else {
-                                                                Log.e("TAG", "Failed to update data: $error")
-                                                                passwordConfirmationLoadingHelper.dismissLoadingDialog()
+                                                                    fetchAndSetUserData()
 
+                                                                    val handler = Handler()
+                                                                    handler.postDelayed({
+                                                                        successLoadingHelper.dismissLoadingDialog()
+                                                                        ToggleControls()
+                                                                    }, 2000)
+
+                                                                } else {
+                                                                    Log.e(
+                                                                        "TAG",
+                                                                        "Failed to update data: $error"
+                                                                    )
+                                                                    passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
+                                                                }
                                                             }
+                                                        } else {
+                                                            Log.e(
+                                                                "TAG",
+                                                                "Error updating user email.",
+                                                                task.exception
+                                                            )
+                                                            passwordConfirmationLoadingHelper.dismissLoadingDialog()
+
                                                         }
-                                                    } else {
-                                                        Log.e("TAG", "Error updating user email.", task.exception)
-                                                        passwordConfirmationLoadingHelper.dismissLoadingDialog()
-
                                                     }
-                                                }
-                                        } else {
-                                            Log.e("TAG", "Error re-authenticating user.", task.exception)
-                                            passwordConfirmationLoadingHelper.dismissLoadingDialog()
+                                            } else {
+                                                Log.e(
+                                                    "TAG",
+                                                    "Error re-authenticating user.",
+                                                    task.exception
+                                                )
+                                                passwordConfirmationLoadingHelper.dismissLoadingDialog()
 
+                                            }
                                         }
-                                    }
-                            }
-                        }, 5000)
+                                }
+                            }, 5000)
 
-                    } else {
-                        //if email is the same
-                        val database = FirebaseDatabase.getInstance()
-                        val dbRef = database.getReference("moviedb/usertb")
+                        } else {
+                            //if email is the same
+                            val database = FirebaseDatabase.getInstance()
+                            val dbRef = database.getReference("moviedb/usertb")
 
-                        val newData = UserTb(
-                            userId,
-                            binding.textInputLayout1.editText!!.text.toString(),
-                            binding.textInputLayout4.editText!!.text.toString(),
-                            user.utype
-                        )
+                            val newData = UserTb(
+                                userId,
+                                binding.textInputLayout1.editText!!.text.toString(),
+                                binding.textInputLayout4.editText!!.text.toString(),
+                                user.utype
+                            )
 
-                        firebaseRestManager.updateItem(dbRef, userId, newData) { success, error ->
-                            if (success) {
-                                Log.d("TAG", "Data updated successfully!")
-                                loadingDialogHelper.dismissLoadingDialog()
-                                val successLoadingHelper = SuccessLoadingHelper()
-                                successLoadingHelper.showLoadingDialog(requireContext())
-                                successLoadingHelper.hideButtons()
-                                successLoadingHelper.updateText("User Data has been Updated!!")
+                            firebaseRestManager.updateItem(
+                                dbRef,
+                                userId,
+                                newData
+                            ) { success, error ->
+                                if (success) {
+                                    Log.d("TAG", "Data updated successfully!")
+                                    loadingDialogHelper.dismissLoadingDialog()
+                                    val successLoadingHelper = SuccessLoadingHelper()
+                                    successLoadingHelper.showLoadingDialog(requireContext())
+                                    successLoadingHelper.hideButtons()
+                                    successLoadingHelper.updateText("User Data has been Updated!!")
 
-                                fetchAndSetUserData()
+                                    fetchAndSetUserData()
 
-                                val handler = Handler()
-                                handler.postDelayed({
-                                    successLoadingHelper.dismissLoadingDialog()
-                                    ToggleControls()
-                                }, 2000)
+                                    val handler = Handler()
+                                    handler.postDelayed({
+                                        successLoadingHelper.dismissLoadingDialog()
+                                        ToggleControls()
+                                    }, 2000)
 
-                            } else {
-                                Log.e("TAG", "Failed to update data: $error")
+                                } else {
+                                    Log.e("TAG", "Failed to update data: $error")
+                                }
                             }
                         }
                     }
+                    else{
+                        loadingDialogHelper.dismissLoadingDialog()
+
+                    }
                 }
             }
+
+
         }
-
-
     }
 
 

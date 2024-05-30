@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserActivity">
@@ -11,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/appBarLayout"
+        android:layout_marginTop="40dp"
         android:background="@color/black">
 
         <androidx.appcompat.widget.Toolbar
@@ -20,16 +22,13 @@
             android:background="@color/black"
             android:minHeight="?attr/actionBarSize">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
 
                 <TextView
+                    android:fontFamily="@font/roboto_bold"
+
                     android:id="@+id/UserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="Hey UserName"
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
@@ -38,14 +37,13 @@
 
 
 
-            </LinearLayout>
 
             <ImageView
                 android:id="@+id/LogoutButton"
                 android:layout_gravity="end"
-                android:src="@drawable/logout_icon"
-                android:layout_width="70dp"
-                android:layout_height="70dp"/>
+                android:src="@drawable/logout48pxwhile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -64,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#FFF"
+        android:background="#000000"
         app:abb_selectedTabType="text"
         app:abb_indicatorAppearance="round"
         app:abb_indicatorMargin="16dp"
@@ -73,7 +71,8 @@
         app:abb_rippleEnabled="true"
         app:abb_indicatorLocation="bottom"
         app:abb_tabAnimationSelected="slide"
-        app:abb_tabColor="@color/black"
-        app:abb_selectedIndex="0" />
+        app:abb_tabColor="@color/white"
+        app:abb_selectedIndex="0"
+        android:layout_marginBottom="25pt"/>
 
 </RelativeLayout>
