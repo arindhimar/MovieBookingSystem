@@ -69,21 +69,27 @@ class CinemaAdminViewCinemaRating : Fragment() {
                     firebaseRestManagerCo.getSingleItem(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb", ownerId!!) { cinemaOwner ->
                         val currentCinemaId = cinemaOwner!!.cinemaId
                         val showIds = showsForCurrentCinema.map { it.showId }
-                        firebaseRestManagerFeedback.getAllItems(FeedbackTb::class.java, "moviedb/feedbacktb") { feedbackList ->
+                        firebaseRestManagerFeedback.getAllItems(
+                            FeedbackTb::class.java,
+                            "moviedb/feedbacktb"
+                        ) { feedbackList ->
                             val feedbackForCurrentCinema = feedbackList.filter { feedback ->
                                 feedback.showId in showIds && !feedback.cinemaRating.isNullOrEmpty()
                             }
 
                             // Calculate the overall rating
-                            val overallRating = feedbackForCurrentCinema.mapNotNull { it.cinemaRating?.toFloat() }
-                            val averageRating = if (overallRating.isNotEmpty()) overallRating.average().toFloat() else 0f
+                            val overallRating =
+                                feedbackForCurrentCinema.mapNotNull { it.cinemaRating?.toFloat() }
+                            val averageRating =
+                                if (overallRating.isNotEmpty()) overallRating.average()
+                                    .toFloat() else 0f
 
                             // Update the UI with the overall rating and message, along with cinema ID
                             updateRatingUI(averageRating, currentCinemaId)
                             loadingDialogHelper.dismissLoadingDialog()
 
                         }
-                        }
+                    }
 
 
                 }

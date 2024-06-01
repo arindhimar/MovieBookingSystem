@@ -204,7 +204,8 @@ class CinemaOwnerLeaseMovie : Fragment() {
                             val adapter = OwnerMovieListAdapter(movieList)
                             adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
                                 override fun onItemClick(movie: MovieTB) {
-                                    // Handle item click if necessary
+                                    val movieShowsHelperClass = MovieRatingDialogHelper(requireContext(),movie)
+                                    movieShowsHelperClass.showMovieRatingDialog()
                                 }
                             })
                             recyclerView.adapter = adapter

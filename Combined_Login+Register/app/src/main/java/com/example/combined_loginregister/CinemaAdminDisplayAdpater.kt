@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 
 class CinemaAdminDisplayAdpater(private val cinemaAdminsList: ArrayList<CinemaAdminTb>) : RecyclerView.Adapter<CinemaAdminDisplayAdpater.AdminCinemaViewHolder>() {
 
-    private lateinit var onItemClickListener: OnItemClickListener
+    private var onItemClickListener: OnItemClickListener? = null
 
     interface OnItemClickListener {
         fun onItemClick(cinema: CinemaAdminTb)
@@ -57,7 +57,7 @@ class CinemaAdminDisplayAdpater(private val cinemaAdminsList: ArrayList<CinemaAd
 
         holder.itemView.setOnClickListener {
             if (holder.isDataLoaded) {
-                onItemClickListener.onItemClick(cinemaAdmin)
+                onItemClickListener?.onItemClick(cinemaAdmin)
             }
         }
     }

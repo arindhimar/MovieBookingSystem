@@ -117,6 +117,14 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                 Log.d("TAG", "getCinemaAdminsForCurrentOwner: ${cinemaAdminsForCurrentOwner.size}")
                 val adapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner)
 
+
+                    adapter.setOnItemClickListener(object : CinemaAdminDisplayAdpater.OnItemClickListener {
+                        override fun onItemClick(cinema: CinemaAdminTb) {
+                            // Handle item click
+                        }
+                    })
+
+
                 cinemaAdminHereForCO.adapter = adapter
                 cinemaAdminHereForCO.layoutManager = LinearLayoutManager(requireContext())
             }
