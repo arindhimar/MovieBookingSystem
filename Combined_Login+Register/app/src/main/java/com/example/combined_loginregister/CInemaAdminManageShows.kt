@@ -332,21 +332,47 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
                                     val firebaseRestManager = FirebaseRestManager<ShowTb>()
                                     val db = Firebase.database.getReference("moviedb/showtb")
                                     val id = db.push().key ?: return@getSingleItem
-                                    val tempData = ShowTb(id, cinemaId, FirebaseAuth.getInstance().currentUser!!.uid, movie.mid!!, selectedDateText, selectedTimeText, newTimeText!!, price.editText?.text.toString())
 
-                                    firebaseRestManager.addItemWithCustomId(tempData,id, FirebaseDatabase.getInstance().getReference("moviedb/showtb")) { success, message ->
-                                        if (success) {
-                                            val successLoadingHelper = SuccessLoadingHelper()
-                                            successLoadingHelper.showLoadingDialog(requireContext())
-                                            successLoadingHelper.updateText("Show added successfully")
-                                            successLoadingHelper.hideButtons()
+                                    val firebaseRestManager4 = FirebaseRestManager<CinemaAdminTb>()
+                                    firebaseRestManager4.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
+                                        {
+                                            val cinemaAdmin =
+                                                cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
+                                            val tempData = ShowTb(
+                                                id,
+                                                cinemaId,
+                                                cinemaAdmin!!.cinemaadminid.toString(),
+                                                movie.mid!!,
+                                                selectedDateText,
+                                                selectedTimeText,
+                                                newTimeText!!,
+                                                price.editText?.text.toString()
+                                            )
 
-                                            val handler = Handler(Looper.getMainLooper())
-                                            handler.postDelayed({
-                                                successLoadingHelper.dismissLoadingDialog()
-                                                alertDialog2.dismiss()
-                                            }, 2000)
+                                            firebaseRestManager.addItemWithCustomId(
+                                                tempData,
+                                                id,
+                                                FirebaseDatabase.getInstance()
+                                                    .getReference("moviedb/showtb")
+                                            ) { success, message ->
+                                                if (success) {
+                                                    val successLoadingHelper =
+                                                        SuccessLoadingHelper()
+                                                    successLoadingHelper.showLoadingDialog(
+                                                        requireContext()
+                                                    )
+                                                    successLoadingHelper.updateText("Show added successfully")
+                                                    successLoadingHelper.hideButtons()
+
+                                                    val handler = Handler(Looper.getMainLooper())
+                                                    handler.postDelayed({
+                                                        successLoadingHelper.dismissLoadingDialog()
+                                                        alertDialog2.dismiss()
+                                                    }, 2000)
+                                                }
+                                            }
                                         }
+
                                     }
                                 }
                             }

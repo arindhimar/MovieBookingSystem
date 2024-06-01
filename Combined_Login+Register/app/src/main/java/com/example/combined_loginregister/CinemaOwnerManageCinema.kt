@@ -237,7 +237,8 @@ class CinemaOwnerManageCinema : Fragment() {
                                 cinemaOwnerCinemaListAdapter.setOnItemClickListener(object :
                                     CinemaOwnerCinemaListAdapter.OnItemClickListener {
                                     override fun onItemClick(cinema: CinemaTb) {
-
+                                        val cinemaRatingDialogHelper = CinemaRatingDialogHelper(requireContext(),cinema)
+                                        cinemaRatingDialogHelper.showCinemaRatingDialog()
                                     }
 
                                 })

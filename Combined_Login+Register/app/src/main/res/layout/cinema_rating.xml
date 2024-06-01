@@ -54,16 +54,7 @@
                 android:textStyle="bold"
                 android:layout_gravity="center"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:textSize="16sp"
-                android:layout_marginTop="10dp"
-                android:text="If you are enjoying the cinema experience and the movie experience, would you mind rating it?"/>
+
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -92,47 +83,24 @@
 
                     <androidx.appcompat.widget.AppCompatRatingBar
                         android:id="@+id/cinemaRatingBar"
+                        android:isIndicator="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:rating="3"
+
                         android:layout_marginBottom="10dp"/>
 
                     <TextView
+                        android:id="@+id/cinemaRatingText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Movie Rating"
+                        android:text="cinemaRatingText"
                         android:layout_marginTop="20dp"
                         android:textColor="#CC000000"
                         android:textSize="18sp"
                         android:layout_gravity="center"/>
 
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:id="@+id/movieImage"
 
-                        />
-
-
-                    <androidx.appcompat.widget.AppCompatRatingBar
-                        android:id="@+id/movieRatingBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:rating="3"/>
-                    <Button
-
-                        android:layout_marginTop="10pt"
-                        android:id="@+id/ratingNowBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:text="Rate Now"
-                        android:layout_gravity="end"
-                        android:textAllCaps="false"
-                        android:textColor="#FFFFFFFF"
-                        android:background="@drawable/round_back_blue_10"/>
                 </LinearLayout>
 
             </ScrollView>

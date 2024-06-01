@@ -92,6 +92,11 @@ class CinemaAdminActivity : AppCompatActivity() {
                     replaceFragment(CInemaAdminManageShows())
 
                 }
+
+                R.id.nav_view_cinema_rating -> {
+                    replaceFragment(CinemaAdminViewCinemaRating())
+                }
+
                 R.id.view_booking -> {
                     replaceFragment(CinemaAdminViewBookings())
                 }
@@ -130,6 +135,12 @@ class CinemaAdminActivity : AppCompatActivity() {
             binding.navView.setCheckedItem(R.id.nav_manage_shows)
             binding.navView.menu.performIdentifierAction(R.id.nav_manage_shows, 0)
         }
+
+        binding.dashboardViewCinemaRating.setOnClickListener {
+            binding.navView.setCheckedItem(R.id.nav_view_cinema_rating)
+            binding.navView.menu.performIdentifierAction(R.id.nav_view_cinema_rating, 0)
+        }
+
 
 
         binding.dashboardViewBooking.setOnClickListener {

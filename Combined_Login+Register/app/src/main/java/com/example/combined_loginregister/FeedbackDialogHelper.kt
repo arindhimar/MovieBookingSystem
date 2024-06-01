@@ -2,14 +2,16 @@ package com.example.combined_loginregister
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
-import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class FeedbackDialogHelper(private val showId: String) {
 
@@ -44,11 +46,11 @@ class FeedbackDialogHelper(private val showId: String) {
         movieRatingBar = view.findViewById(R.id.movieRatingBar)
         ratingNowBtn = view.findViewById(R.id.ratingNowBtn)
 
-        setupCard()
+        setupCard(context)
         setupRatingListeners()
     }
 
-    private fun setupCard() {
+    private fun setupCard(context: Context) {
         val firebaseRestManager = FirebaseRestManager<ShowTb>()
         firebaseRestManager.getSingleItem(
             ShowTb::class.java,
@@ -88,6 +90,54 @@ class FeedbackDialogHelper(private val showId: String) {
                             .load(cinemaData.cinemaPicture)
                             .into(cinemaImage)
                     }
+                }
+            }
+        }
+
+
+        ratingNowBtn.setOnClickListener {
+
+            val loadingHelper = LoadingDialogHelper()
+            loadingHelper.showLoadingDialog(context)
+
+            val cinemaRating = cinemaRatingBar.rating
+            val movieRating = movieRatingBar.rating
+
+            val firebaseRestManager = FirebaseRestManager<FeedbackTb>()
+
+            val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/feedbacktb")
+
+            val id = dbRef.push().key
+
+            val feetbacktb = FeedbackTb(id, cinemaRating.toString(), movieRating.toString(),showId,FirebaseAuth.getInstance().currentUser?.uid)
+
+            firebaseRestManager.addItemWithCustomId(feetbacktb,id!!,dbRef){success,error->
+                if(success){
+                    loadingHelper.dismissLoadingDialog()
+                    val successLoadingHelper = SuccessLoadingHelper()
+                    successLoadingHelper.showLoadingDialog(context)
+                    successLoadingHelper.hideButtons()
+                    successLoadingHelper.updateText("Thanks for your feedback!!")
+
+                    val handler = Handler()
+                    handler.postDelayed({
+                        successLoadingHelper.dismissLoadingDialog()
+                        dismissFeedbackDialog()
+                    }, 2000)
+
+
+                }else{
+                    loadingHelper.dismissLoadingDialog()
+
+                    val warningLoadingHelper = WarningLoadingHelper()
+                    warningLoadingHelper.showLoadingDialog(context)
+                    warningLoadingHelper.updateText(error!!.message.toString())
+
+                    val handler = Handler()
+                    handler.postDelayed({
+                        warningLoadingHelper.dismissLoadingDialog()
+                    }, 2000)
+
                 }
             }
         }

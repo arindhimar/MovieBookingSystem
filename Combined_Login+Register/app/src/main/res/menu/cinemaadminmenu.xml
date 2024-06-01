@@ -26,7 +26,13 @@
             <item
                 android:checkable="true"
                 android:id="@+id/view_booking"
-                android:icon="@drawable/feedback_dashboard_icon"
+                android:icon="@drawable/move_ticket"
+                android:title="View Bookings" />
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_view_cinema_rating"
+                android:icon="@drawable/star"
                 android:title="View Bookings" />
 
             <!--            <item-->
