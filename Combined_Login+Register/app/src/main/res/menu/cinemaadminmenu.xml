@@ -33,7 +33,7 @@
                 android:checkable="true"
                 android:id="@+id/nav_view_cinema_rating"
                 android:icon="@drawable/star"
-                android:title="View Bookings" />
+                android:title="View Ratings" />
 
             <!--            <item-->
             <!--                android:checkable="true"-->

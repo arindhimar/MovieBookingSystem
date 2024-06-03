@@ -1,0 +1,344 @@
+Applicaiton Owner
+@startuml
+actor ApplicationOwner
+participant "TheCinemaCub App" as App
+participant "FirebaseAuth" as Auth
+participant "FirebaseDB" as DB
+participant "Firebase Storage" as Storage
+
+ApplicationOwner -> App: Enters email and password
+App -> Auth: Authenticate with email and password
+Auth -> App: Authentication result
+
+alt Email not verified
+    App -> Auth: Send verification email
+    Auth -> App: Verification email sent
+    App -> ApplicationOwner: Please verify your email
+else Email verified
+    App -> ApplicationOwner: Login successful
+    ApplicationOwner -> App: Performs actions (Add/View movies, Manage Cinema Admin, View Feedback)
+    alt Add/View movies
+        ApplicationOwner -> App: Adds new movie data
+        App -> DB: Add movie data to FirebaseDB
+        DB -> App: Database update status
+        ApplicationOwner -> App: Uploads movie poster
+        App -> Storage: Upload poster to Firebase Storage
+        Storage -> App: Upload status
+        ApplicationOwner -> App: Views added movies
+        App -> DB: Retrieve movie data from FirebaseDB
+        DB -> App: Movie data
+        App -> ApplicationOwner: Display movies
+    else Manage Cinema Admin
+        ApplicationOwner -> App: Adds new cinema admin data
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> ApplicationOwner: Email already in use
+        else Email does not exist
+            App -> DB: Add cinema admin data to FirebaseDB
+            DB -> App: Database update status
+            ApplicationOwner -> App: Views added cinema admins
+            App -> DB: Retrieve cinema admin data from FirebaseDB
+            DB -> App: Cinema admin data
+            App -> ApplicationOwner: Display cinema admins
+        end
+    else View Feedback
+        ApplicationOwner -> App: Views feedback data
+        App -> DB: Retrieve feedback data from FirebaseDB
+        DB -> App: Feedback data
+        App -> ApplicationOwner: Display feedback
+    end
+end
+
+alt Authentication failed three times
+    ApplicationOwner -> App: Exceeds login attempts
+    App -> ApplicationOwner: Ask to reset password
+    ApplicationOwner -> App: Confirm to reset password
+    alt Yes
+        App -> ApplicationOwner: Prompt for email
+        ApplicationOwner -> App: Enters email
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> Auth: Send password reset email
+            Auth -> App: Password reset email sent
+            App -> ApplicationOwner: Password reset email sent
+        else Email does not exist
+            App -> ApplicationOwner: No user found with this email
+        end
+    else No
+        App -> ApplicationOwner: Continue with normal flow
+    end
+end
+@enduml
+
+
+Cinema Owner
+@startuml
+actor CinemaOwner
+participant "TheCinemaCub App" as App
+participant "FirebaseAuth" as Auth
+participant "FirebaseDB" as DB
+participant "Firebase Storage" as Storage
+
+CinemaOwner -> App: Enters email and password
+App -> Auth: Authenticate with email and password
+Auth -> App: Authentication result
+
+alt Email not verified
+    App -> Auth: Send verification email
+    Auth -> App: Verification email sent
+    App -> CinemaOwner: Please verify your email
+else Email verified
+    App -> CinemaOwner: Login successful
+    CinemaOwner -> App: Performs actions (Add Cinema, Manage Cinema Admin, Rent Movies, View Bookings)
+    
+    alt Add Cinema
+        CinemaOwner -> App: Adds new cinema data
+        CinemaOwner -> App: Uploads cinema image
+        App -> Storage: Upload image to Firebase Storage
+        Storage -> App: Upload status
+        App -> DB: Add cinema data to FirebaseDB
+        DB -> App: Database update status
+    end
+
+    alt Manage Cinema Admin
+        CinemaOwner -> App: Adds new cinema admin data
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> CinemaOwner: Email already in use
+        else Email does not exist
+            CinemaOwner -> App: Selects cinema
+            App -> DB: Add cinema admin data to FirebaseDB
+            DB -> App: Database update status
+            CinemaOwner -> App: Views added cinema admins
+            App -> DB: Retrieve cinema admin data from FirebaseDB
+            DB -> App: Cinema admin data
+            App -> CinemaOwner: Display cinema admins
+        end
+    end
+
+    alt Rent Movies
+        CinemaOwner -> App: Views available movies
+        App -> DB: Retrieve available movies from FirebaseDB
+        DB -> App: Available movies data
+        App -> CinemaOwner: Display available movies
+        CinemaOwner -> App: Views movie ratings
+        App -> DB: Retrieve movie ratings from FirebaseDB
+        DB -> App: Movie ratings data
+        App -> CinemaOwner: Display movie ratings
+        CinemaOwner -> App: Rents a movie
+        App -> DB: Update movie lease status in FirebaseDB
+        DB -> App: Database update status
+    end
+
+    alt View Bookings
+        CinemaOwner -> App: Views bookings for cinema
+        App -> DB: Retrieve booking data from FirebaseDB
+        DB -> App: Booking data
+        App -> CinemaOwner: Display booking data
+    end
+
+end
+
+alt Authentication failed three times
+    CinemaOwner -> App: Exceeds login attempts
+    App -> CinemaOwner: Ask to reset password
+    CinemaOwner -> App: Confirm to reset password
+    alt Yes
+        App -> CinemaOwner: Prompt for email
+        CinemaOwner -> App: Enters email
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> Auth: Send password reset email
+            Auth -> App: Password reset email sent
+            App -> CinemaOwner: Password reset email sent
+        else Email does not exist
+            App -> CinemaOwner: No user found with this email
+        end
+    else No
+        App -> CinemaOwner: Continue with normal flow
+    end
+end
+@enduml
+
+CInema Admin
+@startuml
+
+actor CinemaAdmin
+participant "TheCinemaCub App" as App
+participant "FirebaseAuth" as Auth
+participant "FirebaseDB" as DB
+
+CinemaAdmin -> App: Enters email and password
+App -> Auth: Authenticate with email and password
+Auth -> App: Authentication result
+
+alt Email not verified
+    App -> Auth: Send verification email
+    Auth -> App: Verification email sent
+    App -> CinemaAdmin: Please verify your email
+else Email verified
+    App -> CinemaAdmin: Login successful
+    CinemaAdmin -> App: Performs actions (Add Shows, View Shows, View Bookings, View Cinema Ratings)
+    
+    alt Add Shows
+        CinemaAdmin -> App: Select rented movie
+        App -> DB: Retrieve rented movies for cinema
+        DB -> App: Rented movies data
+        App -> CinemaAdmin: Display rented movies
+        CinemaAdmin -> App: Selects time and date
+        App -> DB: Check for existing show at that time and date
+        DB -> App: Existing show check result
+        alt No existing show
+            App -> DB: Add show data to FirebaseDB
+            DB -> App: Database update status
+        else Show already exists
+            App -> CinemaAdmin: Error: Show already exists
+        end
+    end
+
+    alt View Shows
+        CinemaAdmin -> App: Views shows for cinema
+        App -> DB: Retrieve show data from FirebaseDB
+        DB -> App: Show data
+        App -> CinemaAdmin: Display show data
+    end
+
+    alt View Bookings
+        CinemaAdmin -> App: Views bookings for cinema
+        App -> DB: Retrieve booking data from FirebaseDB
+        DB -> App: Booking data
+        App -> CinemaAdmin: Display booking data
+    end
+
+    alt View Cinema Ratings
+        CinemaAdmin -> App: Views cinema ratings
+        App -> DB: Retrieve cinema ratings from FirebaseDB
+        DB -> App: Cinema ratings data
+        App -> CinemaAdmin: Display cinema ratings
+    end
+
+end
+
+alt Authentication failed three times
+    CinemaAdmin -> App: Exceeds login attempts
+    App -> CinemaAdmin: Ask to reset password
+    CinemaAdmin -> App: Confirm to reset password
+    alt Yes
+        App -> CinemaAdmin: Prompt for email
+        CinemaAdmin -> App: Enters email
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> Auth: Send password reset email
+            Auth -> App: Password reset email sent
+            App -> CinemaAdmin: Password reset email sent
+        else Email does not exist
+            App -> CinemaAdmin: No user found with this email
+        end
+    else No
+        App -> CinemaAdmin: Continue with normal flow
+    end
+end
+
+@enduml
+
+
+User
+@startuml
+actor User
+participant "TheCinemaCub App" as App
+participant "FirebaseAuth" as Auth
+participant "FirebaseDB" as DB
+participant "Payment Gateway" as Payment
+participant "Firebase Storage" as Storage
+
+User -> App: Enters email and password
+App -> Auth: Authenticate with email and password
+Auth -> App: Authentication result
+
+alt Email not verified
+    App -> Auth: Send verification email
+    Auth -> App: Verification email sent
+    App -> User: Please verify your email
+else Email verified
+    App -> User: Login successful
+    User -> App: Performs actions (Select Location, View Shows, Book Show, View Tickets, Provide Ratings)
+    
+    alt Select Location
+        User -> App: Select location
+        App -> DB: Retrieve shows for location
+        DB -> App: Show data
+        App -> Storage: Retrieve cinema posters
+        Storage -> App: Cinema poster data
+        App -> User: Display shows
+        
+        alt Shows available
+            User -> App: Select show
+            App -> DB: Retrieve available seats for show
+            DB -> App: Available seats data
+            App -> User: Display available seats
+            User -> App: Select seats and complete payment
+            App -> Payment: Process payment
+            Payment -> App: Payment success
+            App -> DB: Add booking data to FirebaseDB
+            DB -> App: Database update status
+            App -> User: Display booking success message
+        else No shows available
+            App -> User: No shows available for selected location
+        end
+    end
+
+    alt View Tickets
+        User -> App: View booked tickets
+        App -> DB: Retrieve booked tickets from FirebaseDB
+        DB -> App: Booked tickets data
+        App -> User: Display booked tickets
+    end
+
+    alt Provide Ratings
+        User -> App: Provide ratings for cinema and movie
+        App -> DB: Add ratings data to FirebaseDB
+        DB -> App: Database update status
+        App -> User: Display rating success message
+    end
+end
+
+alt Authentication failed three times
+    User -> App: Exceeds login attempts
+    App -> User: Ask to reset password
+    User -> App: Confirm to reset password
+    alt Yes
+        App -> User: Prompt for email
+        User -> App: Enters email
+        App -> Auth: Check if email exists
+        Auth -> App: Email existence check result
+        alt Email exists
+            App -> Auth: Send password reset email
+            Auth -> App: Password reset email sent
+            App -> User: Password reset email sent
+        else Email does not exist
+            App -> User: No user found with this email
+        end
+    else No
+        App -> User: Continue with normal flow
+    end
+end
+
+alt Login with Google
+    User -> App: Select Google login
+    App -> Auth: Authenticate with Google
+    Auth -> App: Authentication result
+    alt Email not verified
+        App -> Auth: Send verification email
+        Auth -> App: Verification email sent
+        App -> User: Please verify your email
+    else Email verified
+        App -> User: Login successful
+        User -> App: Performs actions (Select Location, View Shows, Book Show, View Tickets, Provide Ratings)
+    end
+end
+@enduml

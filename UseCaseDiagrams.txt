@@ -1,0 +1,47 @@
+@startuml
+left to right direction
+actor ApplicationOwner as AO
+rectangle TheCinemaCub {
+  AO --> (Manage Cinema Owners)
+  AO --> (Manage Movies)
+  AO --> (View Feedback/Ratings)
+  AO --> (Manage Profiles)
+}
+@enduml
+
+
+@startuml
+left to right direction
+actor CinemaOwner as CO
+rectangle TheCinemaCub {
+  CO --> (Manage Cinema)
+  CO --> (Manage Cinema Admin)
+  CO --> (Rent/Lease Movies)
+  CO --> (View Bookings)
+  CO --> (Manage Profiles)
+}
+@enduml
+
+
+@startuml
+left to right direction
+actor CinemaAdmin as CA
+rectangle TheCinemaCub {
+  CA --> (Manage Shows)
+  CA --> (View Bookings)
+  CA --> (View Cinema Ratings)
+  CA --> (Manage Profiles)
+}
+@enduml
+
+
+@startuml
+left to right direction
+actor NormalUser as NU
+rectangle TheCinemaCub {
+  NU --> (View Current Shows)
+  NU --> (Provide Feedback)
+  NU --> (View Bookings)
+  NU --> (Manage Profiles)
+}
+@enduml
