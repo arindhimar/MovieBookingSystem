@@ -1,8 +1,13 @@
 package com.example.combined_loginregister
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +37,8 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
     private var param2: String? = null
     private lateinit var binding: FragmentUserMainBinding
 
+    private val bookingReceiver = BookingReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -37,13 +47,25 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentUserMainBinding.inflate(inflater, container, false)
+
+        // Register the receiver
+        val intentFilter = IntentFilter("com.example.BOOKING_CONFIRMED")
+        requireContext().registerReceiver(bookingReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+
         setupLocationSpinner()
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Unregister the receiver to avoid leaks
+        requireContext().unregisterReceiver(bookingReceiver)
     }
 
     private fun setupLocationSpinner() {
@@ -67,12 +89,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         }
     }
 
-
-
-
-
     private fun findShows(city: String) {
-
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(requireContext())
 
@@ -90,7 +107,6 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
                     val istTimeZone = TimeZone.getTimeZone("Asia/Kolkata")
                     val currentISTTime = Calendar.getInstance(istTimeZone)
 
-                    // Filter shows that are from today or future in IST
                     // Filter shows that are from today or future in IST
                     val validShows = relevantShows.filter { show ->
                         val showDateCalendar = Calendar.getInstance()
@@ -112,16 +128,9 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
                         currentISTDate.set(Calendar.SECOND, 0)
                         currentISTDate.set(Calendar.MILLISECOND, 0)
 
-
-                        // Get the current time in India
-                        val indiaTimeZone = TimeZone.getTimeZone("Asia/Kolkata")
-                        val indiaCalendar = Calendar.getInstance(indiaTimeZone)
-                        val currentTime = indiaCalendar.time
-
                         // Compare the show date with the current date
                         !showDateCalendar.before(currentISTDate)
                     }
-
 
                     val movieIds = validShows.map { it.movieId }.distinct()
                     Log.d("movieList", movieIds.toString())
@@ -188,6 +197,20 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         })
 
         itemTouchHelper.attachToRecyclerView(binding.horizontalRecyclerView)
+    }
+
+    // BroadcastReceiver to handle the broadcast when data is added
+    inner class BookingReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val bookingId = intent?.getStringExtra("bookingId")
+            if (bookingId != null) {
+                Toast.makeText(context, "Booking confirmed with ID: $bookingId", Toast.LENGTH_LONG).show()
+                // Perform any additional UI updates or actions here
+                Log.d("TAG", "onReceive: $bookingId ")
+            } else {
+                Toast.makeText(context, "Booking confirmed", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     companion object {

@@ -9,6 +9,7 @@ import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -95,6 +96,7 @@ class SeatManager(
                         if (item.showId == show.showId) {
                             val bookedSeats = item.bookedSeats
                             bookedSeatsSet = bookedSeats.split(",").toMutableSet()
+                            Log.d("TAG", "bookedSeatsSet: $bookedSeatsSet ")
                         }
                     }
 
