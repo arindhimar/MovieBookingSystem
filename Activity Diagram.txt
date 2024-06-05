@@ -1,0 +1,409 @@
+Application Owner
+
+@startuml
+start
+
+:Select Login Method;
+if (Login with Email and Password) then (yes)
+  :Enter Email and Password;
+  :Authenticate with FirebaseAuth;
+else (no)
+  :Select Google Account;
+  :Authenticate with FirebaseAuth;
+endif
+
+if (Email Verified?) then (yes)
+  :Login Successful;
+  :Display Dashboard;
+  :Perform Actions;
+  
+  while (Choose Action) is (Add/View Movies)
+    :Enter Movie Data;
+    :Add Movie Data to FirebaseDB;
+    :Upload Movie Poster;
+    :Upload Poster to Firebase Storage;
+    :Retrieve Movie Data from FirebaseDB;
+    :Display Movies;
+  endwhile
+  
+  while (Choose Action) is (Manage Cinema Admin)
+    :Enter Cinema Admin Data;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Display Email Already in Use Error;
+    else (no)
+      :Add Cinema Admin Data to FirebaseDB;
+      :Retrieve Cinema Admin Data from FirebaseDB;
+      :Display Cinema Admins;
+    endif
+  endwhile
+  
+  while (Choose Action) is (View Feedback)
+    :Retrieve Feedback Data from FirebaseDB;
+    :Display Feedback;
+  endwhile
+
+  while (Choose Action) is (Update Profile)
+    :Enter Profile Data;
+    :Update Profile Data in FirebaseDB;
+    :Profile Update Status;
+  endwhile
+  
+  :Log Out;
+  :End Session;
+  
+else (no)
+  :Send Verification Email;
+  :Display Verification Email Sent Message;
+endif
+
+if (Authentication Failed Three Times?) then (yes)
+  :Ask to Reset Password;
+  if (Confirm to Reset Password) then (yes)
+    :Prompt for Email;
+    :Enter Email;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Send Password Reset Email;
+      :Display Password Reset Email Sent;
+    else (no)
+      :Display No User Found with this Email;
+    endif
+  else (no)
+    :Continue with Normal Flow;
+  endif
+else (no)
+  :Continue with Normal Flow;
+endif
+
+stop
+@enduml
+
+
+Cinema Owner
+@startuml
+start
+
+:Select Login Method;
+if (Login with Email and Password) then (yes)
+  :Enter Email and Password;
+  :Authenticate with FirebaseAuth;
+else (no)
+  :Select Google Account;
+  :Authenticate with FirebaseAuth;
+endif
+
+if (Email Verified?) then (yes)
+  :Login Successful;
+  :Display Dashboard;
+  :Perform Actions;
+
+  while (Choose Action) is (Add Cinema)
+    :Enter Cinema Data;
+    :Upload Cinema Image;
+    :Upload Image to Firebase Storage;
+    :Add Cinema Data to FirebaseDB;
+    :Database Update Status;
+  endwhile
+
+  while (Choose Action) is (Manage Cinema Admin)
+    :Enter Cinema Admin Data;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Display Email Already in Use Error;
+    else (no)
+      :Select Cinema;
+      :Add Cinema Admin Data to FirebaseDB;
+      :Retrieve Cinema Admin Data from FirebaseDB;
+      :Display Cinema Admins;
+    endif
+  endwhile
+
+  while (Choose Action) is (Rent/Lease Movies)
+    :Retrieve Available Movies from FirebaseDB;
+    :Display Available Movies;
+    :Select Movie to Rent;
+    :Retrieve Movie Ratings from FirebaseDB;
+    :Display Movie Ratings;
+    :Update Movie Lease Status in FirebaseDB;
+    :Database Update Status;
+  endwhile
+
+  while (Choose Action) is (View Bookings)
+    :Retrieve Booking Data from FirebaseDB;
+    :Display Booking Data;
+  endwhile
+
+  while (Choose Action) is (Update Profile)
+    :Enter Profile Data;
+    :Update Profile Data in FirebaseDB;
+    :Profile Update Status;
+  endwhile
+
+  :Log Out;
+  :End Session;
+
+else (no)
+  :Send Verification Email;
+  :Display Verification Email Sent Message;
+endif
+
+if (Authentication Failed Three Times?) then (yes)
+  :Ask to Reset Password;
+  if (Confirm to Reset Password) then (yes)
+    :Prompt for Email;
+    :Enter Email;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Send Password Reset Email;
+      :Display Password Reset Email Sent;
+    else (no)
+      :Display No User Found with this Email;
+    endif
+  else (no)
+    :Continue with Normal Flow;
+  endif
+else (no)
+  :Continue with Normal Flow;
+endif
+
+stop
+@enduml
+
+
+CinemaOwner
+@startuml
+start
+
+:Select Login Method;
+if (Login with Email and Password) then (yes)
+  :Enter Email and Password;
+  :Authenticate with FirebaseAuth;
+else (no)
+  :Select Google Account;
+  :Authenticate with FirebaseAuth;
+endif
+
+if (Email Verified?) then (yes)
+  :Login Successful;
+  :Display Dashboard;
+  :Perform Actions;
+
+  while (Choose Action) is (Add Cinema)
+    :Enter Cinema Data;
+    :Upload Cinema Image;
+    :Upload Image to Firebase Storage;
+    :Add Cinema Data to FirebaseDB;
+    :Database Update Status;
+  endwhile
+
+  while (Choose Action) is (Manage Cinema Admin)
+    :Enter Cinema Admin Data;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Display Email Already in Use Error;
+    else (no)
+      :Select Cinema;
+      :Add Cinema Admin Data to FirebaseDB;
+      :Retrieve Cinema Admin Data from FirebaseDB;
+      :Display Cinema Admins;
+    endif
+  endwhile
+
+  while (Choose Action) is (Rent/Lease Movies)
+    :Retrieve Available Movies from FirebaseDB;
+    :Display Available Movies;
+    :Select Movie to Rent;
+    :Retrieve Movie Ratings from FirebaseDB;
+    :Display Movie Ratings;
+    :Update Movie Lease Status in FirebaseDB;
+    :Database Update Status;
+  endwhile
+
+  while (Choose Action) is (View Bookings)
+    :Retrieve Booking Data from FirebaseDB;
+    :Display Booking Data;
+  endwhile
+
+  while (Choose Action) is (Update Profile)
+    :Enter Profile Data;
+    :Update Profile Data in FirebaseDB;
+    :Profile Update Status;
+  endwhile
+
+  :Log Out;
+  :End Session;
+
+else (no)
+  :Send Verification Email;
+  :Display Verification Email Sent Message;
+endif
+
+if (Authentication Failed Three Times?) then (yes)
+  :Ask to Reset Password;
+  if (Confirm to Reset Password) then (yes)
+    :Prompt for Email;
+    :Enter Email;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Send Password Reset Email;
+      :Display Password Reset Email Sent;
+    else (no)
+      :Display No User Found with this Email;
+    endif
+  else (no)
+    :Continue with Normal Flow;
+  endif
+else (no)
+  :Continue with Normal Flow;
+endif
+
+stop
+@enduml
+
+Cinema Admin
+@startuml
+start
+
+:Select Login Method;
+if (Login with Email and Password) then (yes)
+  :Enter Email and Password;
+  :Authenticate with FirebaseAuth;
+else (no)
+  :Select Google Account;
+  :Authenticate with FirebaseAuth;
+endif
+
+if (Email Verified?) then (yes)
+  :Login Successful;
+  :Display Dashboard;
+  :Perform Actions;
+
+  while (Choose Action) is (Manage Shows)
+    :Retrieve Rented Movies for Cinema;
+    :Display Rented Movies;
+    :Select Rented Movie;
+    :Check for Existing Show at Time and Date;
+    if (Show Exists?) then (yes)
+      :Display Show Already Exists Error;
+    else (no)
+      :Add Show Data to FirebaseDB;
+      :Database Update Status;
+    endif
+  endwhile
+
+  while (Choose Action) is (View Bookings)
+    :Retrieve Booking Data from FirebaseDB;
+    :Display Booking Data;
+  endwhile
+
+  while (Choose Action) is (View Cinema Ratings)
+    :Retrieve Cinema Ratings from FirebaseDB;
+    :Display Cinema Ratings;
+  endwhile
+
+  while (Choose Action) is (Update Profile)
+    :Enter Profile Data;
+    :Update Profile Data in FirebaseDB;
+    :Profile Update Status;
+  endwhile
+
+  :Log Out;
+  :End Session;
+
+else (no)
+  :Send Verification Email;
+  :Display Verification Email Sent Message;
+endif
+
+if (Authentication Failed Three Times?) then (yes)
+  :Ask to Reset Password;
+  if (Confirm to Reset Password) then (yes)
+    :Prompt for Email;
+    :Enter Email;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Send Password Reset Email;
+      :Display Password Reset Email Sent;
+    else (no)
+      :Display No User Found with this Email;
+    endif
+  else (no)
+    :Continue with Normal Flow;
+  endif
+else (no)
+  :Continue with Normal Flow;
+endif
+
+stop
+@enduml
+
+Normal User
+@startuml
+start
+
+:Select Login Method;
+if (Login with Email and Password) then (yes)
+  :Enter Email and Password;
+  :Authenticate with FirebaseAuth;
+else (no)
+  :Select Google Account;
+  :Authenticate with FirebaseAuth;
+endif
+
+if (Email Verified?) then (yes)
+  :Login Successful;
+  :Display Dashboard;
+  :Perform Actions;
+
+  while (Choose Action) is (View Current Shows)
+    :Retrieve Shows in User's City;
+    :Display Current Shows;
+  endwhile
+
+  while (Choose Action) is (View Bookings)
+    :Retrieve Booking Data from FirebaseDB;
+    :Display Booking Data;
+  endwhile
+
+  while (Choose Action) is (Provide Feedback)
+    :Enter Feedback;
+    :Submit Feedback to FirebaseDB;
+    :Feedback Submission Status;
+  endwhile
+
+  while (Choose Action) is (Update Profile)
+    :Enter Profile Data;
+    :Update Profile Data in FirebaseDB;
+    :Profile Update Status;
+  endwhile
+
+  :Log Out;
+  :End Session;
+
+else (no)
+  :Send Verification Email;
+  :Display Verification Email Sent Message;
+endif
+
+if (Authentication Failed Three Times?) then (yes)
+  :Ask to Reset Password;
+  if (Confirm to Reset Password) then (yes)
+    :Prompt for Email;
+    :Enter Email;
+    :Check if Email Exists in FirebaseAuth;
+    if (Email Exists?) then (yes)
+      :Send Password Reset Email;
+      :Display Password Reset Email Sent;
+    else (no)
+      :Display No User Found with this Email;
+    endif
+  else (no)
+    :Continue with Normal Flow;
+  endif
+else (no)
+  :Continue with Normal Flow;
+endif
+
+stop
+@enduml
