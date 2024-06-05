@@ -179,16 +179,24 @@ class LoginAndRegister : AppCompatActivity() {
             }
         }
 
-        binding.textInputLayout4.setEndIconOnClickListener {
-            //Validation for phone number
-            if ( binding.textInputLayout4.editText!!.text.toString().trim().isEmpty()) {
+        binding.sendMobileVerification.setOnClickListener {
+            if(binding.textInputLayout4.editText!!.text.toString().trim().isNotEmpty()) {
+                if (binding.textInputLayout4.editText!!.text.toString().trim().isEmpty()) {
+                    binding.textInputLayout4.error = "Phone number cannot be empty"
+                } else if (!binding.textInputLayout4.editText!!.text.toString().trim()
+                        .matches("[6-9]\\d{9}".toRegex())
+                ) {
+                    binding.textInputLayout4.error = "Invalid phone number"
+                } else {
+                    //if phone number is valid generate OTP
+                    startPhoneNumberVerification(
+                        binding.textInputLayout4.editText!!.text.trim().toString()
+                    )
+                    showLoading("Sending OTP")
+                }
+            }
+            else{
                 binding.textInputLayout4.error = "Phone number cannot be empty"
-            } else if (! binding.textInputLayout4.editText!!.text.toString().trim().matches("[6-9]\\d{9}".toRegex())) {
-                binding.textInputLayout4.error = "Invalid phone number"
-            } else {
-                //if phone number is valid generate OTP
-                startPhoneNumberVerification(binding.textInputLayout4.editText!!.text.trim().toString())
-                showLoading("Sending OTP")
             }
         }
 
@@ -476,9 +484,22 @@ class LoginAndRegister : AppCompatActivity() {
 
     private fun verifyPhoneNumberWithCode(verificationId: String?, code: String) {
         // [START verify_with_code]
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
-        // [END verify_with_code]
-        signInWithPhoneAuthCredential(credential)
+        if(verificationId!=null) {
+            val credential = PhoneAuthProvider.getCredential(verificationId, code)
+            // [END verify_with_code]
+            signInWithPhoneAuthCredential(credential)
+        }
+        else{
+            val warningLoadingHelper = WarningLoadingHelper()
+            warningLoadingHelper.showLoadingDialog(this)
+            warningLoadingHelper.hideButtons()
+            warningLoadingHelper.updateText("Please Enter OTP")
+            val handler = Handler()
+            handler.postDelayed({
+                warningLoadingHelper.dismissLoadingDialog()
+            }, 2000)
+
+        }
     }
 
 
@@ -588,7 +609,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout5.isVisible = currentVisibility
 
         binding.loginbtn.isVisible = !currentVisibility
-        binding.sendEmailVerification.isVisible = currentVisibility
+        binding.sendMobileVerification.isVisible = currentVisibility
 
         binding.loginbtn2.isVisible = currentVisibility
         binding.loginbtn3.isVisible = currentVisibility
@@ -615,7 +636,7 @@ class LoginAndRegister : AppCompatActivity() {
         binding.textInputLayout5.isVisible = false
 
         binding.loginbtn.isVisible = false
-        binding.sendEmailVerification.isVisible = false
+        binding.sendMobileVerification.isVisible = false
 
         binding.imageView2.isVisible = false
         binding.imageView.isVisible=false
@@ -811,57 +832,111 @@ class LoginAndRegister : AppCompatActivity() {
     private fun updateUI(account: GoogleSignInAccount) {
         val email = account.email
         if (email != null) {
-            // Authenticate the user with Firebase using Google credentials
-            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            FirebaseAuth.getInstance().signInWithCredential(credential)
-                .addOnCompleteListener(this) { authTask ->
-                    if (authTask.isSuccessful) {
-                        // User authenticated with Firebase successfully
-                        val firebaseUser = FirebaseAuth.getInstance().currentUser
-                        firebaseUser?.let { user ->
-                            val uid = user.uid
-                            Log.d("TAG", "User UID: $uid")
 
-                            val firebaseRestManager = FirebaseRestManager<UserTb>()
-                            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
-                                if(user!=null) {
-                                    if (user!!.utype == "owner") {
-                                        val intent = Intent(this, OwnerActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    } else if (user.utype == "cinemaowner") {
-                                        intent = Intent(
-                                            this@LoginAndRegister,
-                                            CinemaOwnerActivity::class.java
-                                        )
-                                        startActivity(intent)
-                                        finish()
+            val firebaseRestManager = FirebaseRestManager<CredentialsTb>()
+            firebaseRestManager.getAllItems(CredentialsTb::class.java,"moviedb/credentialstb"){credentials->
+                val credential = credentials.find { it.userEmail == email }
+                credential!!.userPassword?.let {
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, it)
+                        .addOnCompleteListener(this) { authTask ->
+                            if (authTask.isSuccessful) {
+                                // User authenticated with Firebase successfully
+                                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                                firebaseUser?.let { user ->
+                                    val uid = user.uid
+                                    Log.d("TAG", "User UID: $uid")
+
+                                    val firebaseRestManager = FirebaseRestManager<UserTb>()
+                                    firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
+                                        if(user!=null) {
+                                            if (user!!.utype == "owner") {
+                                                val intent = Intent(this, OwnerActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            } else if (user.utype == "cinemaowner") {
+                                                intent = Intent(
+                                                    this@LoginAndRegister,
+                                                    CinemaOwnerActivity::class.java
+                                                )
+                                                startActivity(intent)
+                                                finish()
+
+                                            } else if(user.utype=="cinemaadmin"){
+                                                intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            } else if(user.utype=="user"){
+                                                intent = Intent(this@LoginAndRegister,UserActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                        } else{
+                                            firebaseAuth.signOut()
+                                            mGoogleSignInClient.signOut()
+                                        }
 
                                     }
-                                    else if(user.utype=="cinemaadmin"){
-                                        intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
-                                    else if(user.utype=="user"){
-                                        intent = Intent(this@LoginAndRegister,UserActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
+
                                 }
-                                else{
-                                    firebaseAuth.signOut()
-                                    mGoogleSignInClient.signOut()
-                                }
-
+                            } else {
+                                // Authentication failed
+                                Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
                             }
-
                         }
-                    } else {
-                        // Authentication failed
-                        Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
-                    }
                 }
+            }
+
+//            // Authenticate the user with Firebase using Google credentials
+//            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+//            FirebaseAuth.getInstance().signInWithCredential(credential)
+//                .addOnCompleteListener(this) { authTask ->
+//                    if (authTask.isSuccessful) {
+//                        // User authenticated with Firebase successfully
+//                        val firebaseUser = FirebaseAuth.getInstance().currentUser
+//                        firebaseUser?.let { user ->
+//                            val uid = user.uid
+//                            Log.d("TAG", "User UID: $uid")
+//
+//                            val firebaseRestManager = FirebaseRestManager<UserTb>()
+//                            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
+//                                if(user!=null) {
+//                                    if (user!!.utype == "owner") {
+//                                        val intent = Intent(this, OwnerActivity::class.java)
+//                                        startActivity(intent)
+//                                        finish()
+//                                    } else if (user.utype == "cinemaowner") {
+//                                        intent = Intent(
+//                                            this@LoginAndRegister,
+//                                            CinemaOwnerActivity::class.java
+//                                        )
+//                                        startActivity(intent)
+//                                        finish()
+//
+//                                    }
+//                                    else if(user.utype=="cinemaadmin"){
+//                                        intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
+//                                        startActivity(intent)
+//                                        finish()
+//                                    }
+//                                    else if(user.utype=="user"){
+//                                        intent = Intent(this@LoginAndRegister,UserActivity::class.java)
+//                                        startActivity(intent)
+//                                        finish()
+//                                    }
+//                                }
+//                                else{
+//                                    firebaseAuth.signOut()
+//                                    mGoogleSignInClient.signOut()
+//                                }
+//
+//                            }
+//
+//                        }
+//                    } else {
+//                        // Authentication failed
+//                        Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
+//                    }
+//                }
         } else {
             // Email address is null
             Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
