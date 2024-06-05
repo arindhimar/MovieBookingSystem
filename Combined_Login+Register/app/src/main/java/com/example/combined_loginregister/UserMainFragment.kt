@@ -64,7 +64,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Unregister the receiver to avoid leaks
+
         requireContext().unregisterReceiver(bookingReceiver)
     }
 
@@ -148,6 +148,8 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
             }
         }
     }
+
+
 
     private fun setupRecyclerView(movieList: MutableList<MovieTB>) {
         val adapter = MovieListAdapter(movieList)

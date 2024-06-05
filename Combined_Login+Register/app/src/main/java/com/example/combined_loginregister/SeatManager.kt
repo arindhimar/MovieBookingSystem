@@ -2,9 +2,12 @@ package com.example.combined_loginregister
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
@@ -17,6 +20,8 @@ import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -29,6 +34,7 @@ class SeatManager(
     private lateinit var view: View
     private lateinit var bottomSheetDialog: BottomSheetDialog
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun showLoadingDialog(context: Context) {
         // Inflate the cinema seat layout
         view = LayoutInflater.from(context).inflate(R.layout.cinema_seat_layout, null)
@@ -43,6 +49,8 @@ class SeatManager(
 
         // Set the dialog to class variable for dismissing later if needed
         this.dialog = dialog
+
+
 
         // Call setup method after the dialog is shown
         setUpCard()
@@ -88,15 +96,15 @@ class SeatManager(
                 // Set the column count
                 seatContainer.columnCount = columns
 
-                var bookedSeatsSet = mutableSetOf<String>()
+                val bookedSeatsSet = mutableSetOf<String>()
 
                 val firebaseRestManager = FirebaseRestManager<BookingTb>()
                 firebaseRestManager.getAllItems(BookingTb::class.java, "moviedb/bookingtb") { items ->
                     for (item in items) {
                         if (item.showId == show.showId) {
                             val bookedSeats = item.bookedSeats
-                            bookedSeatsSet = bookedSeats.split(",").toMutableSet()
-                            Log.d("TAG", "bookedSeatsSet: $bookedSeatsSet ")
+                            bookedSeatsSet.addAll(bookedSeats.split(","))
+                            Log.d("TAG", "bookedSeatsSet: $bookedSeatsSet")
                         }
                     }
 
@@ -105,7 +113,6 @@ class SeatManager(
                         seatView.id = View.generateViewId()
 
                         seatView.setImageResource(R.drawable.chair_default)
-
 
                         // Set seat layout params
                         val params = GridLayout.LayoutParams().apply {
@@ -125,6 +132,7 @@ class SeatManager(
 
                         if (bookedSeatsSet.contains(seatId)) {
                             seatView.setImageResource(R.drawable.chair_booked)
+                            Log.d("TAG", "setUpCard: yep they are here")
                             seatView.isEnabled = false
                         }
 
@@ -161,6 +169,9 @@ class SeatManager(
             }
         }
     }
+
+
+
     private fun onSeatClicked(seatId: String, seatView: ImageView) {
         if (selectedSeats.contains(seatId)) {
             selectedSeats.remove(seatId)
@@ -204,6 +215,10 @@ class SeatManager(
             intent.putExtra("key_showId", show.showId)
             intent.putExtra("key_seats", ArrayList(selectedSeats))
             requireContext.startActivity(intent)
+
+
+            bottomSheetDialog.dismiss()
+            dialog.dismiss()
 
 
         }

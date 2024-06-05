@@ -2,11 +2,13 @@ package com.example.combined_loginregister
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -173,6 +175,7 @@ class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: 
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onChipClick(show: ShowTb) {
         val seatManager = SeatManager(show,requireContext)
         seatManager.showLoadingDialog(requireContext)

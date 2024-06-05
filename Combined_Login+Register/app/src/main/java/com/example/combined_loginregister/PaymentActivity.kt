@@ -33,6 +33,7 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
             put("description", "Payment for the movie")
             put("currency", "INR")
             put("amount", amount * 100)
+            put("theme.color", "#FFBB86FC")
         }
 
         try {
@@ -115,6 +116,8 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
             Toast.makeText(this, "Payment ID is null", Toast.LENGTH_LONG).show()
         }
     }
+
+
 
     override fun onPaymentError(code: Int, description: String?) {
         Toast.makeText(this, "Payment failed: $description", Toast.LENGTH_LONG).show()
