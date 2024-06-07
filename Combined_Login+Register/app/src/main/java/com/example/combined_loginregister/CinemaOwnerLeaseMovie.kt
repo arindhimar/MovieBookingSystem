@@ -3,14 +3,17 @@ package com.example.combined_loginregister
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.combined_loginregister.databinding.FragmentCinemaOwnerLeaseMovieBinding
@@ -26,6 +29,10 @@ class CinemaOwnerLeaseMovie : Fragment() {
     private lateinit var binding: FragmentCinemaOwnerLeaseMovieBinding
     private lateinit var dialogView: View
     private lateinit var alertDialog: AlertDialog
+    private var movieList = ArrayList<MovieTB>()
+    private lateinit var adapter: OwnerMovieListAdapter
+    private var dialogMovieList = ArrayList<MovieTB>()
+    private lateinit var dialogAdapter: OwnerMovieListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +53,16 @@ class CinemaOwnerLeaseMovie : Fragment() {
             showAddLeaseMovieDialog(inflater)
         }
 
+        // Add TextWatcher to search bar in main fragment
+        val searchBar: EditText = binding.searchBar
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterMovies(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         return binding.root
     }
 
@@ -64,6 +81,16 @@ class CinemaOwnerLeaseMovie : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Error: RecyclerView not found", Toast.LENGTH_SHORT).show()
         }
+
+        // Add TextWatcher to search bar in dialog
+        val dialogSearchBar: EditText = dialogView.findViewById(R.id.search_bar)
+        dialogSearchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterDialogMovies(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     private fun getUnleasedMovies(recyclerView: RecyclerView) {
@@ -79,7 +106,7 @@ class CinemaOwnerLeaseMovie : Fragment() {
                 loadingScreen.dismissLoadingDialog()
 
                 if (items.isNotEmpty()) {
-                    val movieList = ArrayList<MovieTB>()
+                    dialogMovieList.clear()
                     val currentUser = FirebaseAuth.getInstance().currentUser
 
                     if (currentUser == null) {
@@ -94,16 +121,16 @@ class CinemaOwnerLeaseMovie : Fragment() {
                                 it.userId == currentUser.uid && it.movieId == tempMovieItem.mid
                             }
                             if (!isLeased) {
-                                movieList.add(tempMovieItem)
+                                dialogMovieList.add(tempMovieItem)
                             }
 
-                            val adapter = OwnerMovieListAdapter(movieList)
-                            adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
+                            dialogAdapter = OwnerMovieListAdapter(dialogMovieList)
+                            dialogAdapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
                                 override fun onItemClick(movie: MovieTB) {
                                     showLeaseConfirmationDialog(movie)
                                 }
                             })
-                            recyclerView.adapter = adapter
+                            recyclerView.adapter = dialogAdapter
                             recyclerView.layoutManager = LinearLayoutManager(requireContext())
                         }
                     }
@@ -152,7 +179,7 @@ class CinemaOwnerLeaseMovie : Fragment() {
         val tempId = dbRef.push().key
         val tempData = LeaseMovieTb(tempId, movie.mid, FirebaseAuth.getInstance().currentUser!!.uid)
 
-        firebaseRestManager.addItemWithCustomId(tempData,tempId!!, dbRef) { success, error ->
+        firebaseRestManager.addItemWithCustomId(tempData, tempId!!, dbRef) { success, error ->
             if (success) {
                 val successLoadingHelper = SuccessLoadingHelper()
                 successLoadingHelper.showLoadingDialog(requireContext())
@@ -183,7 +210,7 @@ class CinemaOwnerLeaseMovie : Fragment() {
                 loadingScreen.dismissLoadingDialog()
 
                 if (items.isNotEmpty()) {
-                    val movieList = ArrayList<MovieTB>()
+                    movieList.clear()
                     val currentUser = FirebaseAuth.getInstance().currentUser
 
                     if (currentUser == null) {
@@ -201,10 +228,10 @@ class CinemaOwnerLeaseMovie : Fragment() {
                                 movieList.add(tempMovieItem)
                             }
 
-                            val adapter = OwnerMovieListAdapter(movieList)
+                            adapter = OwnerMovieListAdapter(movieList)
                             adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
                                 override fun onItemClick(movie: MovieTB) {
-                                    val movieShowsHelperClass = MovieRatingDialogHelper(requireContext(),movie)
+                                    val movieShowsHelperClass = MovieRatingDialogHelper(requireContext(), movie)
                                     movieShowsHelperClass.showMovieRatingDialog()
                                 }
                             })
@@ -217,6 +244,20 @@ class CinemaOwnerLeaseMovie : Fragment() {
                 }
             }
         }
+    }
+
+    private fun filterMovies(query: String) {
+        val filteredList = movieList.filter { movie ->
+            movie.mname!!.contains(query, ignoreCase = true)
+        }
+        adapter.updateList(filteredList)
+    }
+
+    private fun filterDialogMovies(query: String) {
+        val filteredList = dialogMovieList.filter { movie ->
+            movie.mname!!.contains(query, ignoreCase = true)
+        }
+        dialogAdapter.updateList(filteredList)
     }
 
     companion object {

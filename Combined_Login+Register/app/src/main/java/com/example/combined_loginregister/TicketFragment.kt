@@ -50,24 +50,24 @@ class TicketFragment : Fragment() {
     }
 
     private fun loadUserTickets() {
-        val firebaseRestManager =FirebaseRestManager<BookingTb>()
-       firebaseRestManager.getAllItems(BookingTb::class.java,"moviedb/bookingtb"){bookingTb ->
-           val userTickets  = bookingTb.filter { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
+        val firebaseRestManager = FirebaseRestManager<BookingTb>()
+        firebaseRestManager.getAllItems(BookingTb::class.java, "moviedb/bookingtb") { bookingTb ->
+            val userTickets = bookingTb.filter { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
 
-           val adapter = TicketDisplayAdapter(userTickets)
-           Log.d("TAG", "displayCinemaOwner: $userTickets")
-           adapter.setOnItemClickListener(object : TicketDisplayAdapter.OnItemClickListener {
-               override fun onItemClick(booking: BookingTb) {
+            // Sort the tickets by their combined date and time in descending order
+            val sortedTickets = userTickets.sortedByDescending { it.getCombinedDateTime() }
 
-               }
+            val adapter = TicketDisplayAdapter(sortedTickets)
+            Log.d("TAG", "displayCinemaOwner: $sortedTickets")
+            adapter.setOnItemClickListener(object : TicketDisplayAdapter.OnItemClickListener {
+                override fun onItemClick(booking: BookingTb) {
+                    // Handle item click
+                }
+            })
 
-           })
-
-
-           binding.TicketCardsHere.adapter = adapter
-           binding.TicketCardsHere.layoutManager = LinearLayoutManager(requireContext())
-
-       }
+            binding.TicketCardsHere.adapter = adapter
+            binding.TicketCardsHere.layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     companion object {

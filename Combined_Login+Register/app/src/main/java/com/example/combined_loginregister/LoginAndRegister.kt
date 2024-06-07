@@ -836,53 +836,109 @@ class LoginAndRegister : AppCompatActivity() {
             val firebaseRestManager = FirebaseRestManager<CredentialsTb>()
             firebaseRestManager.getAllItems(CredentialsTb::class.java,"moviedb/credentialstb"){credentials->
                 val credential = credentials.find { it.userEmail == email }
-                credential!!.userPassword?.let {
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, it)
-                        .addOnCompleteListener(this) { authTask ->
-                            if (authTask.isSuccessful) {
-                                // User authenticated with Firebase successfully
-                                val firebaseUser = FirebaseAuth.getInstance().currentUser
-                                firebaseUser?.let { user ->
-                                    val uid = user.uid
-                                    Log.d("TAG", "User UID: $uid")
 
-                                    val firebaseRestManager = FirebaseRestManager<UserTb>()
-                                    firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", user.uid) { user ->
-                                        if(user!=null) {
-                                            if (user!!.utype == "owner") {
-                                                val intent = Intent(this, OwnerActivity::class.java)
-                                                startActivity(intent)
-                                                finish()
-                                            } else if (user.utype == "cinemaowner") {
-                                                intent = Intent(
-                                                    this@LoginAndRegister,
-                                                    CinemaOwnerActivity::class.java
-                                                )
-                                                startActivity(intent)
-                                                finish()
+                if(credential!=null) {
 
-                                            } else if(user.utype=="cinemaadmin"){
-                                                intent = Intent(this@LoginAndRegister,CinemaAdminActivity::class.java)
-                                                startActivity(intent)
-                                                finish()
-                                            } else if(user.utype=="user"){
-                                                intent = Intent(this@LoginAndRegister,UserActivity::class.java)
-                                                startActivity(intent)
-                                                finish()
+                    credential.userPassword?.let {
+                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, it)
+                            .addOnCompleteListener(this) { authTask ->
+                                if (authTask.isSuccessful) {
+                                    // User authenticated with Firebase successfully
+                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+                                    firebaseUser?.let { user ->
+                                        val uid = user.uid
+                                        Log.d("TAG", "User UID: $uid")
+
+                                        val firebaseRestManager = FirebaseRestManager<UserTb>()
+                                        firebaseRestManager.getSingleItem(
+                                            UserTb::class.java,
+                                            "moviedb/usertb",
+                                            user.uid
+                                        ) { user ->
+                                            if (user != null) {
+                                                if (user!!.utype == "owner") {
+                                                    val intent =
+                                                        Intent(this, OwnerActivity::class.java)
+                                                    startActivity(intent)
+                                                    finish()
+                                                } else if (user.utype == "cinemaowner") {
+                                                    intent = Intent(
+                                                        this@LoginAndRegister,
+                                                        CinemaOwnerActivity::class.java
+                                                    )
+                                                    startActivity(intent)
+                                                    finish()
+
+                                                } else if (user.utype == "cinemaadmin") {
+                                                    intent = Intent(
+                                                        this@LoginAndRegister,
+                                                        CinemaAdminActivity::class.java
+                                                    )
+                                                    startActivity(intent)
+                                                    finish()
+                                                } else if (user.utype == "user") {
+                                                    intent = Intent(
+                                                        this@LoginAndRegister,
+                                                        UserActivity::class.java
+                                                    )
+                                                    startActivity(intent)
+                                                    finish()
+                                                }
+                                            } else {
+                                                firebaseAuth.signOut()
+                                                mGoogleSignInClient.signOut()
                                             }
-                                        } else{
-                                            firebaseAuth.signOut()
-                                            mGoogleSignInClient.signOut()
+
                                         }
 
                                     }
-
+                                } else {
+                                    // Authentication failed
+                                    Log.d(
+                                        "Login Error",
+                                        "Firebase authentication failed: ${authTask.exception?.message}"
+                                    )
                                 }
-                            } else {
-                                // Authentication failed
-                                Log.d("Login Error", "Firebase authentication failed: ${authTask.exception?.message}")
                             }
-                        }
+                    }
+                }
+                else{
+
+                    val registerOrForgotPasswordHelper = RegisterOrForgotPasswordHelper()
+                    registerOrForgotPasswordHelper.showRegisterOrForgotPasswordDialog(this)
+                    val view = registerOrForgotPasswordHelper.getView()
+                    val btn_yes = view.findViewById<Button>(R.id.btn_yes)
+                    val btn_no = view.findViewById<Button>(R.id.btn_no)
+
+                    val textview2 = view.findViewById<TextView>(R.id.textView2)
+
+                    textview2.text = " Details not found!!  "
+
+                    btn_yes.setOnClickListener {
+                        binding.registerbtn.performClick()
+                        registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
+                    }
+
+                    btn_no.setOnClickListener {
+                        registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
+                        val forgotPasswordHelper = ForgotPasswordHelper()
+                        forgotPasswordHelper.showForgotPasswordDialog(this)
+
+                    }
+
+
+
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+                        .requestEmail()
+                        .build()
+
+                    val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+                    mGoogleSignInClient.signOut()
+
+
+
                 }
             }
 

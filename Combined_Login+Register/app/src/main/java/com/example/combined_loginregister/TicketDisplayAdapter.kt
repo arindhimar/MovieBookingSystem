@@ -39,6 +39,7 @@ class TicketDisplayAdapter(private val bookingList: List<BookingTb>) : RecyclerV
                  val showData = it
                  holder.showDate.text = showData.showDate
                  holder.showTime.text = showData.showStartTime+"to"+showData.showEndTime
+                 holder.bookingId.text = "Booking Id: "+booking.bookingId
 
                  val seats = booking.bookedSeats.split(",")
                  holder.showRowandSeat.text = booking.bookedSeats
@@ -84,6 +85,7 @@ class TicketDisplayAdapter(private val bookingList: List<BookingTb>) : RecyclerV
         val moviePoster: ImageView = itemView.findViewById(R.id.moviePoster)
         val showDate: TextView = itemView.findViewById(R.id.showDate)
         val showTime: TextView = itemView.findViewById(R.id.showTime)
+        val bookingId : TextView = itemView.findViewById(R.id.bookingId)
         val showRowandSeat: TextView = itemView.findViewById(R.id.showRowandSeat)
 
     }

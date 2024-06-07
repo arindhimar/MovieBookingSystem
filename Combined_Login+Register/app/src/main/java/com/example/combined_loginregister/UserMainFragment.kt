@@ -4,11 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +36,8 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
     private lateinit var binding: FragmentUserMainBinding
 
     private val bookingReceiver = BookingReceiver()
+    private var currentCity: String? = null
+    private var movieList: MutableList<MovieTB> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +59,13 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         requireContext().registerReceiver(bookingReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
 
         setupLocationSpinner()
+        setupSearchBar()
+
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         requireContext().unregisterReceiver(bookingReceiver)
     }
 
@@ -79,13 +80,40 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
 
         binding.LocationSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedCity = parent?.getItemAtPosition(position).toString()
-                findShows(selectedCity)
+                currentCity = parent?.getItemAtPosition(position).toString()
+                currentCity?.let { findShows(it) }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do nothing
             }
+        }
+    }
+
+    private fun setupSearchBar() {
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do something before the text is changed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Do something when the text is being changed
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // Do something after the text has changed
+                val searchText = s.toString()
+                performSearch(searchText)
+            }
+        })
+    }
+
+    private fun performSearch(query: String) {
+        if (query.isNotEmpty()) {
+            val filteredMovies = movieList.filter { it.mname!!.contains(query, true) }
+            setupRecyclerView(filteredMovies.toMutableList())
+        } else {
+            setupRecyclerView(movieList)
         }
     }
 
@@ -138,7 +166,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
                     val firebaseRestManager3 = FirebaseRestManager<MovieTB>()
                     firebaseRestManager3.getAllItems(MovieTB::class.java, "moviedb/movietb") { movieItems ->
                         if (movieItems.isNotEmpty()) {
-                            val movieList = movieItems.filter { it.mid in movieIds }.toMutableList()
+                            movieList = movieItems.filter { it.mid in movieIds }.toMutableList()
                             Log.d("movieList", movieList.toString())
                             setupRecyclerView(movieList)
                             loadingDialogHelper.dismissLoadingDialog()
@@ -148,8 +176,6 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
             }
         }
     }
-
-
 
     private fun setupRecyclerView(movieList: MutableList<MovieTB>) {
         val adapter = MovieListAdapter(movieList)
@@ -174,27 +200,6 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
                 val position = viewHolder.adapterPosition
                 movieList.removeAt(position)
                 adapter.notifyItemRemoved(position)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                val itemView = viewHolder.itemView
-                val background = ColorDrawable(Color.RED)
-                background.setBounds(
-                    itemView.left + dX.toInt(),
-                    itemView.top,
-                    itemView.right,
-                    itemView.bottom
-                )
-                background.draw(c)
             }
         })
 

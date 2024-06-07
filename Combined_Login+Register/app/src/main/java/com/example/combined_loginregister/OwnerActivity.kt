@@ -5,6 +5,7 @@ import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -84,6 +85,19 @@ class OwnerActivity : AppCompatActivity() {
 
 
 
+        val headerView = binding.navView.getHeaderView(0)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.NavHeaderText)
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val email = user.email
+            usernameTextView.text = email
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",user.uid){
+                usernameTextView.text ="Welcome ${it!!.uname}"
+            }
+        }
+
 
 
 
@@ -112,9 +126,7 @@ class OwnerActivity : AppCompatActivity() {
                 R.id.nav_menu_account -> {
                     replaceFragment(CommonProfileFragment())
                 }
-                R.id.manage_feedback -> {
-                    //pending
-                }
+
                 R.id.logoutuser -> {
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
@@ -188,7 +200,6 @@ class OwnerActivity : AppCompatActivity() {
 }
 
 
-//firebase restmanager ,firebase storage
 
 
 

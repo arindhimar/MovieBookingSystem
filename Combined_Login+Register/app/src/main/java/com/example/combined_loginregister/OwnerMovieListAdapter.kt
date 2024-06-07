@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
+class OwnerMovieListAdapter(private var movieList: List<MovieTB>) : RecyclerView.Adapter<OwnerMovieListAdapter.OwnerMovieViewHolder>() {
 
     private lateinit var onItemClickListener: OnItemClickListener
 
@@ -66,6 +66,11 @@ class OwnerMovieListAdapter(private val movieList: List<MovieTB>) : RecyclerView
     override fun getItemCount(): Int {
         Log.d("TAG", "getItemCount:${movieList.size} ")
         return movieList.size
+    }
+
+    fun updateList(newList: List<MovieTB>) {
+        movieList = ArrayList(newList)
+        notifyDataSetChanged()
     }
 
     class OwnerMovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

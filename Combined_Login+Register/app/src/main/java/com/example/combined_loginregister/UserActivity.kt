@@ -82,6 +82,17 @@ class UserActivity : AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: Fragment) {
+        Log.d("TAG", "replaceFragment:$fragment ")
+        if (fragment is CommonProfileFragment) {
+
+                Log.d("TAG", "replaceFragment:yessssssssssssssssssssssss ")
+
+                binding.fragmentContainer.setBackgroundColor(getColor(R.color.white))
+
+        }else{
+            binding.fragmentContainer.setBackgroundColor(getColor(R.color.black))
+        }
+
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment)
         transaction.commit()

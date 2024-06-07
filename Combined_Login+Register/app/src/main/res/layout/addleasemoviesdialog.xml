@@ -6,6 +6,8 @@
 
     android:layout_height="480dp">
 
+
+
     <androidx.cardview.widget.CardView
         android:layout_width="320dp"
         android:layout_height="480dp"
@@ -20,10 +22,32 @@
         android:layout_margin="10dp"
         >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/UnleasedMoviesHereForCO"
+        <RelativeLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_alignParentTop="true"
+                android:hint="Search Movie"
+                android:padding="10dp"
+                android:drawableLeft="@android:drawable/ic_menu_search"
+                android:drawablePadding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_below="@+id/search_bar"
+                android:id="@+id/UnleasedMoviesHereForCO"
+                android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+        </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

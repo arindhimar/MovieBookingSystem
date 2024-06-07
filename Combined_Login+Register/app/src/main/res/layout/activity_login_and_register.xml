@@ -42,17 +42,18 @@
 
         <!--    Login Layout            -->
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/AppIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="48dp"
-                android:background="@drawable/circle_background"
+                android:src="@drawable/nomral_icon"
+                android:scaleType="centerCrop"
                 android:contentDescription="Description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Circle"/>
 
             <!-- txtLoginEmailMobileId  -->
             <com.google.android.material.textfield.TextInputLayout

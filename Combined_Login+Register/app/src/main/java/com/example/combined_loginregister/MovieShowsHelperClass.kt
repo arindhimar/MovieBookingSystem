@@ -56,6 +56,8 @@ class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: 
         recyclerView = view.findViewById(R.id.recyclerView)
         showsHere = view.findViewById(R.id.ShowsHere)
 
+        subHeading2.visibility = View.GONE
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext, LinearLayoutManager.HORIZONTAL, false)
         showsHere.layoutManager = LinearLayoutManager(requireContext)
 

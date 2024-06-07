@@ -9,14 +9,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class CinemaOwnerCinemaListAdapter(private val cinemaList: ArrayList<CinemaTb>) : RecyclerView.Adapter<CinemaOwnerCinemaListAdapter.OwnerCinemaViewHolder>() {
+class CinemaOwnerCinemaListAdapter(private var cinemaList: List<CinemaTb>) : RecyclerView.Adapter<CinemaOwnerCinemaListAdapter.OwnerCinemaViewHolder>() {
 
     private lateinit var onItemClickListener: OnItemClickListener
 
     interface OnItemClickListener {
         fun onItemClick(cinema: CinemaTb)
     }
-
+    fun updateList(newList: List<CinemaTb>) {
+        cinemaList = newList
+        notifyDataSetChanged()
+    }
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
     }

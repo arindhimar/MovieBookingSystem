@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class ListAllUserAdapter(private val userList: List<UserTb>) : RecyclerView.Adapter<ListAllUserAdapter.UserViewHolder>() {
+class ListAllUserAdapter(private var userList: List<UserTb>) : RecyclerView.Adapter<ListAllUserAdapter.UserViewHolder>() {
 
     private lateinit var onItemClickListener: OnItemClickListener
 
@@ -53,6 +53,11 @@ class ListAllUserAdapter(private val userList: List<UserTb>) : RecyclerView.Adap
         // Return the count of cinemaowners only
 //        return userList.count { it.utype == "cinemaowner" }
         return userList.count()
+    }
+
+    fun updateList(newList: List<UserTb>) {
+        userList = ArrayList(newList)
+        notifyDataSetChanged()
     }
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

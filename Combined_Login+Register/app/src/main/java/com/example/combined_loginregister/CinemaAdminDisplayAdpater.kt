@@ -9,14 +9,21 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class CinemaAdminDisplayAdpater(private val cinemaAdminsList: ArrayList<CinemaAdminTb>) : RecyclerView.Adapter<CinemaAdminDisplayAdpater.AdminCinemaViewHolder>() {
+class CinemaAdminDisplayAdpater(private var cinemaAdminsList: List<CinemaAdminTb>) : RecyclerView.Adapter<CinemaAdminDisplayAdpater.AdminCinemaViewHolder>() {
 
     private var onItemClickListener: OnItemClickListener? = null
 
     interface OnItemClickListener {
         fun onItemClick(cinema: CinemaAdminTb)
     }
+    fun getAllItems(): List<CinemaAdminTb> {
+        return cinemaAdminsList
+    }
 
+    fun updateList(newList: List<CinemaAdminTb>) {
+        cinemaAdminsList = newList
+        notifyDataSetChanged()
+    }
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
     }
@@ -41,7 +48,7 @@ class CinemaAdminDisplayAdpater(private val cinemaAdminsList: ArrayList<CinemaAd
                                 holder.Heading.isVisible = false
                                 val userName = userData.uname ?: "Unknown User"
                                 val cinemaName = cinemaData.cinemaName ?: "Unknown Cinema"
-                                val displayText = "UserName : $userName\nCinema : $cinemaName"
+                                val displayText = "UserName b : $userName\nCinema : $cinemaName"
                                 holder.SubHeading1.text = displayText
                                 Glide.with(holder.itemView.context)
                                     .load(R.drawable.account_fill)

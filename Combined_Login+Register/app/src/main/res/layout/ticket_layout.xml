@@ -184,6 +184,16 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/bookingId"
+            android:textSize="16sp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:fontFamily="@font/mouldycheeseregular"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
             android:text="Row &amp; Seat"
             android:textColor="@color/white"
             android:fontFamily="@font/mouldycheeseregular"

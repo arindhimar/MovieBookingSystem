@@ -6,12 +6,15 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +31,8 @@ class ManageMovies : Fragment() {
     lateinit var dialogView: View
     lateinit var alertDialog: AlertDialog
     private var selectedUris: MutableList<Uri>? = null
+    private var movieList = ArrayList<MovieTB>()
+    private lateinit var adapter: OwnerMovieListAdapter
 
     @SuppressLint("InflateParams")
     override fun onCreateView(
@@ -35,8 +40,6 @@ class ManageMovies : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentManageMoviesBinding.inflate(layoutInflater, container, false)
-
-
 
         binding.AddMovieBtn.setOnClickListener {
             // Inflate the custom layout
@@ -49,8 +52,6 @@ class ManageMovies : Fragment() {
             // Set custom window animations
             alertDialog = dialogBuilder.create()
             alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
-
-
 
             val uploadImagesBtn = dialogView.findViewById<Button>(R.id.uploadImagesBtn)
             val AddMovieBtnFinal = dialogView.findViewById<Button>(R.id.AddMovieBtnFinal)
@@ -95,12 +96,7 @@ class ManageMovies : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-
-
                     uploadImageToFirebaseStorage(selectedUris)
-
-
-
                 }
             }
             alertDialog.show()
@@ -108,7 +104,15 @@ class ManageMovies : Fragment() {
 
         displayMovies()
 
-
+        // Add TextWatcher to search bar
+        val searchBar: EditText = binding.searchBar
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterMovies(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         return binding.root
     }
@@ -140,14 +144,15 @@ class ManageMovies : Fragment() {
                 loadingScreen.dismissLoadingDialog()
 
                 if (items.isNotEmpty()) {
-                    val movieList = ArrayList<MovieTB>(items)
-                    val adapter = OwnerMovieListAdapter(movieList)
+                    movieList = ArrayList(items)
+                    adapter = OwnerMovieListAdapter(movieList)
                     adapter.setOnItemClickListener(object : OwnerMovieListAdapter.OnItemClickListener {
                         override fun onItemClick(movie: MovieTB) {
-                            displayAllMoviePoster(movie.mid!!)
+                            // displayAllMoviePoster(movie.mid!!)
+                            val movieShowsHelperClass = MovieRatingDialogHelper(requireContext(), movie)
+                            movieShowsHelperClass.showMovieRatingDialog()
                         }
                     })
-
 
                     binding.CardsHere.adapter = adapter
                     binding.CardsHere.layoutManager = LinearLayoutManager(requireContext())
@@ -156,6 +161,13 @@ class ManageMovies : Fragment() {
                 }
             }
         }
+    }
+
+    private fun filterMovies(query: String) {
+        val filteredList = movieList.filter { movie ->
+            movie.mname!!.contains(query, ignoreCase = true)
+        }
+        adapter.updateList(filteredList)
     }
 
     private fun displayAllMoviePoster(tempMid: String) {
@@ -176,7 +188,7 @@ class ManageMovies : Fragment() {
         firebaseRestManager2.getAllItems(moviePosterClass, node) { posterItems ->
             if (posterItems.isNotEmpty()) {
                 for (item2 in posterItems) {
-                    if (item2.mid ==tempMid) {
+                    if (item2.mid == tempMid) {
                         Log.d("TAG", "displayAllMoviePoster: ${item2.mlink}")
                         imageUrls.add(item2.mlink!!)
                     }
@@ -194,7 +206,7 @@ class ManageMovies : Fragment() {
         val adapter = SingleMovieAllPosterAdapter(requireContext(), imageUrls)
         recyclerView.adapter = adapter
 
-//        dialog2.show()
+        // dialog2.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -206,7 +218,7 @@ class ManageMovies : Fragment() {
                 }
                 val clipData = data.clipData
                 val textView: TextView = dialogView.findViewById(R.id.textView)
-//                textView.text = "Poster uploaded : ${clipData!!.itemCount}\nThe first image uploaded will be\nshown to users as the main poster**"
+                // textView.text = "Poster uploaded : ${clipData!!.itemCount}\nThe first image uploaded will be\nshown to users as the main poster**"
                 if (clipData != null && clipData.itemCount > 0) {
                     for (i in 0 until clipData.itemCount) {
                         val uri = clipData.getItemAt(i).uri
@@ -218,13 +230,11 @@ class ManageMovies : Fragment() {
                         selectedUris!!.add(uri)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "No images selected", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), "No images selected", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-
 
     private fun uploadImageToFirebaseStorage(imageUri: MutableList<Uri>?) {
         // Show loading dialog
@@ -240,7 +250,7 @@ class ManageMovies : Fragment() {
         val movieId = dbRef.push().key
         // Create a UserTb object with the obtained user ID
         val tempMovie = MovieTB(movieId, textInputLayout1.editText!!.text.toString(), textInputLayout2.editText!!.text.toString())
-        firebaseRestManager.addItemWithCustomId(tempMovie,movieId!!, dbRef) { success, error ->
+        firebaseRestManager.addItemWithCustomId(tempMovie, movieId!!, dbRef) { success, error ->
             if (success) {
                 // Movie added successfully, now upload the image
                 for (i in 0 until selectedUris!!.size) {
@@ -279,8 +289,6 @@ class ManageMovies : Fragment() {
                                     displayMovies()
                                     alertDialog.dismiss() // Close the alert dialog
                                     selectedUris!!.clear()
-
-
                                 } else {
                                     // Handle error adding movie poster to database
                                     Toast.makeText(
@@ -290,7 +298,6 @@ class ManageMovies : Fragment() {
                                     ).show()
                                     loadingScreen.dismissLoadingDialog()
                                     alertDialog.dismiss() // Close the alert dialog
-
                                 }
                             }
 
@@ -316,12 +323,8 @@ class ManageMovies : Fragment() {
                 ).show()
                 loadingScreen.dismissLoadingDialog()
                 alertDialog.dismiss() // Close the alert dialog
-
             }
         }
     }
-
-
-
-
 }
+

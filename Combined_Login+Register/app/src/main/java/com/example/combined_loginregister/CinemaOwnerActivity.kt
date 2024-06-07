@@ -88,7 +88,18 @@ class CinemaOwnerActivity : AppCompatActivity() {
             }
         }.build()
 
+        val headerView = binding.navView.getHeaderView(0)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.NavHeaderText)
 
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val email = user.email
+            usernameTextView.text = email
+            val firebaseRestManager = FirebaseRestManager<UserTb>()
+            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",user.uid){
+                usernameTextView.text ="Welcome ${it!!.uname}"
+            }
+        }
 
 
 

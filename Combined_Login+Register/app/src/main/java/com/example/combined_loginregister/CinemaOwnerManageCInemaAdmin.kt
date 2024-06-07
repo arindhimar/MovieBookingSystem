@@ -3,12 +3,15 @@ package com.example.combined_loginregister
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +37,10 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     lateinit var binding: FragmentCinemaOwnerManageCInemaAdminBinding
     lateinit var dialogView: View
     lateinit var alertDialog: AlertDialog
+    private lateinit var cinemaList: List<CinemaTb>
+    private lateinit var adapter: CinemaOwnerCinemaListAdapter
 
+    lateinit var cinemaAdminAdapter: CinemaAdminDisplayAdpater
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +79,18 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
             // Initialize the recyclerView object
             val recyclerView = dialogView.findViewById<RecyclerView>(R.id.CinemaCardsHere)
 
+            val dialogSearchBar = dialogView.findViewById<EditText>(R.id.search_bar)
+            dialogSearchBar.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    filterDialogCinema(s.toString())
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+
             // Set custom window animations
             alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
@@ -83,11 +101,29 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
 
         getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
 
+        // Add TextWatcher for search functionality
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                filterDialogCinema(s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
 
 
         return binding.root
     }
+    private fun filterDialogCinema(query: String) {
 
+            val filteredList = cinemaList.filter { cinema ->
+                cinema.cinemaName!!.contains(query, ignoreCase = true) || cinema.cinemaID!!.contains(query, ignoreCase = true)
+            }
+            adapter.updateList(filteredList)
+
+    }
     private fun getCinemaAdminsForCurrentOwner(cinemaAdminHereForCO: RecyclerView) {
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(requireContext())
@@ -101,42 +137,52 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                 return@getAllItems
             }
 
-                firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
-                val cinemaAdminsForCurrentOwner = ArrayList<CinemaAdminTb>()
-                for (cinemaAdmin in cinemaAdminItems) {
-                    if (cinemaAdmin.cinemaOwnerId == currentOwner.cinemaOwnerId) {
-                        cinemaAdminsForCurrentOwner.add(cinemaAdmin)
-                    }
-                    loadingDialogHelper.dismissLoadingDialog()
-                }
-                if (cinemaAdminsForCurrentOwner.isEmpty()){
-                    loadingDialogHelper.dismissLoadingDialog()
+            firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
+                val cinemaAdminsForCurrentOwner = cinemaAdminItems.filter { it.cinemaOwnerId == currentOwner.cinemaOwnerId }
+                loadingDialogHelper.dismissLoadingDialog()
+
+                if (cinemaAdminsForCurrentOwner.isEmpty()) {
                     return@getAllItems
                 }
 
                 Log.d("TAG", "getCinemaAdminsForCurrentOwner: ${cinemaAdminsForCurrentOwner.size}")
-                val adapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner)
-
-
-                    adapter.setOnItemClickListener(object : CinemaAdminDisplayAdpater.OnItemClickListener {
-                        override fun onItemClick(cinema: CinemaAdminTb) {
-                            // Handle item click
-                        }
-                    })
-
-
-                cinemaAdminHereForCO.adapter = adapter
+                cinemaAdminAdapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner.toMutableList())
+                cinemaAdminHereForCO.adapter = cinemaAdminAdapter
                 cinemaAdminHereForCO.layoutManager = LinearLayoutManager(requireContext())
             }
         }
     }
 
+    private fun filterCinemaAdmins(query: String) {
+        val loadingDialogHelper = LoadingDialogHelper()
+        loadingDialogHelper.showLoadingDialog(requireContext())
+
+        getAllUsers { users ->
+            val filteredUsers = users.filter { it.uname!!.contains(query, ignoreCase = true) }
+            val filteredUserIds = filteredUsers.map { it.uid }
+
+            val filteredList = cinemaAdminAdapter.getAllItems().filter {
+                it.userId in filteredUserIds || it.cinemaadminid!!.contains(query, ignoreCase = true)
+            }
+
+            cinemaAdminAdapter.updateList(filteredList)
+            loadingDialogHelper.dismissLoadingDialog()
+        }
+    }
+
+
+    private fun getAllUsers(onComplete: (List<UserTb>) -> Unit) {
+        val firebaseRestManager = FirebaseRestManager<UserTb>()
+        firebaseRestManager.getAllItems(UserTb::class.java, "moviedb/usertb") { users ->
+            onComplete(users)
+        }
+    }
 
     private fun getOwnedCinemaList(cinemaAdminHereForCO: RecyclerView) {
         val firebaseRestManager = FirebaseRestManager<CinemaOwnerTb>()
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
-        val ownedCinemaList = ArrayList<CinemaTb>()
-        val adapter = CinemaOwnerCinemaListAdapter(ownedCinemaList)
+        cinemaList = ArrayList<CinemaTb>()
+        adapter = CinemaOwnerCinemaListAdapter(cinemaList)
 
         adapter.setOnItemClickListener(object : CinemaOwnerCinemaListAdapter.OnItemClickListener {
             override fun onItemClick(cinema: CinemaTb) {
@@ -188,7 +234,7 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                     if (item.uid == uid) {
                         val cinemaId = item.cinemaId!!
                         firebaseRestManager.getSingleItem(CinemaTb::class.java, "moviedb/cinematb", cinemaId) { tempCinemaItem ->
-                            tempCinemaItem?.let { ownedCinemaList.add(it) }
+                            tempCinemaItem?.let { (cinemaList as ArrayList<CinemaTb>).add(it) }
                             adapter.notifyDataSetChanged()
                             Log.d("TAG", "getOwnedCinemaList: works!!")
                         }
