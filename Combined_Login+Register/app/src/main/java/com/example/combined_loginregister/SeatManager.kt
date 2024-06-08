@@ -1,11 +1,10 @@
 package com.example.combined_loginregister
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Handler
@@ -21,9 +20,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.registerReceiver
-import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
 
 class SeatManager(
     private val show: ShowTb,
@@ -50,10 +57,9 @@ class SeatManager(
         // Set the dialog to class variable for dismissing later if needed
         this.dialog = dialog
 
-
-
         // Call setup method after the dialog is shown
         setUpCard()
+        realTimeSetUp()
     }
 
     fun returnView(): View {
@@ -61,9 +67,25 @@ class SeatManager(
     }
 
     fun dismissLoadingDialog() {
-        if (dialog.isShowing) {
+        if (::dialog.isInitialized && dialog.isShowing) {
             dialog.dismiss()
         }
+    }
+
+    private fun realTimeSetUp() {
+        val firebaseDatabase = FirebaseDatabase.getInstance()
+        val bookingRef = firebaseDatabase.getReference("moviedb/bookingtb")
+        val bookingListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                setUpCard()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error
+                Log.e("SeatManager", "Error: ${error.message}")
+            }
+        }
+        bookingRef.addValueEventListener(bookingListener)
     }
 
     private fun setUpCard() {
@@ -78,8 +100,8 @@ class SeatManager(
         ) { cinema ->
             val cinema = cinema ?: return@getSingleItem
 
-            val capacity = cinema.cinemaCapacity!!.toInt()
-            val seatContainer = view?.findViewById<GridLayout>(R.id.seatContainer)
+            val capacity = cinema.cinemaCapacity?.toInt() ?: 0
+            val seatContainer = view.findViewById<GridLayout>(R.id.seatContainer)
             seatContainer?.removeAllViews()
 
             // Get the container dimensions
@@ -132,14 +154,20 @@ class SeatManager(
 
                         if (bookedSeatsSet.contains(seatId)) {
                             seatView.setImageResource(R.drawable.chair_booked)
-                            Log.d("TAG", "setUpCard: yep they are here")
-                            seatView.isEnabled = false
+
+                            if (requireContext is UserActivity) {
+                                seatView.isEnabled = true
+                            } else if (requireContext is CinemaAdminActivity) {
+                                seatView.isEnabled = false
+                            }
+                        } else {
+                            seatView.isEnabled = true
                         }
 
                         seatContainer.addView(seatView, params)
 
                         seatView.setOnClickListener {
-                            onSeatClicked(seatId, seatView)
+                            onSeatClicked(seatId, seatView, bookedSeatsSet)
                         }
                     }
 
@@ -152,7 +180,7 @@ class SeatManager(
             }
         }
 
-        val confirmSeatButton = view?.findViewById<TextView>(R.id.confirm_seat_button)
+        val confirmSeatButton = view.findViewById<TextView>(R.id.confirm_seat_button)
         confirmSeatButton?.setOnClickListener {
             if (selectedSeats.isNotEmpty()) {
                 showBottomSheet()
@@ -170,17 +198,48 @@ class SeatManager(
         }
     }
 
+    private fun onSeatClicked(seatId: String, seatView: ImageView, bookedSeatsSet: Set<String>) {
+        if (requireContext is UserActivity) {
+            if (selectedSeats.contains(seatId)) {
+                selectedSeats.remove(seatId)
+                seatView.setImageResource(R.drawable.chair_default)
+            } else {
+                selectedSeats.add(seatId)
+                seatView.setImageResource(R.drawable.chair_selected)
+            }
+        } else if (requireContext is CinemaAdminActivity) {
+            if (bookedSeatsSet.contains(seatId)) {
+                try {
+                    val layoutInflater = LayoutInflater.from(requireContext)
+                    val dialogView: View = layoutInflater.inflate(R.layout.ticket_layout, null)
 
+                    val dialogBuilder = AlertDialog.Builder(requireContext)
+                    dialogBuilder.setView(dialogView)
 
-    private fun onSeatClicked(seatId: String, seatView: ImageView) {
-        if (selectedSeats.contains(seatId)) {
-            selectedSeats.remove(seatId)
-            seatView.setImageResource(R.drawable.chair_default)
-        } else {
-            selectedSeats.add(seatId)
-            seatView.setImageResource(R.drawable.chair_selected)
+                    val alertDialog: AlertDialog = dialogBuilder.create()
+                    alertDialog.show()
+
+                    val moviePoster: ImageView = dialogView.findViewById(R.id.moviePoster)
+                    val showDate: TextView = dialogView.findViewById(R.id.showDate)
+                    val showTime: TextView = dialogView.findViewById(R.id.showTime)
+                    val bookingId: TextView = dialogView.findViewById(R.id.bookingId)
+                    val showRowandSeat: TextView = dialogView.findViewById(R.id.showRowandSeat)
+
+                    alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+                } catch (e: Exception) {
+                    Log.e("SeatManager", "Error displaying dialog", e)
+                }
+            } else {
+                Log.d("TAG", "Seat not booked: $seatId")
+                if (selectedSeats.contains(seatId)) {
+                    selectedSeats.remove(seatId)
+                    seatView.setImageResource(R.drawable.chair_default)
+                } else {
+                    selectedSeats.add(seatId)
+                    seatView.setImageResource(R.drawable.chair_selected)
+                }
+            }
         }
-
     }
 
     private fun showBottomSheet() {
@@ -203,26 +262,79 @@ class SeatManager(
 
         pricing_breakdown.text = spannableString
 
-
         val totalCost = selectedSeats.size * show.price.toInt()
         val paymentButton = bottomSheetView.findViewById<TextView>(R.id.payment_button)
         paymentButton.text = "Pay : $totalCost"
 
         paymentButton.setOnClickListener {
-            val intent = Intent(requireContext, PaymentActivity::class.java)
+            if (requireContext is UserActivity) {
+                val intent = Intent(requireContext, PaymentActivity::class.java)
+                intent.putExtra("key_amount", totalCost)
+                intent.putExtra("key_showId", show.showId)
+                intent.putExtra("key_seats", ArrayList(selectedSeats))
+                requireContext.startActivity(intent)
 
-            intent.putExtra("key_amount", totalCost)
-            intent.putExtra("key_showId", show.showId)
-            intent.putExtra("key_seats", ArrayList(selectedSeats))
-            requireContext.startActivity(intent)
+                bottomSheetDialog.dismiss()
+                dialog.dismiss()
+            } else if (requireContext is CinemaAdminActivity) {
+                // Generate bookingId
+                val loadingDialogHelper = LoadingDialogHelper()
+
+                val bookingId = FirebaseDatabase.getInstance().reference.push().key ?: ""
+
+                // Set time zone to IST
+                val timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+
+                // Get current date and time in IST
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+                    this.timeZone = timeZone
+                }
+                val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply {
+                    this.timeZone = timeZone
+                }
+
+                val bookingDate = dateFormat.format(Date())
+                val bookingTime = timeFormat.format(Date())
+
+                // Create BookingTb object
+                val booking = BookingTb(
+                    bookingId = bookingId,
+                    paymentId = UUID.randomUUID().toString().replace("-", "").substring(0, 16),
+                    bookingDate = bookingDate,
+                    bookingTime = bookingTime,
+                    showId = show.showId,
+                    userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                    bookedSeats = selectedSeats.joinToString(",")
+                )
+
+                // Push to Firebase
+                val firebaseRestManager = FirebaseRestManager<BookingTb>()
+                firebaseRestManager.addItemWithCustomId(booking, bookingId, FirebaseDatabase.getInstance().getReference("moviedb/bookingtb")) { success, error ->
+                    loadingDialogHelper.dismissLoadingDialog()
+                    if (success) {
+                        val successLoadingHelper = SuccessLoadingHelper()
+                        successLoadingHelper.showLoadingDialog(requireContext)
+                        successLoadingHelper.hideButtons()
+                        successLoadingHelper.updateText("Ticket has been booked!")
 
 
-            bottomSheetDialog.dismiss()
-            dialog.dismiss()
+                        val handler = Handler()
+                        handler.postDelayed({
+                            successLoadingHelper.dismissLoadingDialog()
+                        }, 2000)
 
+                    } else {
+                        val warningLoadingHelper = WarningLoadingHelper()
+                        warningLoadingHelper.showLoadingDialog(requireContext)
 
+                        val handler = Handler()
+                        handler.postDelayed({
+                            warningLoadingHelper.dismissLoadingDialog()
+                        }, 2000)
+                    }
+                }
+            }
         }
-
 
         bottomSheetDialog = BottomSheetDialog(requireContext)
         bottomSheetDialog.setContentView(bottomSheetView)

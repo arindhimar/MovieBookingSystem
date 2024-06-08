@@ -76,9 +76,8 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
 
 
 
-         cinemaOwnerId=null.toString()
-         cinemaId = null.toString().toString()
-
+        cinemaOwnerId=null.toString()
+        cinemaId = null.toString().toString()
         binding.btnOpenAddShowDialog.setOnClickListener {
             if (FirebaseAuth.getInstance().currentUser == null) {
                 // Handle user not logged in
@@ -289,6 +288,7 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
         }
 
         addFinalShowBtn.setOnClickListener {
+            Log.d("TAG", "showAddShowDialog: asnd,asndkjnajsdk")
             val firebaseRestManager = FirebaseRestManager<ShowTb>()
             firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
                 val filteredShows = showTbs.filter { it.cinemaId == cinemaId && it.showDate == selectedDateText }
@@ -335,7 +335,7 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
 
                                     val firebaseRestManager4 = FirebaseRestManager<CinemaAdminTb>()
                                     firebaseRestManager4.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
-                                        {
+                                        run {
                                             val cinemaAdmin =
                                                 cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
                                             val tempData = ShowTb(
@@ -483,7 +483,15 @@ class CInemaAdminManageShows : Fragment() , HorizontalCalendarAdapter.OnItemClic
             Log.d("TAG", "onItemClick: $filteredShows")
             // Set up the ShowAdapter with filtered shows and assign it to the RecyclerView
             val showAdapter = ShowAdapter(filteredShows)
-//            showAdapter.setOnItemClickListener(this)
+            showAdapter.setOnItemClickListener(object : ShowAdapter.OnItemClickListener {
+                @RequiresApi(Build.VERSION_CODES.O)
+                override fun onItemClick(show: ShowTb) {
+                    // Handle the click event here
+                    Log.d("TAG", "onItemClick: $show")
+
+
+                }
+            })
             binding.ShowsHere.adapter = showAdapter
         }
     }

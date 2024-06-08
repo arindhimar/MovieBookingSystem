@@ -100,8 +100,7 @@ dependencies {
     implementation("com.razorpay:checkout:1.6.38")
     implementation ("com.sun.mail:android-mail:1.6.6")
     implementation ("com.sun.mail:android-activation:1.6.7")
-
-
+    implementation ("com.getkeepsafe.taptargetview:taptargetview:1.13.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 

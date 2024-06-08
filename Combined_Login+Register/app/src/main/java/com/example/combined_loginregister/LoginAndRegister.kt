@@ -712,7 +712,16 @@ class LoginAndRegister : AppCompatActivity() {
     fun LoginUser(view: View) {
         // Validating for empty fields
         if (binding.txtLoginEmailMobileId.editText!!.text.isEmpty() || binding.txtPassword.editText!!.text.isEmpty()) {
-            Toast.makeText(this, "Empty Fields!!", Toast.LENGTH_SHORT).show()
+
+            val warningLoadingHelper = WarningLoadingHelper()
+            warningLoadingHelper.showLoadingDialog(this)
+            warningLoadingHelper.hideButtons()
+            warningLoadingHelper.updateText("Please Enter Credentials")
+            val handler = Handler()
+            handler.postDelayed({
+                warningLoadingHelper.dismissLoadingDialog()
+            }, 2000)
+
             return // Exit the function to prevent further execution
         }
 
@@ -784,9 +793,9 @@ class LoginAndRegister : AppCompatActivity() {
                     }
                 } else {
                     // Login failed, display a message to the user ye wala wrong details hai bisi
-                    Toast.makeText(baseContext, "New User ?? Register Please!!",
-                        Toast.LENGTH_SHORT).show()
+
                     loadingDialogHelper.dismissLoadingDialog()
+                    resetOrRegister()
 
                 }
             }
@@ -904,28 +913,8 @@ class LoginAndRegister : AppCompatActivity() {
                 }
                 else{
 
-                    val registerOrForgotPasswordHelper = RegisterOrForgotPasswordHelper()
-                    registerOrForgotPasswordHelper.showRegisterOrForgotPasswordDialog(this)
-                    val view = registerOrForgotPasswordHelper.getView()
-                    val btn_yes = view.findViewById<Button>(R.id.btn_yes)
-                    val btn_no = view.findViewById<Button>(R.id.btn_no)
 
-                    val textview2 = view.findViewById<TextView>(R.id.textView2)
-
-                    textview2.text = " Details not found!!  "
-
-                    btn_yes.setOnClickListener {
-                        binding.registerbtn.performClick()
-                        registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
-                    }
-
-                    btn_no.setOnClickListener {
-                        registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
-                        val forgotPasswordHelper = ForgotPasswordHelper()
-                        forgotPasswordHelper.showForgotPasswordDialog(this)
-
-                    }
-
+                    resetOrRegister()
 
 
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -998,6 +987,31 @@ class LoginAndRegister : AppCompatActivity() {
             Toast.makeText(this, "Email address is null somehow Database Breach ", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+
+    private fun resetOrRegister(){
+        val registerOrForgotPasswordHelper = RegisterOrForgotPasswordHelper()
+        registerOrForgotPasswordHelper.showRegisterOrForgotPasswordDialog(this)
+        val view = registerOrForgotPasswordHelper.getView()
+        val btn_yes = view.findViewById<Button>(R.id.btn_yes)
+        val btn_no = view.findViewById<Button>(R.id.btn_no)
+
+        val textview2 = view.findViewById<TextView>(R.id.textView2)
+
+        textview2.text = " Details not found!!  "
+
+        btn_yes.setOnClickListener {
+            binding.registerbtn.performClick()
+            registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
+        }
+
+        btn_no.setOnClickListener {
+            registerOrForgotPasswordHelper.dismissRegisterOrForgotPasswordDialog()
+            val forgotPasswordHelper = ForgotPasswordHelper()
+            forgotPasswordHelper.showForgotPasswordDialog(this)
+
+        }
     }
 
     private fun checkPrevLogin(){

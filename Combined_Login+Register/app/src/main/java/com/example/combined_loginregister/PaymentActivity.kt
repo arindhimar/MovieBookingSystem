@@ -89,11 +89,6 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
                     successLoadingHelper.hideButtons()
                     successLoadingHelper.updateText("Ticket has been booked\nCheck ticket in the Booked Ticket Menu!!")
 
-                    // Send broadcast to notify other activity
-                    val broadcastIntent = Intent("com.example.BOOKING_CONFIRMED").apply {
-                        putExtra("bookingId", bookingId)
-                    }
-                    sendBroadcast(broadcastIntent)
 
                     val handler = Handler()
                     handler.postDelayed({

@@ -26,7 +26,6 @@ class MovieListAdapter(private val itemList: List<MovieTB>) : RecyclerView.Adapt
         val Heading = itemView.findViewById<TextView>(R.id.Heading)
         val SubHeading1 = itemView.findViewById<TextView>(R.id.SubHeading1)
         val SubHeading2 = itemView.findViewById<TextView>(R.id.SubHeading2)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -54,6 +53,7 @@ class MovieListAdapter(private val itemList: List<MovieTB>) : RecyclerView.Adapt
 
                         holder.Heading.text = item.mname
                         holder.SubHeading1.text = item.duration + " Minutes"
+                        holder.SubHeading2.visibility = View.GONE
 
 
                         break
