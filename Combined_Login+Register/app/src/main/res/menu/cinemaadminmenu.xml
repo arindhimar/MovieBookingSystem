@@ -9,7 +9,7 @@
             <item
                 android:checkable="true"
                 android:id="@+id/nav_cinema_admin_dashboard"
-                android:icon="@drawable/ic_menu_screenboth"
+                android:icon="@drawable/dashboard_icon"
                 android:title="Cinema Admin DashBoard"
 
                 />
@@ -27,7 +27,7 @@
                 android:checkable="true"
                 android:id="@+id/view_booking"
                 android:icon="@drawable/move_ticket"
-                android:title="View Bookings" />
+                android:title="Bookings" />
 
             <item
                 android:checkable="true"

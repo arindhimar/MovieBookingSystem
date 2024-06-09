@@ -48,7 +48,7 @@ class CinemaAdminDisplayAdpater(private var cinemaAdminsList: List<CinemaAdminTb
                                 holder.Heading.isVisible = false
                                 val userName = userData.uname ?: "Unknown User"
                                 val cinemaName = cinemaData.cinemaName ?: "Unknown Cinema"
-                                val displayText = "UserName b : $userName\nCinema : $cinemaName"
+                                val displayText = "UserName : $userName\nCinema : $cinemaName"
                                 holder.SubHeading1.text = displayText
                                 Glide.with(holder.itemView.context)
                                     .load(R.drawable.account_fill)

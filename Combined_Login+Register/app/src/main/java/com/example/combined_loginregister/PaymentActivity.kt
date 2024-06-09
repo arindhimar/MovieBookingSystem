@@ -115,6 +115,14 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener {
 
 
     override fun onPaymentError(code: Int, description: String?) {
-        Toast.makeText(this, "Payment failed: $description", Toast.LENGTH_LONG).show()
+        val warningLoadingHelper = WarningLoadingHelper()
+        warningLoadingHelper.showLoadingDialog(this)
+        warningLoadingHelper.updateText("Payment Failed")
+        val handler = Handler()
+        handler.postDelayed({
+            warningLoadingHelper.dismissLoadingDialog()
+            finish()
+        }, 2000)
+        
     }
 }

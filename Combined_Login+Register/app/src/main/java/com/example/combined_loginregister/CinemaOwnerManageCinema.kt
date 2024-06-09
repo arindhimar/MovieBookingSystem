@@ -175,6 +175,9 @@ class CinemaOwnerManageCinema : Fragment() {
 
         firebaseRestManager.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { items ->
             if (items.isNotEmpty()) {
+                cinemaList.clear()  // Clear the existing cinema list
+
+
                 for (item in items) {
                     if (item.uid == FirebaseAuth.getInstance().currentUser!!.uid) {
                         firebaseRestManager2.getSingleItem(CinemaTb::class.java, "moviedb/cinematb", item.cinemaId!!) { cinemaitem ->

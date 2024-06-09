@@ -100,7 +100,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/movie_icon_dashboard"
+                                android:src="@drawable/ic_menu_screenboth"
                                 android:layout_marginTop="18dp"/>
 
                             <TextView
@@ -221,14 +221,14 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
 
-                                android:src="@drawable/feedback_dashboard_icon"
+                                android:src="@drawable/move_ticket"
                                 android:layout_marginTop="18dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
-                                android:text="Manage\nBooking"
+                                android:text="Booking"
                                 android:fontFamily="@font/googlesans_bold"
                                 android:textSize="18sp"
                                 android:textColor="@color/white"
@@ -259,7 +259,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/medical"
+                                android:src="@drawable/ic_menu_accountboth"
                                 android:layout_marginTop="18dp"/>
 
                             <TextView
@@ -327,7 +327,7 @@
         app:headerLayout="@layout/layout_nav_header"
         app:menu="@menu/cinema_owner_menu"
         android:layout_marginTop="25pt"
-
+        app:itemTextAppearanceActiveBoldEnabled="false"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/nav_view"

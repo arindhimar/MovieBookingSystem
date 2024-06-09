@@ -9,7 +9,7 @@
             <item
                 android:checkable="true"
                 android:id="@+id/nav_cinema_owner_dashboard"
-                android:icon="@drawable/ic_menu_screenboth"
+                android:icon="@drawable/dashboard_icon"
                 android:title="Cinema Owner DashBoard"
 
                 />
@@ -22,24 +22,27 @@
 
                 />
 
+
+
+            <item
+                android:checkable="true"
+                android:id="@+id/nav_rent_movies"
+                android:icon="@drawable/movie_icon_dashboard"
+                android:title="Manage Rent Movies" />
+
+
             <item
                 android:checkable="true"
                 android:id="@+id/nav_manage_cinema_admin"
-                android:icon="@drawable/ic_menu_screenboth"
+                android:icon="@drawable/account_profile_48px"
                 android:title="Manage Cinema Admin"
 
                 />
 
             <item
                 android:checkable="true"
-                android:id="@+id/nav_rent_movies"
-                android:icon="@drawable/ic_menu_showboth"
-                android:title="Manage Rent Movies" />
-
-            <item
-                android:checkable="true"
                 android:id="@+id/manage_booking"
-                android:icon="@drawable/feedback_dashboard_icon"
+                android:icon="@drawable/move_ticket"
                 android:title="Manage Booking" />
 
             <!--            <item-->

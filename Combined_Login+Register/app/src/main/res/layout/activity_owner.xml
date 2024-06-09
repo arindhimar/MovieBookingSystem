@@ -253,12 +253,11 @@
     <com.google.android.material.navigation.NavigationView
         app:headerLayout="@layout/layout_nav_header"
         android:layout_marginTop="25pt"
-
+        app:itemTextAppearanceActiveBoldEnabled="false"
         app:menu="@menu/owner_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/nav_view"
-
         android:layout_gravity="start" />
 
 

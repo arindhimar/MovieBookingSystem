@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_alignParentTop="true"
-                android:hint="Search Cinema Name OR Id"
+                android:hint="Search Cinema Name Or ID"
                 android:padding="10dp"
                 android:drawableLeft="@android:drawable/ic_menu_search"
                 android:drawablePadding="10dp"

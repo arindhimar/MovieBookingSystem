@@ -92,11 +92,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:hintTextColor="@color/white"
+                app:hintTextColor="@color/black"
                 app:layout_constraintVertical_bias="0.627"
 
-                app:startIconDrawable="@drawable/baseline_person_24"
-                app:startIconTint="@color/white">
+                app:startIconDrawable="@drawable/rupee"
+                app:startIconTint="#1E1E8E">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

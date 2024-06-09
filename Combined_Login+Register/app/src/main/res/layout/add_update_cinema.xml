@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toTopOf="parent"
 
 
-                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconDrawable="@drawable/cinema_icon"
                 app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -100,7 +100,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:hintTextColor="@color/white"
                 app:layout_constraintVertical_bias="0.627"
-                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconDrawable="@drawable/city"
                 app:startIconTint="@color/white">
 
                 <AutoCompleteTextView
@@ -145,7 +145,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:hintTextColor="@color/white"
                 app:layout_constraintVertical_bias="0.627"
-                app:startIconDrawable="@drawable/baseline_person_24"
+                app:startIconDrawable="@drawable/capacity"
                 app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:text="Upload Posters"
-                android:textColor="@color/black"
+                android:textColor="@color/ic_launcher_background"
                 android:textSize="14sp"
                 app:cornerRadius="25dp"
 

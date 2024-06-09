@@ -102,7 +102,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:layout_constraintVertical_bias="0.627"
-            app:startIconDrawable="@drawable/baseline_person_24"
+            app:startIconDrawable="@drawable/stopwatch"
             app:startIconTint="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -123,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:text="Upload Posters"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:cornerRadius="25dp"
 

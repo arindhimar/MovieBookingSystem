@@ -21,7 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.combined_loginregister.databinding.FragmentManageMoviesBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 private const val PICK_IMAGES_REQUEST = 1
 
@@ -103,6 +106,7 @@ class ManageMovies : Fragment() {
         }
 
         displayMovies()
+        setUpRealTimeDatabase()
 
         // Add TextWatcher to search bar
         val searchBar: EditText = binding.searchBar
@@ -161,6 +165,22 @@ class ManageMovies : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setUpRealTimeDatabase()
+    {
+        val firebaseDatabase = FirebaseDatabase.getInstance().reference
+        val rootRef = firebaseDatabase.child("moviedb/movietb")
+        rootRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.d("TAG", "onDataChange: data changed ")
+                displayMovies()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("TAG", "Error: ${error.message}")
+            }
+        })
     }
 
     private fun filterMovies(query: String) {
@@ -297,6 +317,8 @@ class ManageMovies : Fragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     loadingScreen.dismissLoadingDialog()
+                                    selectedUris!!.clear()
+
                                     alertDialog.dismiss() // Close the alert dialog
                                 }
                             }

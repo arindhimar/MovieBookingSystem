@@ -202,6 +202,9 @@ class CinemaOwnerActivity : AppCompatActivity() {
             binding.navView.menu.performIdentifierAction(R.id.logoutuser, 0)
         }
 
+        binding.navView.setCheckedItem(R.id.nav_cinema_owner_dashboard)
+
+
     }
 
 

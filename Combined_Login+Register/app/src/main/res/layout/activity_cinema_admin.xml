@@ -154,7 +154,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
-                                android:text="View \n Bookings"
+                                android:text=" Bookings"
                                 android:fontFamily="@font/googlesans_bold"
                                 android:textSize="18sp"
                                 android:textColor="@color/white"
@@ -289,6 +289,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:layout_marginTop="25pt"
+        app:itemTextAppearanceActiveBoldEnabled="false"
 
         app:headerLayout="@layout/layout_nav_header"
         app:menu="@menu/cinemaadminmenu"
