@@ -110,6 +110,7 @@ class CinemaAdminViewBookings : Fragment(), HorizontalCalendarAdapter.OnItemClic
                     formattedSelectedDate == currentDate -> isShowTimeValid(show, currentDateTime)
                     else -> show.showDate == formattedSelectedDate
                 }
+                        && show.cinemaId == cinemaId
             }
 
             Log.d("TAG", "onItemClick: $filteredShows")

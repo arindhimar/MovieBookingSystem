@@ -29,7 +29,7 @@ class CinemaAdminDisplayAdpater(private var cinemaAdminsList: List<CinemaAdminTb
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdminCinemaViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.listmoviecard, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.listcinemamadincard, parent, false)
         return AdminCinemaViewHolder(view)
     }
 
@@ -49,6 +49,7 @@ class CinemaAdminDisplayAdpater(private var cinemaAdminsList: List<CinemaAdminTb
                                 val userName = userData.uname ?: "Unknown User"
                                 val cinemaName = cinemaData.cinemaName ?: "Unknown Cinema"
                                 val displayText = "UserName : $userName\nCinema : $cinemaName"
+                                holder.SubHeading2.text = "ID : " + cinemaAdmin.cinemaadminid
                                 holder.SubHeading1.text = displayText
                                 Glide.with(holder.itemView.context)
                                     .load(R.drawable.account_fill)
@@ -77,6 +78,7 @@ class CinemaAdminDisplayAdpater(private var cinemaAdminsList: List<CinemaAdminTb
         val MainPoster: ImageView = itemView.findViewById(R.id.MainPoster)
         val Heading: TextView = itemView.findViewById(R.id.Heading)
         val SubHeading1: TextView = itemView.findViewById(R.id.subheading1)
+        val SubHeading2: TextView = itemView.findViewById(R.id.subheading2)
         var isDataLoaded = false
 
         init {

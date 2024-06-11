@@ -866,11 +866,13 @@ class LoginAndRegister : AppCompatActivity() {
                                         ) { user ->
                                             if (user != null) {
                                                 if (user!!.utype == "owner") {
+
                                                     val intent =
                                                         Intent(this, OwnerActivity::class.java)
                                                     startActivity(intent)
                                                     finish()
                                                 } else if (user.utype == "cinemaowner") {
+
                                                     intent = Intent(
                                                         this@LoginAndRegister,
                                                         CinemaOwnerActivity::class.java
@@ -879,6 +881,7 @@ class LoginAndRegister : AppCompatActivity() {
                                                     finish()
 
                                                 } else if (user.utype == "cinemaadmin") {
+
                                                     intent = Intent(
                                                         this@LoginAndRegister,
                                                         CinemaAdminActivity::class.java
@@ -886,6 +889,7 @@ class LoginAndRegister : AppCompatActivity() {
                                                     startActivity(intent)
                                                     finish()
                                                 } else if (user.utype == "user") {
+
                                                     intent = Intent(
                                                         this@LoginAndRegister,
                                                         UserActivity::class.java

@@ -18,154 +18,99 @@ import com.google.firebase.auth.FirebaseAuth
 import org.imaginativeworld.oopsnointernet.callbacks.ConnectionCallback
 import org.imaginativeworld.oopsnointernet.dialogs.signal.NoInternetDialogSignal
 
-
 class CinemaOwnerActivity : AppCompatActivity() {
     lateinit var binding: ActivityCinemaOwnerBinding
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityCinemaOwnerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
+        auth = FirebaseAuth.getInstance()
         validateUser()
-
         init()
-
-
-
     }
 
-    private fun validateUser(){
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if(currentUser==null){
+    private fun validateUser() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
             val warningLoadingHelper = WarningLoadingHelper()
+            warningLoadingHelper.showLoadingDialog(this)
             warningLoadingHelper.hideButtons()
             warningLoadingHelper.updateText("Invalid User Detection!!")
 
-            val handler = Handler()
-            handler.postDelayed({
+            Handler().postDelayed({
                 warningLoadingHelper.dismissLoadingDialog()
             }, 2000)
-        }
-        else{
+        } else {
             val firebaseRestManager = FirebaseRestManager<UserTb>()
-
-            val userName:String?=null
-            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",FirebaseAuth.getInstance().currentUser!!.uid){
-
+            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", currentUser.uid) {
+                // Handle the retrieved user details if necessary
             }
         }
     }
 
-    private fun init(){
+    private fun init() {
         // No Internet Dialog: Signal
         NoInternetDialogSignal.Builder(
             this,
             lifecycle
         ).apply {
             dialogProperties.apply {
-                connectionCallback = object : ConnectionCallback { // Optional
+                connectionCallback = object : ConnectionCallback {
                     override fun hasActiveConnection(hasActiveConnection: Boolean) {
-                        // ...
+                        // Handle connection callback if necessary
                     }
                 }
-
-                cancelable = false // Optional
-                noInternetConnectionTitle = "No Internet" // Optional
-                noInternetConnectionMessage =
-                    "Check your Internet connection and try again." // Optional
-                showInternetOnButtons = true // Optional
-                pleaseTurnOnText = "Please turn on" // Optional
-                wifiOnButtonText = "Wifi" // Optional
-                mobileDataOnButtonText = "Mobile data" // Optional
-
-                onAirplaneModeTitle = "No Internet" // Optional
-                onAirplaneModeMessage = "You have turned on the airplane mode." // Optional
-                pleaseTurnOffText = "Please turn off" // Optional
-                airplaneModeOffButtonText = "Airplane mode" // Optional
-                showAirplaneModeOffButtons = true // Optional
+                cancelable = false
+                noInternetConnectionTitle = "No Internet"
+                noInternetConnectionMessage = "Check your Internet connection and try again."
+                showInternetOnButtons = true
+                pleaseTurnOnText = "Please turn on"
+                wifiOnButtonText = "Wifi"
+                mobileDataOnButtonText = "Mobile data"
+                onAirplaneModeTitle = "No Internet"
+                onAirplaneModeMessage = "You have turned on the airplane mode."
+                pleaseTurnOffText = "Please turn off"
+                airplaneModeOffButtonText = "Airplane mode"
+                showAirplaneModeOffButtons = true
             }
         }.build()
 
         val headerView = binding.navView.getHeaderView(0)
         val usernameTextView = headerView.findViewById<TextView>(R.id.NavHeaderText)
 
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            val email = user.email
+        val user = auth.currentUser
+        user?.let {
+            val email = it.email
             usernameTextView.text = email
             val firebaseRestManager = FirebaseRestManager<UserTb>()
-            firebaseRestManager.getSingleItem(UserTb::class.java,"moviedb/usertb",user.uid){
-                usernameTextView.text ="Welcome ${it!!.uname}"
+            firebaseRestManager.getSingleItem(UserTb::class.java, "moviedb/usertb", it.uid) { userTb ->
+                usernameTextView.text = "Welcome ${userTb?.uname}"
             }
         }
 
-
-
-
         setSupportActionBar(binding.ToolBaar)
-
-
 
         binding.ToolBaar.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navView)
         }
 
-
         binding.navView.setNavigationItemSelectedListener { menuItem ->
-            // Close the drawer when item is tapped
             binding.drawerLayout.closeDrawers()
-
-            // Set checked state for the selected item
             menuItem.isChecked = true
 
-            // Handle navigation item clicks here
             when (menuItem.itemId) {
-                R.id.nav_cinema_owner_dashboard -> {
-                    binding.CinemaOwnerDashBoard.isVisible = true
-                    // Add any additional logic specific to this item
-                }
-                R.id.nav_manage_cinema->{
-                    replaceFragment(CinemaOwnerManageCinema())
-
-                }
-                R.id.nav_manage_cinema_admin -> {
-                    replaceFragment(CinemaOwnerManageCInemaAdmin())
-
-                }
-                R.id.nav_rent_movies -> {
-                    replaceFragment(CinemaOwnerLeaseMovie())
-
-                    // Add any additional logic specific to this item
-                }
-                R.id.manage_booking -> {
-                    replaceFragment(CinemaOwnerManageBooking())
-                    // Add any additional logic specific to this item
-                }
-                R.id.nav_menu_account -> {
-                    replaceFragment(CommonProfileFragment())
-
-                    // Add any additional logic specific to this item
-                }
-                R.id.logoutuser -> {
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
-                        .requestEmail()
-                        .build()
-
-                    val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-                    mGoogleSignInClient.signOut()
-
-                    val auth = FirebaseAuth.getInstance()
-                    auth.signOut()
-
-                    val intent = Intent(this, LoginAndRegister::class.java)
-                    startActivity(intent)
-                    // Add any additional logic specific to this item
-                }
-                // Add more cases for other menu items if needed
+                R.id.nav_cinema_owner_dashboard -> binding.CinemaOwnerDashBoard.isVisible = true
+                R.id.nav_manage_cinema -> replaceFragment(CinemaOwnerManageCinema())
+                R.id.nav_manage_cinema_admin -> replaceFragment(CinemaOwnerManageCInemaAdmin())
+                R.id.nav_rent_movies -> replaceFragment(CinemaOwnerLeaseMovie())
+                R.id.manage_booking -> replaceFragment(CinemaOwnerManageBooking())
+                R.id.nav_menu_account -> replaceFragment(CommonProfileFragment())
+                R.id.logoutuser -> performLogout()
             }
 
             true
@@ -175,7 +120,6 @@ class CinemaOwnerActivity : AppCompatActivity() {
             binding.navView.setCheckedItem(R.id.nav_manage_cinema)
             binding.navView.menu.performIdentifierAction(R.id.nav_manage_cinema, 0)
         }
-
 
         binding.dashboardManageCinemaAdmin.setOnClickListener {
             binding.navView.setCheckedItem(R.id.nav_manage_cinema_admin)
@@ -203,11 +147,25 @@ class CinemaOwnerActivity : AppCompatActivity() {
         }
 
         binding.navView.setCheckedItem(R.id.nav_cinema_owner_dashboard)
-
-
     }
 
+    private fun performLogout() {
+        auth.signOut()
 
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("390229249723-kgf51fevhonod7sf18vnd5ga6tnna0ed.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+        val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        mGoogleSignInClient.signOut().addOnCompleteListener {
+            val intent = Intent(this, LoginAndRegister::class.java)
+            startActivity(intent)
+            finish()
+        }.addOnFailureListener {
+            Log.e("CinemaOwnerActivity", "Google Sign-Out failed", it)
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

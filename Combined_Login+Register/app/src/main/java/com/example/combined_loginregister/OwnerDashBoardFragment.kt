@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import androidx.cardview.widget.CardView
-import com.example.applicaitionowner.ManageCinemaOwner
 import com.example.combined_loginregister.databinding.FragmentOwnerDashBoardBinding
 
 // TODO: Rename parameter arguments, choose names that match

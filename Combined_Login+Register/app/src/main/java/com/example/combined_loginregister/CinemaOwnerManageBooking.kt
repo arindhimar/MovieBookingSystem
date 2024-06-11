@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarSetUp
 import com.example.combined_loginregister.databinding.FragmentCInemaAdminManageShowsBinding
+import com.example.combined_loginregister.databinding.FragmentCinemaOwnerManageBookingBinding
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -25,7 +26,7 @@ private const val ARG_PARAM2 = "param2"
 class CinemaOwnerManageBooking : Fragment(), HorizontalCalendarAdapter.OnItemClickListener {
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var binding: FragmentCInemaAdminManageShowsBinding
+    private lateinit var binding: FragmentCinemaOwnerManageBookingBinding
     private lateinit var tvDateMonth: TextView
     private lateinit var ivCalendarNext: ImageView
     private lateinit var ivCalendarPrevious: ImageView
@@ -44,7 +45,7 @@ class CinemaOwnerManageBooking : Fragment(), HorizontalCalendarAdapter.OnItemCli
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCInemaAdminManageShowsBinding.inflate(layoutInflater, container, false)
+        binding = FragmentCinemaOwnerManageBookingBinding.inflate(layoutInflater, container, false)
         tvDateMonth = binding.textDateMonth
         ivCalendarNext = binding.ivCalendarNext
         ivCalendarPrevious = binding.ivCalendarPrevious

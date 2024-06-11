@@ -520,6 +520,7 @@ class CInemaAdminManageShows : Fragment(), HorizontalCalendarAdapter.OnItemClick
                 ) { cinemaOwnerTbs ->
                     val cinemaOwner = cinemaOwnerTbs.find { it.cinemaOwnerId == cinemaOwnerId }
                     cinemaId = cinemaOwner?.cinemaId.toString()
+                    Log.d("TAG", "loadInitialData: $cinemaId")
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.example.applicaitionowner
+package com.example.combined_loginregister
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -87,16 +87,19 @@ class ManageCinemaOwner : Fragment() {
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance()
 
+        // Get references to input fields
         val textInputLayout1 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout1)
         val textInputLayout2 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout2)
         val textInputLayout3 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout3)
         val textInputLayout4 = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout4)
 
+        // Get input values
         val username = textInputLayout1.editText!!.text
         val email = textInputLayout2.editText!!.text
         val password = textInputLayout3.editText!!.text
         val mobile = textInputLayout4.editText!!.text
 
+        // Validate input values
         if (username.isBlank() || email.isBlank() || password.isBlank() || mobile.isBlank()) {
             Toast.makeText(requireContext(), "Empty fields!", Toast.LENGTH_SHORT).show()
             return
@@ -105,45 +108,69 @@ class ManageCinemaOwner : Fragment() {
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(requireContext())
 
+        // Save current user's email and password before registering the new user
+        val currentUser = firebaseAuth.currentUser
+        val encryption = Encryption(requireContext())
+        val currentEmail = encryption.decrypt("userEmail")
+        val currentPassword = encryption.decrypt("userPassword")
+
+        // Check if the email is already registered
         firebaseAuth.fetchSignInMethodsForEmail(email.toString())
             .addOnCompleteListener { fetchTask ->
                 if (fetchTask.isSuccessful) {
                     val signInMethods = fetchTask.result?.signInMethods
                     if (signInMethods != null && signInMethods.isNotEmpty()) {
+                        // Email is already registered
                         loadingDialogHelper.dismissLoadingDialog()
                         Log.e("TAG", "Email already registered")
                         Toast.makeText(requireContext(), "Email already registered", Toast.LENGTH_SHORT).show()
                     } else {
+                        // Email is not registered, proceed with user registration
                         firebaseAuth.createUserWithEmailAndPassword(email.toString(), password.toString())
                             .addOnCompleteListener { authTask ->
                                 if (authTask.isSuccessful) {
+                                    // User registration successful
                                     val userId = firebaseAuth.currentUser!!.uid
                                     val tempUser = UserTb(userId, username.toString(), mobile.toString(), "cinemaowner")
-                                    val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                                    val dbRef = firebaseDatabase.getReference("moviedb/usertb")
                                     val firebaseRestManager = FirebaseRestManager<UserTb>()
 
                                     firebaseRestManager.addItemWithCustomId(tempUser, userId, dbRef) { success, error ->
                                         if (success) {
+                                            // Send email verification
                                             firebaseAuth.currentUser!!.sendEmailVerification()
-                                            loadingDialogHelper.dismissLoadingDialog()
-                                            val successLoadingHelper = SuccessLoadingHelper()
-                                            successLoadingHelper.showLoadingDialog(requireContext())
-                                            successLoadingHelper.hideButtons()
-                                            successLoadingHelper.updateText("User has been registered!!")
 
-                                            Handler().postDelayed({
-                                                successLoadingHelper.dismissLoadingDialog()
-                                                displayCinemaOwner()
-                                                alertDialog.dismiss()
-                                                val encryption = Encryption(requireContext())
-                                                firebaseAuth.signInWithEmailAndPassword(encryption.decrypt("userEmail"), encryption.decrypt("userPassword"))
-                                            }, 2000)
+                                            // Re-authenticate with the original user's credentials
+                                            firebaseAuth.signInWithEmailAndPassword(currentEmail, currentPassword)
+                                                .addOnCompleteListener { signInTask ->
+                                                    if (signInTask.isSuccessful) {
+                                                        // Original user signed in successfully
+                                                        loadingDialogHelper.dismissLoadingDialog()
+                                                        val successLoadingHelper = SuccessLoadingHelper()
+                                                        successLoadingHelper.showLoadingDialog(requireContext())
+                                                        successLoadingHelper.hideButtons()
+                                                        successLoadingHelper.updateText("User has been registered!!")
+
+                                                        Handler().postDelayed({
+                                                            successLoadingHelper.dismissLoadingDialog()
+                                                            displayCinemaOwner()
+                                                            alertDialog.dismiss()
+                                                        }, 2000)
+                                                    } else {
+                                                        // Error signing in with original user credentials
+                                                        loadingDialogHelper.dismissLoadingDialog()
+                                                        Log.e("TAG", "Error signing in with original user credentials: ${signInTask.exception}")
+                                                        Toast.makeText(requireContext(), "Error signing in with original user credentials", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
                                         } else {
+                                            // Error adding user data to the database
                                             loadingDialogHelper.dismissLoadingDialog()
                                             Log.e("TAG", "Error adding user data to the database: $error")
                                         }
                                     }
                                 } else {
+                                    // User registration failed
                                     loadingDialogHelper.dismissLoadingDialog()
                                     Log.e("TAG", "User registration failed: ${authTask.exception}")
                                     Toast.makeText(requireContext(), "User registration failed", Toast.LENGTH_SHORT).show()
@@ -151,12 +178,14 @@ class ManageCinemaOwner : Fragment() {
                             }
                     }
                 } else {
+                    // Error fetching sign-in methods
                     loadingDialogHelper.dismissLoadingDialog()
                     Log.e("TAG", "Error fetching sign-in methods: ${fetchTask.exception}")
                     Toast.makeText(requireContext(), "Error fetching sign-in methods", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
 
     private fun validateRegisterPage(): Boolean {
         val txtName = dialogView.findViewById<TextInputLayout>(R.id.textInputLayout1)

@@ -18,7 +18,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.combined_loginregister.databinding.FragmentCinemaOwnerManageCInemaAdminBinding
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +41,8 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
     lateinit var dialogView: View
     lateinit var alertDialog: AlertDialog
     private lateinit var cinemaList: List<CinemaTb>
+    private lateinit var allCinemaAdmins: List<CinemaAdminTb> // To keep the original list
+
     private lateinit var adapter: CinemaOwnerCinemaListAdapter
 
     lateinit var cinemaAdminAdapter: CinemaAdminDisplayAdpater
@@ -104,7 +109,7 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
         // Add TextWatcher for search functionality
         binding.searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                filterDialogCinema(s.toString())
+                filterCinemaAdmins(s.toString())
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -116,7 +121,30 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
 
         return binding.root
     }
+
+
+
+
+
+
+    fun setUpRealTimeDatabase(){
+        val firebaseDatabase = FirebaseDatabase.getInstance().getReference("moviedb/cinemaadmintb")
+        firebaseDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+
+        })
+    }
+
     private fun filterDialogCinema(query: String) {
+             cinemaList = ArrayList<CinemaTb>() // Initialize cinemaList here
 
             val filteredList = cinemaList.filter { cinema ->
                 cinema.cinemaName!!.contains(query, ignoreCase = true) || cinema.cinemaID!!.contains(query, ignoreCase = true)
@@ -131,14 +159,15 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
 
         firebaseRestManager.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerItems ->
-            val currentOwner = cinemaOwnerItems.find { it.uid == currentUserUid }
+            val currentOwner:List<CinemaOwnerTb> = cinemaOwnerItems.filter { it.uid == currentUserUid }
             if (currentOwner == null) {
                 loadingDialogHelper.dismissLoadingDialog()
                 return@getAllItems
             }
 
             firebaseRestManager.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminItems ->
-                val cinemaAdminsForCurrentOwner = cinemaAdminItems.filter { it.cinemaOwnerId == currentOwner.cinemaOwnerId }
+
+                val cinemaAdminsForCurrentOwner  = cinemaAdminItems.filter { cinemaAdminItem -> currentOwner.any { it.cinemaOwnerId == cinemaAdminItem.cinemaOwnerId } }
                 loadingDialogHelper.dismissLoadingDialog()
 
                 if (cinemaAdminsForCurrentOwner.isEmpty()) {
@@ -147,26 +176,31 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
 
                 Log.d("TAG", "getCinemaAdminsForCurrentOwner: ${cinemaAdminsForCurrentOwner.size}")
                 cinemaAdminAdapter = CinemaAdminDisplayAdpater(cinemaAdminsForCurrentOwner.toMutableList())
+                allCinemaAdmins = cinemaAdminsForCurrentOwner // Store the original list
                 cinemaAdminHereForCO.adapter = cinemaAdminAdapter
                 cinemaAdminHereForCO.layoutManager = LinearLayoutManager(requireContext())
             }
         }
     }
 
+
     private fun filterCinemaAdmins(query: String) {
-        val loadingDialogHelper = LoadingDialogHelper()
-        loadingDialogHelper.showLoadingDialog(requireContext())
+
 
         getAllUsers { users ->
             val filteredUsers = users.filter { it.uname!!.contains(query, ignoreCase = true) }
             val filteredUserIds = filteredUsers.map { it.uid }
 
-            val filteredList = cinemaAdminAdapter.getAllItems().filter {
-                it.userId in filteredUserIds || it.cinemaadminid!!.contains(query, ignoreCase = true)
+            val filteredList = if (query.isEmpty()) {
+                allCinemaAdmins // Reset to original list when query is empty
+
+            } else {
+                allCinemaAdmins.filter {
+                    it.userId in filteredUserIds || it.cinemaadminid!!.contains(query, ignoreCase = true)
+                }
             }
 
             cinemaAdminAdapter.updateList(filteredList)
-            loadingDialogHelper.dismissLoadingDialog()
         }
     }
 
@@ -316,7 +350,11 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
         val loadingDialogHelper = LoadingDialogHelper()
         loadingDialogHelper.showLoadingDialog(requireContext())
 
-
+        // Save current user's email and password before registering the new user
+        val currentUser = firebaseAuth.currentUser
+        val encryption = Encryption(requireContext())
+        val currentEmail = encryption.decrypt("userEmail")
+        val currentPassword = encryption.decrypt("userPassword")
 
         // Check if the email is already registered
         firebaseAuth.fetchSignInMethodsForEmail(email.toString())
@@ -331,96 +369,72 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                     } else {
                         // Email is not registered, proceed with user registration
                         // Perform user registration with Firebase Authentication
-                        firebaseAuth.createUserWithEmailAndPassword(email.toString(),
-                            password.toString()
-                        )
+                        firebaseAuth.createUserWithEmailAndPassword(email.toString(), password.toString())
                             .addOnCompleteListener { authTask ->
                                 if (authTask.isSuccessful) {
                                     // Use the user ID from Firebase Authentication as the key for database storage
-                                    val userId = firebaseAuth.currentUser!!.uid
-                                    val tempId = userId
+                                    val newUserId = firebaseAuth.currentUser!!.uid
 
                                     // Create a UserTb object with the obtained user ID
-                                    val tempUser = UserTb(userId, username.toString(),mobile.toString(), "cinemaadmin")
-                                    val dbRef = FirebaseDatabase.getInstance().getReference("moviedb/usertb")
+                                    val tempUser = UserTb(newUserId, username.toString(), mobile.toString(), "cinemaadmin")
+                                    val dbRef = firebaseDatabase.getReference("moviedb/usertb")
                                     val firebaseRestManager = FirebaseRestManager<UserTb>()
 
-                                    firebaseRestManager.addItemWithCustomId(tempUser, userId, dbRef) { success, error ->
-
+                                    firebaseRestManager.addItemWithCustomId(tempUser, newUserId, dbRef) { success, error ->
                                         if (success) {
                                             firebaseAuth.currentUser!!.sendEmailVerification()
-                                            val newUserId = firebaseAuth.currentUser!!.uid
-                                            val encryption = Encryption(requireContext())
-                                            firebaseAuth.signInWithEmailAndPassword(encryption.decrypt("userEmail"),encryption.decrypt("userPassword"))
-                                                .addOnCompleteListener { task ->
-                                                    if (task.isSuccessful) {
-                                                        // Sign-in successful, you can access the user information from task.result.user
-                                                        val user = task.result?.user
-                                                        // You can perform further actions here after successful sign-in
+
+                                            // Re-authenticate with the original user's credentials
+                                            firebaseAuth.signInWithEmailAndPassword(currentEmail, currentPassword)
+                                                .addOnCompleteListener { signInTask ->
+                                                    if (signInTask.isSuccessful) {
+                                                        // Original user signed in successfully
                                                         val firebaseRestManager2 = FirebaseRestManager<CinemaAdminTb>()
-                                                        val dbRef2 = FirebaseDatabase.getInstance().getReference("moviedb/cinemaadmintb")
+                                                        val dbRef2 = firebaseDatabase.getReference("moviedb/cinemaadmintb")
                                                         val id = dbRef2.push().key
 
-                                                        val firebaseRestManager3 = FirebaseRestManager<CinemaOwnerTb>()
-                                                        firebaseRestManager3.getAllItems(CinemaOwnerTb::class.java,"moviedb/CinemaOwnerTb"){cinemaownertbitems->
-                                                            if(cinemaownertbitems.isNotEmpty()){
-                                                                for(tempItem in cinemaownertbitems){
-                                                                    Log.d("TAG", "registerUser: idhr aya $tempItem")
-                                                                    Log.d("TAG", "registerUser: ${cinema.cinemaID}  ${firebaseAuth.currentUser!!.uid} ")
-                                                                    if(cinema.cinemaID==tempItem.cinemaId&&firebaseAuth.currentUser!!.uid==tempItem.uid){
-                                                                        Log.d("TAG", "registerUser: idhr bhi aya")
-                                                                        val tempData = CinemaAdminTb(id,newUserId,tempItem.cinemaOwnerId)
-                                                                        firebaseRestManager2.addItemWithCustomId(tempData,id!!,dbRef2){success2,error2->
-                                                                            if(success2){
-                                                                                loadingDialogHelper.dismissLoadingDialog()
-                                                                                val successLoadingHelper = SuccessLoadingHelper()
-                                                                                successLoadingHelper.showLoadingDialog(requireContext())
-                                                                                successLoadingHelper.hideButtons()
-                                                                                successLoadingHelper.updateText("Cinema Admin bas been registered!!\nAlso a verification mail has been sent!!")
+                                                        firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerItems ->
+                                                            for (tempItem in cinemaOwnerItems) {
+                                                                if (cinema.cinemaID == tempItem.cinemaId && currentUser!!.uid == tempItem.uid) {
+                                                                    val tempData = CinemaAdminTb(id, newUserId, tempItem.cinemaOwnerId)
+                                                                    firebaseRestManager2.addItemWithCustomId(tempData, id!!, dbRef2) { success2, error2 ->
+                                                                        if (success2) {
+                                                                            loadingDialogHelper.dismissLoadingDialog()
+                                                                            val successLoadingHelper = SuccessLoadingHelper()
+                                                                            successLoadingHelper.showLoadingDialog(requireContext())
+                                                                            successLoadingHelper.hideButtons()
+                                                                            successLoadingHelper.updateText("Cinema Admin has been registered!!\nAlso, a verification mail has been sent!!")
 
+                                                                            getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
 
-                                                                                getCinemaAdminsForCurrentOwner(binding.cinemaAdminHereForCO)
-
-
-
-                                                                                val handler = Handler()
-                                                                                handler.postDelayed({
-                                                                                    successLoadingHelper.dismissLoadingDialog()
-
-                                                                                    alertDialog.dismiss()
-                                                                                    val encryption = Encryption(requireContext())
-                                                                                    firebaseAuth.signInWithEmailAndPassword(encryption.decrypt("userEmail"),encryption.decrypt("userPassword"))
-                                                                                }, 2000)
-                                                                            } else {
-                                                                                // Handle failure to add user data to the database
-                                                                                loadingDialogHelper.dismissLoadingDialog()
-                                                                                Log.e("TAG", "Error adding user data to the database: $error")
-
-                                                                                firebaseAuth.currentUser!!.delete()
-
-                                                                                val encryption = Encryption(requireContext())
-                                                                                firebaseAuth.signInWithEmailAndPassword(encryption.decrypt("userEmail"),encryption.decrypt("userPassword"))
-
-                                                                                // Display error message or take appropriate action
-                                                                            }
+                                                                            val handler = Handler()
+                                                                            handler.postDelayed({
+                                                                                successLoadingHelper.dismissLoadingDialog()
+                                                                                alertDialog.dismiss()
+                                                                            }, 2000)
+                                                                        } else {
+                                                                            loadingDialogHelper.dismissLoadingDialog()
+                                                                            Log.e("TAG", "Error adding user data to the database: $error2")
+                                                                            Toast.makeText(requireContext(), "Error adding user data to the database", Toast.LENGTH_SHORT).show()
                                                                         }
-
-                                                                        break
-
                                                                     }
+                                                                    break
                                                                 }
                                                             }
-                                                        }                                                    } else {
-                                                        // Sign-in failed, handle the error
-                                                        val exception = task.exception
-                                                        println("Sign-in failed: $exception")
-                                                        // You can provide feedback to the user or take appropriate action
+                                                        }
+                                                    } else {
+                                                        loadingDialogHelper.dismissLoadingDialog()
+                                                        Log.e("TAG", "Error signing in with original user credentials: ${signInTask.exception}")
+                                                        Toast.makeText(requireContext(), "Error signing in with original user credentials", Toast.LENGTH_SHORT).show()
                                                     }
                                                 }
+                                        } else {
+                                            loadingDialogHelper.dismissLoadingDialog()
+                                            Log.e("TAG", "Error adding user data to the database: $error")
+                                            Toast.makeText(requireContext(), "Error adding user data to the database", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 } else {
-                                    // Registration failed
                                     loadingDialogHelper.dismissLoadingDialog()
                                     Log.e("TAG", "User registration failed: ${authTask.exception}")
                                     Toast.makeText(requireContext(), "User registration failed", Toast.LENGTH_SHORT).show()
@@ -428,13 +442,13 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
                             }
                     }
                 } else {
-                    // Error fetching sign-in methods
                     loadingDialogHelper.dismissLoadingDialog()
                     Log.e("TAG", "Error fetching sign-in methods: ${fetchTask.exception}")
                     Toast.makeText(requireContext(), "Error fetching sign-in methods", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
 
 
     companion object {
