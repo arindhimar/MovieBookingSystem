@@ -119,7 +119,22 @@ class CinemaOwnerManageCinema : Fragment() {
                 if (cinemaName.isNotEmpty() && cinemaCity.isNotEmpty() && selectedUri != null) {
                     textInputLayout1.error = null
                     textInputLayout2.error = null
-                    uploadImageToFirebaseStorage(selectedUri)
+
+                    val cityList = resources.getStringArray(R.array.city_name)
+                    if (cityList.contains(cinemaCity)) {
+                        uploadImageToFirebaseStorage(selectedUri)
+                    }
+                    else{
+                        val warningLoadingHelper = WarningLoadingHelper()
+                        warningLoadingHelper.showLoadingDialog(requireContext())
+                        warningLoadingHelper.hideButtons()
+                        warningLoadingHelper.updateText("Please select a valid city!")
+                        val handler = Handler()
+                        handler.postDelayed({
+                            warningLoadingHelper.dismissLoadingDialog()
+                        }, 2000)
+                    }
+
                 } else {
                     Toast.makeText(
                         requireContext(),
