@@ -91,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email"
-                    android:maxLines="1"
+
                     android:textColorHint="@color/m3_textfield_login_page_colors"
                      />
 

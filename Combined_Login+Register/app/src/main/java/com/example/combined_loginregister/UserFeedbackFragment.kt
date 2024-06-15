@@ -29,6 +29,7 @@ class UserFeedbackFragment : Fragment() {
     private var param2: String? = null
     lateinit var binding: FragmentUserFeedbackBinding
     private val endedBookings = mutableListOf<BookingTb>()
+    private val uniqueShowIds = mutableSetOf<String>()
     private lateinit var adapter: TicketDisplayAdapter
     private lateinit var noDataDialogHelper: NoDataDialogHelper
     private var noDataDialogShown = false // Flag to track if the no data dialog has been shown
@@ -49,7 +50,7 @@ class UserFeedbackFragment : Fragment() {
         noDataDialogHelper = NoDataDialogHelper() // Initialize here
         setupRecyclerView()
         fetchTicketDetails()
-        tryKrteHai()
+        listenForFeedbackChanges()
         return binding.root
     }
 
@@ -72,14 +73,20 @@ class UserFeedbackFragment : Fragment() {
         val firebaseRestManager = FirebaseRestManager<BookingTb>()
         firebaseRestManager.getAllItems(BookingTb::class.java, "moviedb/bookingtb") { bookingList ->
             if (bookingList.isNotEmpty()) {
-                val userBookings = bookingList.distinctBy { it.showId }.filter { it.userId == FirebaseAuth.getInstance().currentUser?.uid }
-                userBookings.forEach { booking ->
-                    fetchShowDetails(booking)
+                val userBookings = bookingList.filter { it.userId == FirebaseAuth.getInstance().currentUser?.uid }
+                if (userBookings.isNotEmpty()) {
+                    userBookings.forEach { booking ->
+                        if (!uniqueShowIds.contains(booking.showId)) {
+                            uniqueShowIds.add(booking.showId)
+                            fetchShowDetails(booking)
+                        }
+                    }
+                } else {
+                    showNoDataDialog()
                 }
             } else {
                 showNoDataDialog()
             }
-
             // Dismiss the loading dialog after data retrieval is complete
             loadingDialogHelper.dismissLoadingDialog()
         }
@@ -89,66 +96,81 @@ class UserFeedbackFragment : Fragment() {
         val firebaseRestManager = FirebaseRestManager<ShowTb>()
         firebaseRestManager.getSingleItem(ShowTb::class.java, "moviedb/showtb", booking.showId) { show ->
             show?.let { showdata ->
-                val currentTime = Calendar.getInstance().time
-                val showEndTime = parseTime(showdata.showEndTime)
-                if (showEndTime.before(currentTime)) {
-                    val feedbackFirebaseRestManager = FirebaseRestManager<FeedbackTb>()
-                    feedbackFirebaseRestManager.getAllItems(FeedbackTb::class.java, "moviedb/feedbacktb") { feedbackList ->
-                        if (feedbackList.isNotEmpty()) {
-                            val existingFeedback = feedbackList.find { it.showId == booking.showId && it.userId == booking.userId }
-                            Log.d("TAG", "fetchShowDetails:  $existingFeedback")
-                            if (existingFeedback == null &&!endedBookings.contains(booking)) {
-                                endedBookings.add(booking)
-                                updateUI()
-                                if(noDataDialogShown) {
-                                    noDataDialogHelper.dismissNoDataDialog()
-                                }
-                            }
-                            else{
-                                if (!noDataDialogShown) {
-                                    showNoDataDialog()
-                                    noDataDialogShown = true // Set the flag to true
-                                }
-                            }
-                        }
-                        else{
-                            if (!endedBookings.contains(booking)) {
-                                endedBookings.add(booking)
-                                updateUI()
-                                if(noDataDialogShown) {
+                val currentDate = Calendar.getInstance().time
+                val showDate = parseDate(showdata.showDate, "yyyy-MM-dd")
 
-                                    noDataDialogHelper.dismissNoDataDialog()
-                                }
+                if (showDate != null) {
+                    if (!showDate.after(currentDate)) {
+                        if (showDate == currentDate) {
+                            val currentTime = Calendar.getInstance().time
+                            val showEndTime = parseDate(showdata.showEndTime, "HH:mm")
+                            if (showEndTime != null && showEndTime.before(currentTime)) {
+                                addBookingIfNoFeedback(booking)
                             }
+                        } else {
+                            addBookingIfNoFeedback(booking)
                         }
                     }
-
                 }
             }
         }
     }
-    private fun parseTime(time: String): Date {
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return dateFormat.parse(time)?: Date()
+
+    private fun addBookingIfNoFeedback(booking: BookingTb) {
+        val feedbackFirebaseRestManager = FirebaseRestManager<FeedbackTb>()
+        feedbackFirebaseRestManager.getAllItems(FeedbackTb::class.java, "moviedb/feedbacktb") { feedbackList ->
+            if (feedbackList.isNotEmpty()) {
+                val existingFeedback = feedbackList.find { it.showId == booking.showId && it.userId == booking.userId }
+                if (existingFeedback == null && !endedBookings.contains(booking)) {
+                    endedBookings.add(booking)
+                    updateUI()
+                    if (noDataDialogShown) {
+                        noDataDialogHelper.dismissNoDataDialog()
+                        noDataDialogShown = false
+                    }
+                }
+            } else {
+                if (!endedBookings.contains(booking)) {
+                    endedBookings.add(booking)
+                    updateUI()
+                    if (noDataDialogShown) {
+                        noDataDialogHelper.dismissNoDataDialog()
+                        noDataDialogShown = false
+                    }
+                }
+            }
+
+            if (endedBookings.isEmpty() && !noDataDialogShown) {
+                showNoDataDialog()
+            }
+        }
+    }
+
+    private fun parseDate(dateStr: String, format: String): Date? {
+        return try {
+            val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+            dateFormat.parse(dateStr)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun updateUI() {
-        // Notify the adapter about data changes
         adapter.notifyDataSetChanged()
         Log.d("TAG", "Ended bookings: ${endedBookings.joinToString("\n") { it.bookingId }}")
     }
 
-    private fun tryKrteHai(){
-        val firebaseDatabase  =  FirebaseDatabase.getInstance().reference
+    private fun listenForFeedbackChanges() {
+        val firebaseDatabase = FirebaseDatabase.getInstance().reference
         val rootRef = firebaseDatabase.child("moviedb/feedbacktb")
         rootRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method will be called whenever there is a change in the data
-                Log.d("TAG", "onDataChange:asdhaskhdhahsdkashdkasd ")
+                Log.d("TAG", "onDataChange: Feedback data changed")
                 endedBookings.clear()
+                uniqueShowIds.clear()
                 adapter.notifyDataSetChanged()
                 fetchTicketDetails()
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -161,8 +183,10 @@ class UserFeedbackFragment : Fragment() {
     private fun showNoDataDialog() {
         noDataDialogHelper.showNoDataDialog(requireContext())
         noDataDialogHelper.hideButtons()
-        noDataDialogHelper.updateText("No pending feedback found!!Start booking tickets to give feedback and rate your experience.")
+        noDataDialogHelper.updateText("No pending feedback found!! Start booking tickets to give feedback and rate your experience.")
+        noDataDialogShown = true // Set the flag to true
     }
+
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
