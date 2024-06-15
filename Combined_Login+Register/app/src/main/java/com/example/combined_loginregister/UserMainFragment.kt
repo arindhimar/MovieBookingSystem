@@ -54,9 +54,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
     ): View {
         binding = FragmentUserMainBinding.inflate(inflater, container, false)
 
-        // Register the receiver
-        val intentFilter = IntentFilter("com.example.BOOKING_CONFIRMED")
-        requireContext().registerReceiver(bookingReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+     
 
         setupLocationSpinner()
         setupSearchBar()
