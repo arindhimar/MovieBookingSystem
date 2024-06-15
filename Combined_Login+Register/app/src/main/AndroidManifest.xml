@@ -26,9 +26,7 @@
         <activity
             android:name=".PaymentActivity"
             android:exported="false" />
-        <receiver
-            android:name=".BookingReceiver"
-            android:exported="false" />
+
 
         <receiver
             android:name="com.razorpay.RzpTokenReceiver"
