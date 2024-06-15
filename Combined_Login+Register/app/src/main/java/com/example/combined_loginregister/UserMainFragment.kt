@@ -54,7 +54,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
     ): View {
         binding = FragmentUserMainBinding.inflate(inflater, container, false)
 
-     
+
 
         setupLocationSpinner()
         setupSearchBar()
@@ -64,7 +64,6 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
 
     override fun onDestroyView() {
         super.onDestroyView()
-        requireContext().unregisterReceiver(bookingReceiver)
     }
 
     private fun setupLocationSpinner() {
