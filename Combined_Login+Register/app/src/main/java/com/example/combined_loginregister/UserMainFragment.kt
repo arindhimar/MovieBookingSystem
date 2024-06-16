@@ -203,19 +203,7 @@ class UserMainFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListen
         itemTouchHelper.attachToRecyclerView(binding.horizontalRecyclerView)
     }
 
-    // BroadcastReceiver to handle the broadcast when data is added
-    inner class BookingReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val bookingId = intent?.getStringExtra("bookingId")
-            if (bookingId != null) {
-                Toast.makeText(context, "Booking confirmed with ID: $bookingId", Toast.LENGTH_LONG).show()
-                // Perform any additional UI updates or actions here
-                Log.d("TAG", "onReceive: $bookingId ")
-            } else {
-                Toast.makeText(context, "Booking confirmed", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+
 
     companion object {
         @JvmStatic
