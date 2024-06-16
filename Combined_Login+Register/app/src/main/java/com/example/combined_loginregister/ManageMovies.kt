@@ -99,7 +99,16 @@ class ManageMovies : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    uploadImageToFirebaseStorage(selectedUris)
+                    if(selectedUris!!.size >0 ) {
+                        uploadImageToFirebaseStorage(selectedUris)
+                    }
+                    else{
+                        Toast.makeText(
+                            requireContext(),
+                            "Make sure to add movie name, movie duration, and at least 1 movie poster!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
             alertDialog.show()
@@ -122,6 +131,9 @@ class ManageMovies : Fragment() {
     }
 
     private fun openGallery() {
+        if(selectedUris != null) {
+            selectedUris!!.clear()
+        }
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
