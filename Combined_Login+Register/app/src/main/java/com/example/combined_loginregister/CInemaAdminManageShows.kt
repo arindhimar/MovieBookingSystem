@@ -14,7 +14,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.i18n.DateTimeFormatter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arjungupta08.horizontal_calendar_date.HorizontalCalendarAdapter
@@ -33,8 +32,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalTime
-import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -338,27 +335,28 @@ class CInemaAdminManageShows : Fragment(), HorizontalCalendarAdapter.OnItemClick
         }
 
         addFinalShowBtn.setOnClickListener {
-            Log.d("TAG", "showAddShowDialog: asnd,asndkjnajsdk")
+            val selectedDate = selectedDateText
+            val selectedStartTime = selectedTimeText
+            val selectedEndTime = newTimeText
+
+            if (selectedStartTime == null || selectedEndTime == null) {
+                // Handle the case when start or end time is null
+                return@setOnClickListener
+            }
+
             val firebaseRestManager = FirebaseRestManager<ShowTb>()
             firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
-                val filteredShows =
-                    showTbs.filter { it.cinemaId == cinemaId && it.showDate == selectedDateText }
+                val filteredShows = showTbs.filter { it.cinemaId == cinemaId && it.showDate == selectedDate }
 
                 var isOverlap = false
                 for (show in filteredShows) {
-                    if (selectedTimeText == null || newTimeText == null) {
-                        if (isTimeOverlap(
-                                selectedTimeText, newTimeText!!, show.showStartTime,
-                                show.showEndTime
-                            )
-                        ) {
-                            isOverlap = true
-                            break
-                        }
+                    if (isTimeOverlap(selectedStartTime, selectedEndTime, show.showStartTime, show.showEndTime,)) {
+                        isOverlap = true
+                        break
                     }
                 }
 
-                if (isOverlap || newTimeText == null) {
+                if (isOverlap) {
                     val warningLoadingHelper = WarningLoadingHelper()
                     warningLoadingHelper.showLoadingDialog(requireContext())
                     warningLoadingHelper.updateText("Selected time overlaps with an existing show.")
@@ -367,85 +365,322 @@ class CInemaAdminManageShows : Fragment(), HorizontalCalendarAdapter.OnItemClick
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         warningLoadingHelper.dismissLoadingDialog()
-                        alertDialog2.dismiss()
+                        alertDialog2?.dismiss()
                     }, 2000)
                 } else {
-
-                    if (price.editText?.text.toString().isEmpty()) {
-                        price.error = "Enter price"
-                    } else {
-                        if (price.editText?.text.toString().toInt() < 1) {
-                            price.error = "Enter valid price"
-                        } else {
-                            price.error = null
-                            val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
-                            firebaseRestManager2.getSingleItem(
-                                CinemaOwnerTb::class.java,
-                                "moviedb/CinemaOwnerTb",
-                                cinemaOwnerId
-                            ) { items ->
-                                if (items != null) {
-                                    cinemaId = items.cinemaId.toString()
-                                    val firebaseRestManager = FirebaseRestManager<ShowTb>()
-                                    val db = Firebase.database.getReference("moviedb/showtb")
-                                    val id = db.push().key ?: return@getSingleItem
-
-                                    val firebaseRestManager4 = FirebaseRestManager<CinemaAdminTb>()
-                                    firebaseRestManager4.getAllItems(
-                                        CinemaAdminTb::class.java,
-                                        "moviedb/cinemaadmintb"
-                                    ) { cinemaAdminTbs ->
-                                        run {
-                                            val cinemaAdmin =
-                                                cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
-                                            val tempData = ShowTb(
-                                                id,
-                                                cinemaId,
-                                                cinemaAdmin!!.cinemaadminid.toString(),
-                                                movie.mid!!,
-                                                selectedDateText,
-                                                selectedTimeText,
-                                                newTimeText!!,
-                                                price.editText?.text.toString()
-                                            )
-
-                                            firebaseRestManager.addItemWithCustomId(
-                                                tempData,
-                                                id,
-                                                FirebaseDatabase.getInstance()
-                                                    .getReference("moviedb/showtb")
-                                            ) { success, message ->
-                                                if (success) {
-                                                    val successLoadingHelper =
-                                                        SuccessLoadingHelper()
-                                                    successLoadingHelper.showLoadingDialog(
-                                                        requireContext()
-                                                    )
-                                                    successLoadingHelper.updateText("Show added successfully")
-                                                    successLoadingHelper.hideButtons()
-
-                                                    val handler = Handler(Looper.getMainLooper())
-                                                    handler.postDelayed({
-                                                        successLoadingHelper.dismissLoadingDialog()
-                                                        alertDialog2.dismiss()
-                                                    }, 2000)
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
+                    // Proceed to add the show as no overlap is found
+                    addShow(selectedDate, selectedStartTime, selectedEndTime, price,movie,alertDialog2)
                 }
             }
         }
 
+
         alertDialog2.window?.attributes?.windowAnimations = R.style.DialogAnimation
     }
+    private fun addShow(
+        selectedDate: String,
+        selectedStartTime: String,
+        selectedEndTime: String,
+        price: TextInputLayout,
+        movie: MovieTB,
+        alertDialog2: AlertDialog
+    ) {
+        if (price.editText?.text.toString().isEmpty()) {
+            price.error = "Enter price"
+        } else {
+            if (price.editText?.text.toString().toInt() < 1) {
+                price.error = "Enter valid price"
+            } else {
+                price.error = null
+                val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
+                firebaseRestManager2.getSingleItem(
+                    CinemaOwnerTb::class.java,
+                    "moviedb/CinemaOwnerTb",
+                    cinemaOwnerId
+                ) { items ->
+                    if (items != null) {
+                        cinemaId = items.cinemaId.toString()
+                        val firebaseRestManager = FirebaseRestManager<ShowTb>()
+                        val db = Firebase.database.getReference("moviedb/showtb")
+                        val id = db.push().key ?: return@getSingleItem
+
+                        val firebaseRestManager4 = FirebaseRestManager<CinemaAdminTb>()
+                        firebaseRestManager4.getAllItems(
+                            CinemaAdminTb::class.java,
+                            "moviedb/cinemaadmintb"
+                        ) { cinemaAdminTbs ->
+                            run {
+                                val cinemaAdmin = cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
+                                val tempData = ShowTb(
+                                    id,
+                                    cinemaId,
+                                    cinemaAdmin!!.cinemaadminid.toString(),
+                                    movie.mid!!,
+                                    selectedDate,
+                                    selectedStartTime,
+                                    selectedEndTime,
+                                    price.editText?.text.toString()
+                                )
+
+                                firebaseRestManager.addItemWithCustomId(
+                                    tempData,
+                                    id,
+                                    FirebaseDatabase.getInstance().getReference("moviedb/showtb")
+                                ) { success, message ->
+                                    if (success) {
+                                        val successLoadingHelper = SuccessLoadingHelper()
+                                        successLoadingHelper.showLoadingDialog(requireContext())
+                                        successLoadingHelper.updateText("Show added successfully")
+                                        successLoadingHelper.hideButtons()
+
+                                        val handler = Handler(Looper.getMainLooper())
+                                        handler.postDelayed({
+                                            successLoadingHelper.dismissLoadingDialog()
+                                            alertDialog2?.dismiss()
+                                        }, 2000)
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun isTimeOverlap(
+        newShowStartTime: String,
+        newShowEndTime: String,
+        existingShowStartTime: String,
+        existingShowEndTime: String
+    ): Boolean {
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+        return try {
+            val newStart = timeFormat.parse(newShowStartTime)
+            val newEnd = timeFormat.parse(newShowEndTime)
+            val existingStart = timeFormat.parse(existingShowStartTime)
+            val existingEnd = timeFormat.parse(existingShowEndTime)
+
+            newStart.before(existingEnd) && existingStart.before(newEnd)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun showAddShowDialog(movie: MovieTB) {
+//        val dialogView2: View = layoutInflater.inflate(R.layout.custom_show_add_dialog, null)
+//        val alertDialog2: AlertDialog
+//
+//        val dialogBuilder2 = AlertDialog.Builder(requireContext())
+//        dialogBuilder2.setView(dialogView2)
+//
+//        alertDialog2 = dialogBuilder2.create()
+//        alertDialog2.show()
+//
+//        val btnDate = dialogView2.findViewById<Button>(R.id.btnDate)
+//        val btnTime = dialogView2.findViewById<Button>(R.id.btnTime)
+//        val textView = dialogView2.findViewById<TextView>(R.id.textView)
+//        val addFinalShowBtn = dialogView2.findViewById<Button>(R.id.AddFinalShowBtn)
+//        val price = dialogView2.findViewById<TextInputLayout>(R.id.price)
+//
+//        val currentDateTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"))
+//        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+//        dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+//        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+//        timeFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+//        val currentIndianDate = dateFormat.format(currentDateTime.time)
+//        val currentIndianTime = timeFormat.format(currentDateTime.time)
+//
+//        textView.text = "Date: $currentIndianDate\nTime: $currentIndianTime"
+//
+//        var selectedDateText = currentIndianDate
+//        var selectedTimeText = currentIndianTime
+//        var newTimeText: String? = null
+//
+//        btnDate.setOnClickListener {
+//            val datePicker = MaterialDatePicker.Builder.datePicker()
+//                .setTitleText("Select Show Date")
+//                .setSelection(currentDateTime.timeInMillis)
+//                .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+//                .build()
+//
+//            datePicker.addOnPositiveButtonClickListener {
+//                val selectedDateInMillis = datePicker.selection
+//                if (selectedDateInMillis != null) {
+//                    val selectedDate = Calendar.getInstance().apply {
+//                        timeInMillis = selectedDateInMillis
+//                        timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+//                    }
+//
+//                    val formattedSelectedDate = dateFormat.format(selectedDate.time)
+//                    selectedDateText = formattedSelectedDate
+//
+//                    textView.text = "Date: $selectedDateText\nTime: $selectedTimeText"
+//                }
+//            }
+//            datePicker.show(parentFragmentManager, "date")
+//        }
+//
+//        btnTime.setOnClickListener {
+//
+//            val timePicker = MaterialTimePicker.Builder()
+//                .setTimeFormat(TimeFormat.CLOCK_12H)
+//                .setHour(currentDateTime.get(Calendar.HOUR_OF_DAY))
+//                .setMinute(currentDateTime.get(Calendar.MINUTE))
+//                .setTitleText("Select Movie Time")
+//                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
+//                .build()
+//
+//            timePicker.addOnPositiveButtonClickListener {
+//                val selectedHour = timePicker.hour
+//                val selectedMinute = timePicker.minute
+//
+//                // Format the selected time
+//                val formattedSelectedTime =
+//                    String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
+//
+//                // Add minutes to the selected time
+//                val additionalMinutes = movie.duration!!.toInt()
+//                val calendar = Calendar.getInstance().apply {
+//                    set(Calendar.HOUR_OF_DAY, selectedHour)
+//                    set(Calendar.MINUTE, selectedMinute)
+//                    add(Calendar.MINUTE, additionalMinutes)
+//                }
+//
+//                // Format the new time
+//                val formattedNewTime = String.format(
+//                    Locale.getDefault(),
+//                    "%02d:%02d",
+//                    calendar.get(Calendar.HOUR_OF_DAY),
+//                    calendar.get(Calendar.MINUTE)
+//                )
+//
+//                // Update the selected time text and new time text
+//                selectedTimeText = formattedSelectedTime
+//                newTimeText = formattedNewTime
+//
+//                textView.text =
+//                    "Date: $selectedDateText\nSelected Time: $selectedTimeText\nEnd Time: $newTimeText"
+//            }
+//            timePicker.show(parentFragmentManager, "time")
+//        }
+//
+//        addFinalShowBtn.setOnClickListener {
+//            Log.d("TAG", "showAddShowDialog: asnd,asndkjnajsdk")
+//            val firebaseRestManager = FirebaseRestManager<ShowTb>()
+//            firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
+//                val filteredShows =
+//                    showTbs.filter { it.cinemaId == cinemaId && it.showDate == selectedDateText }
+//
+//                var isOverlap = false
+//                for (show in filteredShows) {
+//                    if (selectedTimeText == null || newTimeText == null) {
+//                        if (isTimeOverlap(
+//                                selectedTimeText, newTimeText!!, show.showStartTime,
+//                                show.showEndTime
+//                            )
+//                        ) {
+//                            isOverlap = true
+//                            break
+//                        }
+//                    }
+//                }
+//
+//                if (isOverlap || newTimeText == null) {
+//                    val warningLoadingHelper = WarningLoadingHelper()
+//                    warningLoadingHelper.showLoadingDialog(requireContext())
+//                    warningLoadingHelper.updateText("Selected time overlaps with an existing show.")
+//                    warningLoadingHelper.hideButtons()
+//
+//                    val handler = Handler(Looper.getMainLooper())
+//                    handler.postDelayed({
+//                        warningLoadingHelper.dismissLoadingDialog()
+//                        alertDialog2.dismiss()
+//                    }, 2000)
+//                } else {
+//
+//                    if (price.editText?.text.toString().isEmpty()) {
+//                        price.error = "Enter price"
+//                    } else {
+//                        if (price.editText?.text.toString().toInt() < 1) {
+//                            price.error = "Enter valid price"
+//                        } else {
+//                            price.error = null
+//                            val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
+//                            firebaseRestManager2.getSingleItem(
+//                                CinemaOwnerTb::class.java,
+//                                "moviedb/CinemaOwnerTb",
+//                                cinemaOwnerId
+//                            ) { items ->
+//                                if (items != null) {
+//                                    cinemaId = items.cinemaId.toString()
+//                                    val firebaseRestManager = FirebaseRestManager<ShowTb>()
+//                                    val db = Firebase.database.getReference("moviedb/showtb")
+//                                    val id = db.push().key ?: return@getSingleItem
+//
+//                                    val firebaseRestManager4 = FirebaseRestManager<CinemaAdminTb>()
+//                                    firebaseRestManager4.getAllItems(
+//                                        CinemaAdminTb::class.java,
+//                                        "moviedb/cinemaadmintb"
+//                                    ) { cinemaAdminTbs ->
+//                                        run {
+//                                            val cinemaAdmin =
+//                                                cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
+//                                            val tempData = ShowTb(
+//                                                id,
+//                                                cinemaId,
+//                                                cinemaAdmin!!.cinemaadminid.toString(),
+//                                                movie.mid!!,
+//                                                selectedDateText,
+//                                                selectedTimeText,
+//                                                newTimeText!!,
+//                                                price.editText?.text.toString()
+//                                            )
+//
+//                                            firebaseRestManager.addItemWithCustomId(
+//                                                tempData,
+//                                                id,
+//                                                FirebaseDatabase.getInstance()
+//                                                    .getReference("moviedb/showtb")
+//                                            ) { success, message ->
+//                                                if (success) {
+//                                                    val successLoadingHelper =
+//                                                        SuccessLoadingHelper()
+//                                                    successLoadingHelper.showLoadingDialog(
+//                                                        requireContext()
+//                                                    )
+//                                                    successLoadingHelper.updateText("Show added successfully")
+//                                                    successLoadingHelper.hideButtons()
+//
+//                                                    val handler = Handler(Looper.getMainLooper())
+//                                                    handler.postDelayed({
+//                                                        successLoadingHelper.dismissLoadingDialog()
+//                                                        alertDialog2.dismiss()
+//                                                    }, 2000)
+//                                                }
+//                                            }
+//                                        }
+//
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//
+//
+//                }
+//            }
+//        }
+//
+//        alertDialog2.window?.attributes?.windowAnimations = R.style.DialogAnimation
+//    }
 
 
     private fun loadCinemaOwner(cinemaOwnerId: String, callback: (String?) -> Unit) {
@@ -480,27 +715,28 @@ class CInemaAdminManageShows : Fragment(), HorizontalCalendarAdapter.OnItemClick
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun isTimeOverlap(
-        newShowStartTime: String,
-        newShowEndTime: String,
-        existingShowStartTime: String,
-        existingShowEndTime: String
-    ): Boolean {
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun isTimeOverlap(
+//        newShowStartTime: String,
+//        newShowEndTime: String,
+//        existingShowStartTime: String,
+//        existingShowEndTime: String
+//    ): Boolean {
+//        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+//
+//        return try {
+//            val newStart = timeFormat.parse(newShowStartTime)
+//            val newEnd = timeFormat.parse(newShowEndTime)
+//            val existingStart = timeFormat.parse(existingShowStartTime)
+//            val existingEnd = timeFormat.parse(existingShowEndTime)
+//
+//            newStart.before(existingEnd) && existingStart.before(newEnd)
+//        } catch (e: ParseException) {
+//            e.printStackTrace()
+//            false
+//        }
+//    }
 
-        return try {
-            val newStart = timeFormat.parse(newShowStartTime)
-            val newEnd = timeFormat.parse(newShowEndTime)
-            val existingStart = timeFormat.parse(existingShowStartTime)
-            val existingEnd = timeFormat.parse(existingShowEndTime)
-
-            newStart.before(existingEnd) && existingStart.before(newEnd)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            false
-        }
-    }
 
 
     private fun loadInitialData() {
