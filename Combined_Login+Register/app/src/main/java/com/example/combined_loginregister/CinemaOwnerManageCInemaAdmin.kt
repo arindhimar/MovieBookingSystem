@@ -382,6 +382,14 @@ class CinemaOwnerManageCInemaAdmin : Fragment() {
 
                                     firebaseRestManager.addItemWithCustomId(tempUser, newUserId, dbRef) { success, error ->
                                         if (success) {
+                                            val firebaseRestManager3 = FirebaseRestManager<CredentialsTb>()
+                                            val tempCredentials = CredentialsTb(newUserId,
+                                                email.toString(), password.toString() )
+
+                                            firebaseRestManager3.addItemWithCustomId(tempCredentials,newUserId,FirebaseDatabase.getInstance().getReference("moviedb/credentialstb")){success,error->{
+
+                                            }}
+
                                             firebaseAuth.currentUser!!.sendEmailVerification()
 
                                             // Re-authenticate with the original user's credentials

@@ -129,11 +129,13 @@ class MovieShowsHelperClass(private var movieData: MovieTB, val requireContext: 
                 // Filter shows by today's date and ensure they are at least 15 minutes from now
                 val filteredShows = showTbs.filter { it.showDate == formattedSelectedDate && it.movieId == movieData.mid }
                     .filter { show ->
-                        val showStartTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-                        showStartTimeFormat.timeZone = indiaTimeZone
-                        val showStartTime = showStartTimeFormat.parse("${show.showDate} ${show.showStartTime}")
-                        showStartTime?.let { it.time - currentTime.time >= 15 * 60 * 1000 } ?: false
+                        true
                     }
+
+                //                        val showStartTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+//                        showStartTimeFormat.timeZone = indiaTimeZone
+//                        val showStartTime = showStartTimeFormat.parse("${show.showDate} ${show.showStartTime}")
+//                        showStartTime?.let { it.time - currentTime.time >= 15 * 60 * 1000 } ?: false
 
                 // Group shows by cinema ID
                 val groupedShows = filteredShows.groupBy { it.cinemaId }

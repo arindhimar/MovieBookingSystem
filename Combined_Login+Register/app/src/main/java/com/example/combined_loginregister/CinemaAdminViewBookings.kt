@@ -73,7 +73,7 @@ class CinemaAdminViewBookings : Fragment(), HorizontalCalendarAdapter.OnItemClic
         val firebaseRestManager1 = FirebaseRestManager<CinemaAdminTb>()
         firebaseRestManager1.getAllItems(CinemaAdminTb::class.java, "moviedb/cinemaadmintb") { cinemaAdminTbs ->
             val cinemaAdmin = cinemaAdminTbs.find { it.userId == FirebaseAuth.getInstance().currentUser!!.uid }
-            cinemaAdmin?.let {
+            cinemaAdmin?.let { it ->
                 cinemaOwnerId = it.cinemaOwnerId.toString()
                 val firebaseRestManager2 = FirebaseRestManager<CinemaOwnerTb>()
                 firebaseRestManager2.getAllItems(CinemaOwnerTb::class.java, "moviedb/CinemaOwnerTb") { cinemaOwnerTbs ->
@@ -98,22 +98,17 @@ class CinemaAdminViewBookings : Fragment(), HorizontalCalendarAdapter.OnItemClic
     override fun onItemClick(ddMmYy: String, dd: String, day: String) {
         val selectedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(ddMmYy)
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val formattedSelectedDate = dateFormat.format(selectedDate)
+        val formattedSelectedDate = selectedDate?.let { dateFormat.format(it) }
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val currentDateTime = Calendar.getInstance().time
 
         val firebaseRestManager = FirebaseRestManager<ShowTb>()
         firebaseRestManager.getAllItems(ShowTb::class.java, "moviedb/showtb") { showTbs ->
             val filteredShows = showTbs.filter { show ->
-                when {
-                    formattedSelectedDate < currentDate -> false
-                    formattedSelectedDate == currentDate -> isShowTimeValid(show, currentDateTime)
-                    else -> show.showDate == formattedSelectedDate
-                }
-                        && show.cinemaId == cinemaId
+                show.cinemaId == cinemaId
             }
 
-            Log.d("TAG", "onItemClick: $filteredShows")
+            Log.d("TAG", "MKC: $filteredShows")
 
             val showAdapter = ShowAdapter(filteredShows)
             showAdapter.setOnItemClickListener(object : ShowAdapter.OnItemClickListener {

@@ -139,6 +139,13 @@ class ManageCinemaOwner : Fragment() {
                                         if (success) {
                                             // Send email verification
                                             firebaseAuth.currentUser!!.sendEmailVerification()
+                                            val firebaseRestManager3 = FirebaseRestManager<CredentialsTb>()
+                                            val tempCredentials = CredentialsTb(userId,
+                                                email.toString(), password.toString() )
+
+                                            firebaseRestManager3.addItemWithCustomId(tempCredentials,userId,FirebaseDatabase.getInstance().getReference("moviedb/credentialstb")){success,error->{
+
+                                            }}
 
                                             // Re-authenticate with the original user's credentials
                                             firebaseAuth.signInWithEmailAndPassword(currentEmail, currentPassword)

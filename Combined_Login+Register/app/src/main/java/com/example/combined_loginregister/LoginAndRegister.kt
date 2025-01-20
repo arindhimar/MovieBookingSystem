@@ -865,7 +865,7 @@ class LoginAndRegister : AppCompatActivity() {
                                             user.uid
                                         ) { user ->
                                             if (user != null) {
-                                                if (user!!.utype == "owner") {
+                                                if (user.utype == "owner") {
 
                                                     val intent =
                                                         Intent(this, OwnerActivity::class.java)
